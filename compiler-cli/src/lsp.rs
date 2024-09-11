@@ -1,5 +1,5 @@
 use crate::{build_lock::BuildLock, fs::ProjectIO};
-use gleam_core::{
+use rakun_core::{
     build::{Mode, NullTelemetry, Target},
     language_server::{LanguageServer, LockGuard, Locker},
     paths::ProjectPaths,
@@ -16,7 +16,7 @@ This command is intended to be run by language server clients such
 as a text editor rather than being run directly in the console.
 
 Many editors will automatically start the language server for you
-when you open a Gleam project. If yours does not you may need to
+when you open a Rakun project. If yours does not you may need to
 look up how to configure your editor to use a language server.
 
 You can exit this program by pressing ctrl+c.

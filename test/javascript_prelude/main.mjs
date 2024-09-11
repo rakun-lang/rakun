@@ -73,7 +73,7 @@ class ExampleRecordImpl extends CustomType {
 let fmt = new Intl.DateTimeFormat("en-GB", { timeStyle: "medium" });
 console.log(`Running tests at ${fmt.format(new Date())}\n`);
 
-// Equality of Gleam values
+// Equality of Rakun values
 
 assertEqual(true, true);
 assertEqual(false, false);

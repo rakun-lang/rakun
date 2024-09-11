@@ -41,7 +41,7 @@ fn long() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2932
+// https://github.com/rakun-lang/rakun/issues/2932
 #[test]
 fn tight_empty() {
     assert_format!(

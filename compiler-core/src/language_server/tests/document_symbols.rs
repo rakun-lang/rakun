@@ -47,7 +47,7 @@ pub type A";
 #[test]
 fn doc_symbols_type_constructor_no_args() {
     let code = "
-pub type B {
+pub record B {
     C
     D
 
@@ -61,11 +61,11 @@ pub type B {
 #[test]
 fn doc_symbols_type_constructor_pos_args() {
     let code = "
-pub type B {
+pub record B {
     C(Int)
 
     /// D
-    D(List(Int))
+    D(List<Int>)
 
     /// E
     E(
@@ -79,11 +79,11 @@ pub type B {
 #[test]
 fn doc_symbols_type_constructor_labeled_args() {
     let code = "
-pub type B {
+pub record B {
     C(argc: Int)
 
     /// D
-    D(argd: List(Int))
+    D(argd: List<Int>)
 
     /// E
     E(
@@ -98,11 +98,11 @@ pub type B {
 #[test]
 fn doc_symbols_type_constructor_pos_and_labeled_args() {
     let code = "
-pub type B {
+pub record B {
     C(Int, argc: Int)
 
     /// D
-    D(Int, argd: List(Int))
+    D(Int, argd: List<Int>)
 
     /// E
     E(
@@ -122,7 +122,7 @@ fn doc_symbols_type_alias() {
 /// DOC
 pub type FFF = Int
 
-pub type FFFF = List(Int)";
+pub type FFFF = List<Int>";
 
     assert_debug_snapshot!(doc_symbols(TestProject::for_source(code)))
 }
@@ -131,11 +131,11 @@ pub type FFFF = List(Int)";
 fn doc_symbols_function() {
     let code = "
 /// DOC
-pub fn super_func(a: Int) -> List(Int) {
+pub fn super_func(a: Int) -> List<Int> {
     [a + 5]
 }
 
-pub fn super_func2(a: Int) -> List(Int) {
+pub fn super_func2(a: Int) -> List<Int> {
     [a + 5]
 }";
 

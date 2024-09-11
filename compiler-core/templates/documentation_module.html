@@ -32,7 +32,7 @@
 {% block content %}
 <h1 id="module-name" class="module-name">
   <a href="#module-name">{{ module_name }}</a>
-  <svg class="icon icon-gleam-chasse"><use xlink:href="#icon-gleam-chasse"></use></svg>
+  <svg class="icon icon-rakun-chasse"><use xlink:href="#icon-rakun-chasse"></use></svg>
 </h1>
 {{ documentation|safe }}
 
@@ -40,7 +40,7 @@
 <section class="module-members">
   <h1 id="module-types" class="module-member-kind">
     <a href="#module-types">Types</a>
-    <svg class="icon icon-gleam-chasse-2"><use xlink:href="#icon-gleam-chasse-2"></use></svg>
+    <svg class="icon icon-rakun-chasse-2"><use xlink:href="#icon-rakun-chasse-2"></use></svg>
   </h1>
 
   {% for typ in types %}
@@ -64,7 +64,7 @@
     {% endif %}
     <div class="custom-type-constructors">
       <div class="rendered-markdown">{{ typ.documentation|safe }}</div>
-      <pre><code class="hljs gleam">{{ typ.definition }}</code></pre>
+      <pre><code class="hljs rakun">{{ typ.definition }}</code></pre>
       {% if !typ.constructors.is_empty() %}
       <h3>
         Constructors
@@ -74,7 +74,7 @@
         <li class="constructor-item">
           <div class="constructor-row">
             <svg class="icon icon-star"><use xlink:href="#icon-star"></use></svg>
-            <pre class="constructor-name"><code class="hljs gleam">{{ constructor.definition }}</code></pre>
+            <pre class="constructor-name"><code class="hljs rakun">{{ constructor.definition }}</code></pre>
           </div>
 
           <div class="constructor-item-docs">
@@ -115,7 +115,7 @@
 <section class="module-members">
   <h1 id="module-constants" class="module-member-kind">
     <a href="#module-constants">Constants</a>
-    <svg class="icon icon-gleam-chasse"><use xlink:href="#icon-gleam-chasse"></use></svg>
+    <svg class="icon icon-rakun-chasse"><use xlink:href="#icon-rakun-chasse"></use></svg>
   </h1>
 
   {% for constant in constants %}
@@ -132,7 +132,7 @@
       </a>
       {% endif %}
     </div>
-    <pre><code class="hljs gleam">{{ constant.definition }}</code></pre>
+    <pre><code class="hljs rakun">{{ constant.definition }}</code></pre>
     <div class="rendered-markdown">{{ constant.documentation|safe }}</div>
   </div>
   {% endfor %}
@@ -143,7 +143,7 @@
 <section class="module-members">
   <h1 id="module-functions" class="module-member-kind">
     <a href="#module-functions">Functions</a>
-    <svg class="icon icon-gleam-chasse"><use xlink:href="#icon-gleam-chasse"></use></svg>
+    <svg class="icon icon-rakun-chasse"><use xlink:href="#icon-rakun-chasse"></use></svg>
   </h1>
   {% for function in functions %}
   <div class="member">
@@ -160,7 +160,7 @@
       {% endif %}
     </div>
 
-    <pre><code class="hljs gleam">{{ function.signature }}</code></pre>
+    <pre><code class="hljs rakun">{{ function.signature }}</code></pre>
     {% if !function.deprecation_message.is_empty() %}
     <p>
       <b>Deprecated:</b> {{ function.deprecation_message }}

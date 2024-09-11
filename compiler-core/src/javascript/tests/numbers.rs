@@ -246,7 +246,7 @@ fn go() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2412
+// https://github.com/rakun-lang/rakun/issues/2412
 #[test]
 fn preceeding_zeros_int() {
     assert_js!(
@@ -258,7 +258,7 @@ fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2412
+// https://github.com/rakun-lang/rakun/issues/2412
 #[test]
 fn preceeding_zeros_float() {
     assert_js!(
@@ -270,7 +270,7 @@ fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2412
+// https://github.com/rakun-lang/rakun/issues/2412
 #[test]
 fn preceeding_zeros_int_const() {
     assert_js!(
@@ -280,7 +280,7 @@ const x = 09_179
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2412
+// https://github.com/rakun-lang/rakun/issues/2412
 #[test]
 fn preceeding_zeros_float_const() {
     assert_js!(
@@ -290,7 +290,7 @@ const x = 09_179.1
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2412
+// https://github.com/rakun-lang/rakun/issues/2412
 #[test]
 fn preceeding_zeros_int_pattern() {
     assert_js!(
@@ -302,7 +302,7 @@ fn main(x) {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2412
+// https://github.com/rakun-lang/rakun/issues/2412
 #[test]
 fn preceeding_zeros_float_pattern() {
     assert_js!(

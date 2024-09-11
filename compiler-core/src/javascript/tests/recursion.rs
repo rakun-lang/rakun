@@ -31,7 +31,7 @@ pub fn main(x) {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1779
+// https://github.com/rakun-lang/rakun/issues/1779
 #[test]
 fn not_tco_due_to_assignment() {
     assert_js!(
@@ -47,7 +47,7 @@ pub fn main(x) {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2400
+// https://github.com/rakun-lang/rakun/issues/2400
 #[test]
 fn shadowing_so_not_recursive() {
     // This funtion is calling an argument with the same name as itself, so it is not recursive

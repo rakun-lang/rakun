@@ -1,6 +1,6 @@
 use crate::assert_js;
 
-// https://github.com/gleam-lang/gleam/issues/1187
+// https://github.com/rakun-lang/rakun/issues/1187
 #[test]
 fn pointless() {
     assert_js!(
@@ -14,7 +14,7 @@ fn go(x) {
     )
 }
 
-// https://github.com/gleam-lang/gleam/issues/1188
+// https://github.com/rakun-lang/rakun/issues/1188
 #[test]
 fn following_todo() {
     assert_js!(
@@ -116,7 +116,7 @@ fn go(x) {
     )
 }
 
-// https://github.com/gleam-lang/gleam/issues/1237
+// https://github.com/rakun-lang/rakun/issues/1237
 #[test]
 fn pipe() {
     assert_js!(
@@ -145,7 +145,7 @@ fn go(x) {
     )
 }
 
-// https://github.com/gleam-lang/gleam/issues/1506
+// https://github.com/rakun-lang/rakun/issues/1506
 #[test]
 fn called_case() {
     assert_js!(
@@ -160,7 +160,7 @@ fn go(x, y) {
     )
 }
 
-// https://github.com/gleam-lang/gleam/issues/1978
+// https://github.com/rakun-lang/rakun/issues/1978
 #[test]
 fn case_local_var_in_tuple() {
     assert_js!(
@@ -176,7 +176,7 @@ fn go(x, y) {
     )
 }
 
-// https://github.com/gleam-lang/gleam/issues/2665
+// https://github.com/rakun-lang/rakun/issues/2665
 #[test]
 fn case_branches_guards_are_wrapped_in_parentheses() {
     assert_js!(
@@ -191,14 +191,14 @@ fn anything() -> a {
     )
 }
 
-// https://github.com/gleam-lang/gleam/issues/2759
+// https://github.com/rakun-lang/rakun/issues/2759
 #[test]
 fn nested_string_prefix_match() {
     assert_js!(
         r#"
 fn main() {
   case Ok(["a", "b c", "d"]) {
-    Ok(["a", "b " <> _, "d"]) -> 1
+    Ok(["a", "b " ++ _, "d"]) -> 1
     _ -> 1
   }
 }
@@ -206,14 +206,14 @@ fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2759
+// https://github.com/rakun-lang/rakun/issues/2759
 #[test]
 fn nested_string_prefix_match_that_would_crash_on_js() {
     assert_js!(
         r#"
 fn main() {
   case Ok(["b c", "d"]) {
-    Ok(["b " <> _, "d"]) -> 1
+    Ok(["b " ++ _, "d"]) -> 1
     _ -> 1
   }
 }
@@ -227,8 +227,8 @@ fn slicing_is_handled_properly_with_multiple_branches() {
         r#"
 pub fn main() {
   case "12345" {
-    "0" <> rest -> rest
-    "123" <> rest -> rest
+    "0" ++ rest -> rest
+    "123" ++ rest -> rest
     _ -> ""
   }
 }
@@ -236,7 +236,7 @@ pub fn main() {
     )
 }
 
-// https://github.com/gleam-lang/gleam/issues/3379
+// https://github.com/rakun-lang/rakun/issues/3379
 #[test]
 fn single_clause_variables() {
     assert_js!(
@@ -252,7 +252,7 @@ pub fn main() {
     )
 }
 
-// https://github.com/gleam-lang/gleam/issues/3379
+// https://github.com/rakun-lang/rakun/issues/3379
 #[test]
 fn single_clause_variables_assigned() {
     assert_js!(

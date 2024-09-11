@@ -298,9 +298,9 @@ mod tests {
     fn make_remote() -> Box<Remote> {
         let mut deps = HashMap::new();
         let _ = deps.insert(
-            "gleam_stdlib".into(),
+            "rakun_stdlib".into(),
             hexpm::Package {
-                name: "gleam_stdlib".into(),
+                name: "rakun_stdlib".into(),
                 repository: "hexpm".into(),
                 releases: vec![
                     Release {
@@ -335,15 +335,15 @@ mod tests {
             },
         );
         let _ = deps.insert(
-            "gleam_otp".into(),
+            "rakun_otp".into(),
             hexpm::Package {
-                name: "gleam_otp".into(),
+                name: "rakun_otp".into(),
                 repository: "hexpm".into(),
                 releases: vec![
                     Release {
                         version: Version::try_from("0.1.0").unwrap(),
                         requirements: [(
-                            "gleam_stdlib".into(),
+                            "rakun_stdlib".into(),
                             Dependency {
                                 app: None,
                                 optional: false,
@@ -359,7 +359,7 @@ mod tests {
                     Release {
                         version: Version::try_from("0.2.0").unwrap(),
                         requirements: [(
-                            "gleam_stdlib".into(),
+                            "rakun_stdlib".into(),
                             Dependency {
                                 app: None,
                                 optional: false,
@@ -375,7 +375,7 @@ mod tests {
                     Release {
                         version: Version::try_from("0.3.0-rc1").unwrap(),
                         requirements: [(
-                            "gleam_stdlib".into(),
+                            "rakun_stdlib".into(),
                             Dependency {
                                 app: None,
                                 optional: false,
@@ -391,7 +391,7 @@ mod tests {
                     Release {
                         version: Version::try_from("0.3.0-rc2").unwrap(),
                         requirements: [(
-                            "gleam_stdlib".into(),
+                            "rakun_stdlib".into(),
                             Dependency {
                                 app: None,
                                 optional: false,
@@ -438,18 +438,18 @@ mod tests {
 
     #[test]
     fn resolution_with_locked() {
-        let locked_stdlib = ("gleam_stdlib".into(), Version::parse("0.1.0").unwrap());
+        let locked_stdlib = ("rakun_stdlib".into(), Version::parse("0.1.0").unwrap());
         let result = resolve_versions(
             make_remote(),
             HashMap::new(),
             "app".into(),
-            vec![("gleam_stdlib".into(), Range::new("~> 0.1".into()))].into_iter(),
+            vec![("rakun_stdlib".into(), Range::new("~> 0.1".into()))].into_iter(),
             &vec![locked_stdlib].into_iter().collect(),
         )
         .unwrap();
         assert_eq!(
             result,
-            vec![("gleam_stdlib".into(), Version::parse("0.1.0").unwrap())]
+            vec![("rakun_stdlib".into(), Version::parse("0.1.0").unwrap())]
                 .into_iter()
                 .collect()
         );
@@ -474,13 +474,13 @@ mod tests {
             make_remote(),
             HashMap::new(),
             "app".into(),
-            vec![("gleam_stdlib".into(), Range::new("~> 0.1".into()))].into_iter(),
+            vec![("rakun_stdlib".into(), Range::new("~> 0.1".into()))].into_iter(),
             &vec![].into_iter().collect(),
         )
         .unwrap();
         assert_eq!(
             result,
-            vec![("gleam_stdlib".into(), Version::try_from("0.3.0").unwrap())]
+            vec![("rakun_stdlib".into(), Version::try_from("0.3.0").unwrap())]
                 .into_iter()
                 .collect()
         );
@@ -492,15 +492,15 @@ mod tests {
             make_remote(),
             HashMap::new(),
             "app".into(),
-            vec![("gleam_otp".into(), Range::new("~> 0.1".into()))].into_iter(),
+            vec![("rakun_otp".into(), Range::new("~> 0.1".into()))].into_iter(),
             &vec![].into_iter().collect(),
         )
         .unwrap();
         assert_eq!(
             result,
             vec![
-                ("gleam_otp".into(), Version::try_from("0.2.0").unwrap()),
-                ("gleam_stdlib".into(), Version::try_from("0.3.0").unwrap())
+                ("rakun_otp".into(), Version::try_from("0.2.0").unwrap()),
+                ("rakun_stdlib".into(), Version::try_from("0.3.0").unwrap())
             ]
             .into_iter()
             .collect()
@@ -513,15 +513,15 @@ mod tests {
             make_remote(),
             HashMap::new(),
             "app".into(),
-            vec![("gleam_otp".into(), Range::new("~> 0.1.0".into()))].into_iter(),
+            vec![("rakun_otp".into(), Range::new("~> 0.1.0".into()))].into_iter(),
             &vec![].into_iter().collect(),
         )
         .unwrap();
         assert_eq!(
             result,
             vec![
-                ("gleam_otp".into(), Version::try_from("0.1.0").unwrap()),
-                ("gleam_stdlib".into(), Version::try_from("0.3.0").unwrap())
+                ("rakun_otp".into(), Version::try_from("0.1.0").unwrap()),
+                ("rakun_stdlib".into(), Version::try_from("0.3.0").unwrap())
             ]
             .into_iter()
             .collect()
@@ -580,15 +580,15 @@ mod tests {
             make_remote(),
             HashMap::new(),
             "app".into(),
-            vec![("gleam_otp".into(), Range::new("~> 0.3.0-rc1".into()))].into_iter(),
+            vec![("rakun_otp".into(), Range::new("~> 0.3.0-rc1".into()))].into_iter(),
             &vec![].into_iter().collect(),
         )
         .unwrap();
         assert_eq!(
             result,
             vec![
-                ("gleam_stdlib".into(), Version::try_from("0.3.0").unwrap()),
-                ("gleam_otp".into(), Version::try_from("0.3.0-rc2").unwrap()),
+                ("rakun_stdlib".into(), Version::try_from("0.3.0").unwrap()),
+                ("rakun_otp".into(), Version::try_from("0.3.0-rc2").unwrap()),
             ]
             .into_iter()
             .collect(),
@@ -601,15 +601,15 @@ mod tests {
             make_remote(),
             HashMap::new(),
             "app".into(),
-            vec![("gleam_otp".into(), Range::new("0.3.0-rc1".into()))].into_iter(),
+            vec![("rakun_otp".into(), Range::new("0.3.0-rc1".into()))].into_iter(),
             &vec![].into_iter().collect(),
         )
         .unwrap();
         assert_eq!(
             result,
             vec![
-                ("gleam_stdlib".into(), Version::try_from("0.3.0").unwrap()),
-                ("gleam_otp".into(), Version::try_from("0.3.0-rc1").unwrap()),
+                ("rakun_stdlib".into(), Version::try_from("0.3.0").unwrap()),
+                ("rakun_otp".into(), Version::try_from("0.3.0-rc1").unwrap()),
             ]
             .into_iter()
             .collect(),
@@ -634,7 +634,7 @@ mod tests {
             make_remote(),
             HashMap::new(),
             "app".into(),
-            vec![("gleam_stdlib".into(), Range::new("~> 99.0".into()))].into_iter(),
+            vec![("rakun_stdlib".into(), Range::new("~> 99.0".into()))].into_iter(),
             &vec![].into_iter().collect(),
         )
         .unwrap_err();
@@ -646,8 +646,8 @@ mod tests {
             make_remote(),
             HashMap::new(),
             "app".into(),
-            vec![("gleam_stdlib".into(), Range::new("~> 0.1.0".into()))].into_iter(),
-            &vec![("gleam_stdlib".into(), Version::new(0, 2, 0))]
+            vec![("rakun_stdlib".into(), Range::new("~> 0.1.0".into()))].into_iter(),
+            &vec![("rakun_stdlib".into(), Version::new(0, 2, 0))]
                 .into_iter()
                 .collect(),
         )
@@ -656,7 +656,7 @@ mod tests {
         match err {
         Error::DependencyResolutionFailed(msg) => assert_eq!(
             msg,
-            "An unrecoverable error happened while solving dependencies: gleam_stdlib is specified with the requirement `~> 0.1.0`, but it is locked to 0.2.0, which is incompatible."
+            "An unrecoverable error happened while solving dependencies: rakun_stdlib is specified with the requirement `~> 0.1.0`, but it is locked to 0.2.0, which is incompatible."
         ),
         _ => panic!("wrong error: {}", err),
         }
@@ -668,13 +668,13 @@ mod tests {
             make_remote(),
             HashMap::new(),
             "app".into(),
-            vec![("gleam_stdlib".into(), Range::new("0.1.0".into()))].into_iter(),
+            vec![("rakun_stdlib".into(), Range::new("0.1.0".into()))].into_iter(),
             &vec![].into_iter().collect(),
         )
         .unwrap();
         assert_eq!(
             result,
-            vec![("gleam_stdlib".into(), Version::try_from("0.1.0").unwrap())]
+            vec![("rakun_stdlib".into(), Version::try_from("0.1.0").unwrap())]
                 .into_iter()
                 .collect()
         );

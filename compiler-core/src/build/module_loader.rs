@@ -132,7 +132,7 @@ where
     fn cached(&self, name: EcoString, meta: CacheMetadata) -> CachedModule {
         CachedModule {
             dependencies: meta.dependencies,
-            source_path: self.source_directory.join(format!("{}.gleam", name)),
+            source_path: self.source_directory.join(format!("{}.rakun", name)),
             origin: self.origin,
             name,
             line_numbers: meta.line_numbers,

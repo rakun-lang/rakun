@@ -27,9 +27,9 @@ pub fn main() {
         definition(TestProject::for_source(code), Position::new(3, 2)),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\src\app.gleam"
+                r"\\?\C:\src\app.rakun"
             } else {
-                "/src/app.gleam"
+                "/src/app.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -59,9 +59,9 @@ pub fn main() {
         definition(TestProject::for_source(code), Position::new(4, 2)),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\src\app.gleam"
+                r"\\?\C:\src\app.rakun"
             } else {
-                "/src/app.gleam"
+                "/src/app.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -93,9 +93,9 @@ pub fn main() {
         definition(TestProject::for_source(code), Position::new(6, 3)),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\src\app.gleam"
+                r"\\?\C:\src\app.rakun"
             } else {
-                "/src/app.gleam"
+                "/src/app.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -115,7 +115,7 @@ pub fn main() {
 #[test]
 fn goto_definition_same_module_records() {
     let code = "
-pub type Rec {
+pub record Rec {
   Var1(Int)
   Var2(Int, Int)
 }
@@ -129,9 +129,9 @@ pub fn main() {
         definition(TestProject::for_source(code), Position::new(7, 11)),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\src\app.gleam"
+                r"\\?\C:\src\app.rakun"
             } else {
-                "/src/app.gleam"
+                "/src/app.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -164,9 +164,9 @@ fn main() {
         ),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\src\example_module.gleam"
+                r"\\?\C:\src\example_module.rakun"
             } else {
-                "/src/example_module.gleam"
+                "/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -199,9 +199,9 @@ fn main() {
         ),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\src\example_module.gleam"
+                r"\\?\C:\src\example_module.rakun"
             } else {
-                "/src/example_module.gleam"
+                "/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -234,9 +234,9 @@ fn main() {
         ),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\src\example_module.gleam"
+                r"\\?\C:\src\example_module.rakun"
             } else {
-                "/src/example_module.gleam"
+                "/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -256,7 +256,7 @@ fn main() {
 #[test]
 fn goto_definition_imported_module_records() {
     let dep_src = "
-pub type Rec {
+pub record Rec {
   Var1(Int)
   Var2(Int, Int)
 }";
@@ -275,9 +275,9 @@ fn main() {
         ),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\src\example_module.gleam"
+                r"\\?\C:\src\example_module.rakun"
             } else {
-                "/src/example_module.gleam"
+                "/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -297,7 +297,7 @@ fn main() {
 #[test]
 fn goto_definition_unqualified_imported_module_records() {
     let dep_src = "
-pub type Rec {
+pub record Rec {
   Var1(Int)
   Var2(Int, Int)
 }";
@@ -316,9 +316,9 @@ fn main() {
         ),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\src\example_module.gleam"
+                r"\\?\C:\src\example_module.rakun"
             } else {
-                "/src/example_module.gleam"
+                "/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -351,9 +351,9 @@ fn main() {
         ),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\build\packages\hex\src\example_module.gleam"
+                r"\\?\C:\build\packages\hex\src\example_module.rakun"
             } else {
-                "/build/packages/hex/src/example_module.gleam"
+                "/build/packages/hex/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -387,9 +387,9 @@ fn main() {
         ),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\build\packages\hex\src\example_module.gleam"
+                r"\\?\C:\build\packages\hex\src\example_module.rakun"
             } else {
-                "/build/packages/hex/src/example_module.gleam"
+                "/build/packages/hex/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -432,9 +432,9 @@ fn main() {
         response,
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\build\packages\hex\src\example_module.gleam"
+                r"\\?\C:\build\packages\hex\src\example_module.rakun"
             } else {
-                "/build/packages/hex/src/example_module.gleam"
+                "/build/packages/hex/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -461,9 +461,9 @@ fn main() {
         response,
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\build\packages\hex\src\example_module.gleam"
+                r"\\?\C:\build\packages\hex\src\example_module.rakun"
             } else {
-                "/build/packages/hex/src/example_module.gleam"
+                "/build/packages/hex/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -507,9 +507,9 @@ fn main() {
         response,
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\dep\src\example_module.gleam"
+                r"\\?\C:\dep\src\example_module.rakun"
             } else {
-                "/dep/src/example_module.gleam"
+                "/dep/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -536,9 +536,9 @@ fn main() {
         response,
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\dep\src\example_module.gleam"
+                r"\\?\C:\dep\src\example_module.rakun"
             } else {
-                "/dep/src/example_module.gleam"
+                "/dep/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -558,7 +558,7 @@ fn main() {
 #[test]
 fn goto_definition_external_module_records() {
     let hex_src = "
-pub type Rec {
+pub record Rec {
   Var1(Int)
   Var2(Int, Int)
 }
@@ -578,9 +578,9 @@ fn main() {
         ),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\build\packages\hex\src\example_module.gleam"
+                r"\\?\C:\build\packages\hex\src\example_module.rakun"
             } else {
-                "/build/packages/hex/src/example_module.gleam"
+                "/build/packages/hex/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -614,9 +614,9 @@ fn main() {
         ),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\dep\src\example_module.gleam"
+                r"\\?\C:\dep\src\example_module.rakun"
             } else {
-                "/dep/src/example_module.gleam"
+                "/dep/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -636,7 +636,7 @@ fn main() {
 #[test]
 fn goto_definition_type() {
     let code = "
-pub type Rec {
+pub record Rec {
   Var1(Int)
   Var2(Int, Int)
 }
@@ -649,9 +649,9 @@ pub fn make_var() -> Rec {
         definition(TestProject::for_source(code), Position::new(6, 22)),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\src\app.gleam"
+                r"\\?\C:\src\app.rakun"
             } else {
-                "/src/app.gleam"
+                "/src/app.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -661,7 +661,7 @@ pub fn make_var() -> Rec {
                 },
                 end: Position {
                     line: 1,
-                    character: 12
+                    character: 14
                 }
             }
         })
@@ -671,7 +671,7 @@ pub fn make_var() -> Rec {
 #[test]
 fn goto_definition_type_in_module() {
     let hex_src = "
-pub type Rec {
+pub record Rec {
   Var1(Int)
   Var2(Int, Int)
 }
@@ -691,9 +691,9 @@ fn make_var() -> example_module.Rec {
         ),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\build\packages\hex\src\example_module.gleam"
+                r"\\?\C:\build\packages\hex\src\example_module.rakun"
             } else {
-                "/build/packages/hex/src/example_module.gleam"
+                "/build/packages/hex/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -703,7 +703,7 @@ fn make_var() -> example_module.Rec {
                 },
                 end: Position {
                     line: 1,
-                    character: 12
+                    character: 14
                 }
             }
         })
@@ -713,7 +713,7 @@ fn make_var() -> example_module.Rec {
 #[test]
 fn goto_definition_type_in_path_dep() {
     let dep = "
-pub type Rec {
+pub record Rec {
   Var1(Int)
   Var2(Int, Int)
 }
@@ -733,9 +733,9 @@ fn make_var() -> example_module.Rec {
         ),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\dep\src\example_module.gleam"
+                r"\\?\C:\dep\src\example_module.rakun"
             } else {
-                "/dep/src/example_module.gleam"
+                "/dep/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -745,7 +745,7 @@ fn make_var() -> example_module.Rec {
                 },
                 end: Position {
                     line: 1,
-                    character: 12
+                    character: 14
                 }
             }
         })
@@ -755,22 +755,22 @@ fn make_var() -> example_module.Rec {
 #[test]
 fn goto_definition_deep_type_in_module() {
     let hex_src = "
-pub type Wobble {
+pub record Wobble {
   Wobble(Int)
 }
 
-pub type Wibble(a) {
+pub record Wibble<a> {
   Wibble(a)
 }
 
-pub type Wabble(a) {
+pub record Wabble<a> {
   Wabble(a)
 }
 ";
 
     let code = "
 import example_module
-fn make_var() -> example_module.Wabble(example_module.Wibble(example_module.Wobble)) {
+fn make_var() -> example_module.Wabble<example_module.Wibble<example_module.Wobble>> {
   example_module.Wabble(example_module.Wibble(example_module.Wobble(1)))
 }
 ";
@@ -782,9 +782,9 @@ fn make_var() -> example_module.Wabble(example_module.Wibble(example_module.Wobb
         ),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\build\packages\hex\src\example_module.gleam"
+                r"\\?\C:\build\packages\hex\src\example_module.rakun"
             } else {
-                "/build/packages/hex/src/example_module.gleam"
+                "/build/packages/hex/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -817,9 +817,9 @@ fn main() {
         ),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\src\example_module.gleam"
+                r"\\?\C:\src\example_module.rakun"
             } else {
-                "/src/example_module.gleam"
+                "/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -852,9 +852,9 @@ fn main() {
         ),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\src\example_module.gleam"
+                r"\\?\C:\src\example_module.rakun"
             } else {
-                "/src/example_module.gleam"
+                "/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -887,9 +887,9 @@ fn main() {
         ),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\src\example_module.gleam"
+                r"\\?\C:\src\example_module.rakun"
             } else {
-                "/src/example_module.gleam"
+                "/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -922,9 +922,9 @@ fn main() {
         ),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\src\wibble.gleam"
+                r"\\?\C:\src\wibble.rakun"
             } else {
-                "/src/wibble.gleam"
+                "/src/wibble.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -957,9 +957,9 @@ fn main() -> MyType {
         ),
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\src\example_module.gleam"
+                r"\\?\C:\src\example_module.rakun"
             } else {
-                "/src/example_module.gleam"
+                "/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {

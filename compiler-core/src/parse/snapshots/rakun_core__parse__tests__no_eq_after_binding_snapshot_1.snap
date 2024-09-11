@@ -1,0 +1,9 @@
+---
+source: compiler-core/src/parse/tests.rs
+expression: let wibble
+---
+error: Syntax error
+  ┌─ /src/parse/error.rakun:1:5
+  │
+1 │ let wibble
+  │     ^^^^^^ I was expecting a '=' after this

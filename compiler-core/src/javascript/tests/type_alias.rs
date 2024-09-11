@@ -4,7 +4,7 @@ use crate::assert_ts_def;
 fn type_alias() {
     assert_ts_def!(
         r#"
-pub type Headers = List(#(String, String))
+pub type Headers = List<#(String, String)>
 "#,
     );
 }

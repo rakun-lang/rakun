@@ -1,6 +1,6 @@
 use camino::{Utf8Path, Utf8PathBuf};
 use flate2::{write::GzEncoder, Compression};
-use gleam_core::{
+use rakun_core::{
     analyse::TargetSupport,
     build::{Codegen, Compile, Mode, Options, Package, Target},
     config::{PackageConfig, SpdxLicense},
@@ -39,7 +39,7 @@ impl PublishCommand {
         let paths = crate::find_project_paths()?;
         let mut config = crate::config::root_config()?;
 
-        let should_publish = check_for_gleam_prefix(&config, i_am_sure)?
+        let should_publish = check_for_rakun_prefix(&config, i_am_sure)?
             && check_for_version_zero(&config, i_am_sure)?
             && check_repo_url(&config, i_am_sure)?;
 
@@ -136,7 +136,7 @@ fn check_repo_url(config: &PackageConfig, i_am_sure: bool) -> Result<bool, Error
     }
 
     println!(
-        "The repository configuration in your `gleam.toml` file does not appear to be
+        "The repository configuration in your `rakun.toml` file does not appear to be
 valid, {} returned status {}",
         &url,
         response.status()
@@ -165,15 +165,15 @@ updates that would normally be safe."
     Ok(should_publish)
 }
 
-/// Ask for confirmation if the package name if `gleam_*`
-fn check_for_gleam_prefix(config: &PackageConfig, i_am_sure: bool) -> Result<bool, Error> {
-    if !config.name.starts_with("gleam_") || config.name.starts_with("gleam_community_") {
+/// Ask for confirmation if the package name if `rakun_*`
+fn check_for_rakun_prefix(config: &PackageConfig, i_am_sure: bool) -> Result<bool, Error> {
+    if !config.name.starts_with("rakun_") || config.name.starts_with("rakun_community_") {
         return Ok(true);
     }
 
     println!(
         "You are about to publish a package with a name that starts with
-the prefix `gleam_`, which is for packages maintained by the Gleam
+the prefix `rakun_`, which is for packages maintained by the Rakun
 core team.",
     );
     let should_publish =
@@ -400,7 +400,7 @@ fn metadata_config<'a>(
             .chain(repo_url.into_iter().map(|u| ("Repository", u)))
             .collect(),
         requirements: requirements?,
-        build_tools: vec!["gleam"],
+        build_tools: vec!["rakun"],
     }
     .as_erlang();
     tracing::info!(contents = ?metadata, "Generated Hex metadata.config");
@@ -431,7 +431,7 @@ fn contents_tarball(
 // TODO: Don't include git-ignored native files
 fn project_files() -> Result<Vec<Utf8PathBuf>> {
     let src = Utf8Path::new("src");
-    let mut files: Vec<Utf8PathBuf> = fs::gleam_files_excluding_gitignore(src)
+    let mut files: Vec<Utf8PathBuf> = fs::rakun_files_excluding_gitignore(src)
         .chain(fs::native_files(src)?)
         .collect();
     let private = Utf8Path::new("priv");
@@ -447,7 +447,7 @@ fn project_files() -> Result<Vec<Utf8PathBuf>> {
     add("README");
     add("README.md");
     add("README.txt");
-    add("gleam.toml");
+    add("rakun.toml");
     add("LICENSE");
     add("LICENCE");
     add("LICENSE.md");
@@ -626,7 +626,7 @@ fn release_metadata_as_erlang() {
         },
     ];
     let version = "1.2.3".try_into().unwrap();
-    let homepage = "https://gleam.run".parse().unwrap();
+    let homepage = "https://rakun.run".parse().unwrap();
     let github = "https://github.com/lpil/myapp".parse().unwrap();
     let req1 = Range::new("~> 1.2.3 or >= 5.0.0".into());
     let req2 = Range::new("~> 1.2".into());
@@ -635,9 +635,9 @@ fn release_metadata_as_erlang() {
         version: &version,
         description: "description goes here 🌈",
         source_files: &[
-            Utf8PathBuf::from("gleam.toml"),
-            Utf8PathBuf::from("src/thingy.gleam"),
-            Utf8PathBuf::from("src/whatever.gleam"),
+            Utf8PathBuf::from("rakun.toml"),
+            Utf8PathBuf::from("src/thingy.rakun"),
+            Utf8PathBuf::from("src/whatever.rakun"),
         ],
         generated_files: &[
             (Utf8PathBuf::from("src/myapp.app"), "".into()),
@@ -656,7 +656,7 @@ fn release_metadata_as_erlang() {
                 requirement: &req2,
             },
         ],
-        build_tools: vec!["gleam", "rebar3"],
+        build_tools: vec!["rakun", "rebar3"],
     };
     assert_eq!(
         meta.as_erlang(),
@@ -665,9 +665,9 @@ fn release_metadata_as_erlang() {
 {<<"version">>, <<"1.2.3">>}.
 {<<"description">>, <<"description goes here 🌈"/utf8>>}.
 {<<"licenses">>, [<<"MIT">>, <<"MPL-2.0">>]}.
-{<<"build_tools">>, [<<"gleam">>, <<"rebar3">>]}.
+{<<"build_tools">>, [<<"rakun">>, <<"rebar3">>]}.
 {<<"links">>, [
-  {<<"homepage">>, <<"https://gleam.run/">>},
+  {<<"homepage">>, <<"https://rakun.run/">>},
   {<<"github">>, <<"https://github.com/lpil/myapp">>}
 ]}.
 {<<"requirements">>, [
@@ -683,12 +683,12 @@ fn release_metadata_as_erlang() {
   ]}
 ]}.
 {<<"files">>, [
-  <<"gleam.toml">>,
+  <<"rakun.toml">>,
   <<"src/myapp.app">>,
   <<"src/thingy.erl">>,
-  <<"src/thingy.gleam">>,
+  <<"src/thingy.rakun">>,
   <<"src/whatever.erl">>,
-  <<"src/whatever.gleam">>
+  <<"src/whatever.rakun">>
 ]}.
 "#
         .to_string()
@@ -712,7 +712,7 @@ fn prevent_publish_git_dependency() {
     let mut config = PackageConfig::default();
     config.dependencies = [(
         "provided".into(),
-        Requirement::git("https://github.com/gleam-lang/gleam.git"),
+        Requirement::git("https://github.com/rakun-lang/rakun.git"),
     )]
     .into();
     assert_eq!(

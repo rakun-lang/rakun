@@ -1,0 +1,18 @@
+---
+source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 448
+expression: "case [3.33], 1 { x, y if x < y -> 1 }"
+---
+error: Type mismatch
+  ┌─ /src/one/two.rakun:1:26
+  │
+1 │ case [3.33], 1 { x, y if x < y -> 1 }
+  │                          ^
+
+Expected type:
+
+    Int
+
+Found type:
+
+    List<Float>

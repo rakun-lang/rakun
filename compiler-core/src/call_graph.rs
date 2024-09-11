@@ -1,4 +1,4 @@
-//! Graphs that represent the relationships between entities in a Gleam module,
+//! Graphs that represent the relationships between entities in a Rakun module,
 //! such as module functions or constants.
 
 #[cfg(test)]

@@ -1,6 +1,6 @@
 # Project
 
-A test Gleam project.
+A test Rakun project.
 
 It covers these features:
 
@@ -10,7 +10,7 @@ It covers these features:
 - Importing packages
   - Specified in config.dependencies
   - Specified in config.dev-dependencies
-- Compilation of Gleam code
+- Compilation of Rakun code
   - in src
   - in test
 - Compilation of locally defined Erlang modules
@@ -19,11 +19,11 @@ It covers these features:
 - Importing of Erlang header files
   - in src
   - in test
-- Importing Gleam src code into test
+- Importing Rakun src code into test
 
 ## Quick start
 
 ```sh
-gleam run
-gleam test
+rakun run
+rakun test
 ```

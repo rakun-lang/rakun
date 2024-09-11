@@ -389,7 +389,7 @@ fn rename_invalid_parameter_label2() {
 fn rename_invalid_constructor() {
     assert_code_action!(
         "Rename to TheConstructor",
-        "type MyType { The_Constructor(Int) }",
+        "record MyType { The_Constructor(Int) }",
         find_position_of("The_").under_char('h').to_selection(),
     );
 }
@@ -398,7 +398,7 @@ fn rename_invalid_constructor() {
 fn rename_invalid_constructor_arg() {
     assert_code_action!(
         "Rename to inner_int",
-        "type IntWrapper { IntWrapper(innerInt: Int) }",
+        "record IntWrapper { IntWrapper(innerInt: Int) }",
         find_position_of("IntWrapper")
             .nth_occurrence(2)
             .select_until(find_position_of(": Int"))
@@ -409,7 +409,7 @@ fn rename_invalid_constructor_arg() {
 fn rename_invalid_custom_type() {
     assert_code_action!(
         "Rename to BoxedValue",
-        "type Boxed_value { Box(Int) }",
+        "record Boxed_value { Box(Int) }",
         find_position_of("Box").select_until(find_position_of("_value"))
     );
 }
@@ -519,7 +519,7 @@ fn rename_invalid_list_pattern_discard() {
 fn rename_invalid_constructor_pattern() {
     assert_code_action!(
         "Rename to inner_value",
-        "pub type Box { Box(Int) }
+        "pub record Box { Box(Int) }
 pub fn main() {
     let Box(innerValue) = Box(203)
 }",
@@ -531,7 +531,7 @@ pub fn main() {
 fn rename_invalid_constructor_pattern_discard() {
     assert_code_action!(
         "Rename to _ignored_inner",
-        "pub type Box { Box(Int) }
+        "pub record Box { Box(Int) }
 pub fn main() {
     let Box(_ignoredInner) = Box(203)
 }",
@@ -591,9 +591,9 @@ fn rename_invalid_string_prefix_pattern() {
     assert_code_action!(
         "Rename to cool_suffix",
         r#"pub fn main() {
-    let assert "prefix" <> coolSuffix = "prefix-suffix"
+    let assert "prefix" ++ coolSuffix = "prefix-suffix"
 }"#,
-        find_position_of("<>").select_until(find_position_of("-suffix"))
+        find_position_of("++").select_until(find_position_of("-suffix"))
     );
 }
 
@@ -602,9 +602,9 @@ fn rename_invalid_string_prefix_pattern_discard() {
     assert_code_action!(
         "Rename to _boring_suffix",
         r#"pub fn main() {
-    let assert "prefix" <> _boringSuffix = "prefix-suffix"
+    let assert "prefix" ++ _boringSuffix = "prefix-suffix"
 }"#,
-        find_position_of("<>").select_until(find_position_of("Suffix"))
+        find_position_of("++").select_until(find_position_of("Suffix"))
     );
 }
 
@@ -613,7 +613,7 @@ fn rename_invalid_string_prefix_pattern_alias() {
     assert_code_action!(
         "Rename to the_prefix",
         r#"pub fn main() {
-    let assert "prefix" as thePrefix <> _suffix = "prefix-suffix"
+    let assert "prefix" as thePrefix ++ _suffix = "prefix-suffix"
 }"#,
         find_position_of("prefix").select_until(find_position_of("-suffix"))
     );
@@ -645,7 +645,7 @@ fn rename_invalid_case_variable_discard() {
 fn rename_invalid_type_parameter_name() {
     assert_code_action!(
         "Rename to inner_type",
-        "type Wrapper(innerType) {}",
+        "record Wrapper<innerType> {}",
         find_position_of("innerType").select_until(find_position_of(")"))
     );
 }
@@ -654,7 +654,7 @@ fn rename_invalid_type_parameter_name() {
 fn rename_invalid_type_alias_parameter_name() {
     assert_code_action!(
         "Rename to phantom_type",
-        "type Phantom(phantomType) = Int",
+        "type Phantom<phantomType>= Int",
         find_position_of("phantomType").select_until(find_position_of(")"))
     );
 }
@@ -764,7 +764,7 @@ fn test_convert_let_assert_string_prefix_to_case() {
     assert_code_action!(
         CONVERT_TO_CASE,
         r#"pub fn main() {
-  let assert "_" <> thing = "_Hello"
+  let assert "_" ++ thing = "_Hello"
 }"#,
         find_position_of("_").to_selection()
     );
@@ -775,7 +775,7 @@ fn test_convert_let_assert_string_prefix_pattern_alias_to_case() {
     assert_code_action!(
         CONVERT_TO_CASE,
         r#"pub fn main() {
-    let assert "123" as one_two_three <> rest = "123456"
+    let assert "123" as one_two_three ++ rest = "123456"
 }"#,
         find_position_of("123").select_until(find_position_of("123456")),
     );
@@ -820,7 +820,7 @@ fn test_convert_assert_custom_type_with_label_shorthands_to_case() {
     assert_code_action!(
         CONVERT_TO_CASE,
         "
-pub type Wibble { Wibble(arg: Int, arg2: Float) }
+pub record Wibble { Wibble(arg: Int, arg2: Float) }
 pub fn main() {
   let assert Wibble(arg2:, ..) = Wibble(arg: 1, arg2: 1.0)
 }
@@ -859,7 +859,7 @@ pub fn main() {
     Wibble(arg2: arg2, arg1: arg1)
 }
 
-pub type Wibble { Wibble(arg1: Int, arg2: Int) }
+pub record Wibble { Wibble(arg1: Int, arg2: Int) }
 "#,
         find_position_of("Wibble").select_until(find_position_of("arg1: arg1").under_char(':')),
     );
@@ -876,7 +876,7 @@ pub fn main() {
     Wibble(arg2: arg2, arg1: arg1)
 }
 
-pub type Wibble { Wibble(arg1: Int, arg2: Int) }
+pub record Wibble { Wibble(arg1: Int, arg2: Int) }
 "#,
         find_position_of("Wibble").select_until(find_position_of("arg2: arg2").under_char(':')),
     );
@@ -892,7 +892,7 @@ pub fn main() {
     Wibble(..todo, arg1: arg1)
 }
 
-pub type Wibble { Wibble(arg1: Int, arg2: Int) }
+pub record Wibble { Wibble(arg1: Int, arg2: Int) }
 "#,
         find_position_of("..todo").select_until(find_position_of("arg1: arg1").under_last_char()),
     );
@@ -908,7 +908,7 @@ pub fn main() {
     arg1 + arg2
 }
 
-pub type Wibble { Wibble(arg1: Int, arg2: Int) }
+pub record Wibble { Wibble(arg1: Int, arg2: Int) }
 "#,
         find_position_of("let").select_until(find_position_of("todo").under_last_char()),
     );
@@ -924,7 +924,7 @@ pub fn main() {
   arg_1 + arg_2
 }
 
-pub type Wibble { Wibble(arg1: Int, arg2: Int) }
+pub record Wibble { Wibble(arg1: Int, arg2: Int) }
 "#,
         find_position_of("arg_1").select_until(find_position_of("arg_2").under_last_char())
     );
@@ -984,7 +984,7 @@ pub fn main() {
   Wibble()
 }
 
-pub type Wibble { Wibble(arg1: Int, arg2: String) }
+pub record Wibble { Wibble(arg1: Int, arg2: String) }
  "#,
         find_position_of("Wibble").select_until(find_position_of("Wibble()").under_last_char()),
     );
@@ -1079,8 +1079,8 @@ fn use_label_shorthand_works_for_nested_record_updates() {
     assert_code_action!(
         USE_LABEL_SHORTHAND_SYNTAX,
         r#"
-pub type Wibble { Wibble(arg: Int, arg2: Wobble) }
-pub type Wobble { Wobble(arg: Int, arg2: String) }
+pub record Wibble { Wibble(arg: Int, arg2: Wobble) }
+pub record Wobble { Wobble(arg: Int, arg2: String) }
 
 pub fn main() {
   let arg = 1
@@ -1097,8 +1097,8 @@ fn use_label_shorthand_works_for_nested_patterns() {
     assert_code_action!(
         USE_LABEL_SHORTHAND_SYNTAX,
         r#"
-pub type Wibble { Wibble(arg: Int, arg2: Wobble) }
-pub type Wobble { Wobble(arg: Int, arg2: String) }
+pub record Wibble { Wibble(arg: Int, arg2: Wobble) }
+pub record Wobble { Wobble(arg: Int, arg2: String) }
 
 pub fn main() {
   let Wibble(arg2: Wobble(arg: arg, arg2: arg2), ..) = todo
@@ -1113,7 +1113,7 @@ fn use_label_shorthand_works_for_alternative_patterns() {
     assert_code_action!(
         USE_LABEL_SHORTHAND_SYNTAX,
         r#"
-pub type Wibble { Wibble(arg: Int, arg2: String) }
+pub record Wibble { Wibble(arg: Int, arg2: String) }
 
 pub fn main() {
   case Wibble(1, "wibble") {
@@ -1276,9 +1276,9 @@ pub fn main() {
 "#;
 
     assert_code_action!(
-        "Import `gleam/io`",
+        "Import `rakun/io`",
         TestProject::for_source(src)
-            .add_hex_module("gleam/io", "pub fn println(message: String) {}"),
+            .add_hex_module("rakun/io", "pub fn println(message: String) {}"),
         find_position_of("io").select_until(find_position_of("."))
     );
 }
@@ -1289,7 +1289,7 @@ fn test_import_module_from_type() {
 
     assert_code_action!(
         "Import `mod/wibble`",
-        TestProject::for_source(src).add_hex_module("mod/wibble", "pub type Wubble { Wubble }"),
+        TestProject::for_source(src).add_hex_module("mod/wibble", "pub record Wubble { Wubble }"),
         find_position_of("wibble").select_until(find_position_of("."))
     );
 }
@@ -1304,7 +1304,7 @@ pub fn main() {
 
     assert_code_action!(
         "Import `values`",
-        TestProject::for_source(src).add_hex_module("values", "pub type Value { Value(Int) }"),
+        TestProject::for_source(src).add_hex_module("values", "pub record Value { Value(Int) }"),
         find_position_of("values").select_until(find_position_of("."))
     );
 }
@@ -1312,7 +1312,7 @@ pub fn main() {
 #[test]
 fn test_rename_module_for_imported() {
     let src = r#"
-import gleam/io
+import rakun/io
 
 pub fn main() {
   i.println("Hello, world!")
@@ -1322,7 +1322,7 @@ pub fn main() {
     assert_code_action!(
         "Did you mean `io`",
         TestProject::for_source(src)
-            .add_hex_module("gleam/io", "pub fn println(message: String) {}"),
+            .add_hex_module("rakun/io", "pub fn println(message: String) {}"),
         find_position_of("i.").select_until(find_position_of("println"))
     );
 }
@@ -1403,7 +1403,7 @@ fn test_no_action_to_import_module_with_private_type() {
 
     assert_no_code_actions!(
         title,
-        TestProject::for_source(src).add_hex_module("module", "type T { T }"),
+        TestProject::for_source(src).add_hex_module("module", "record T { T }"),
         find_position_of("module").select_until(find_position_of("."))
     );
 }
@@ -1417,7 +1417,7 @@ fn test_no_action_to_import_module_with_constructor_named_same_as_type() {
     assert_no_code_actions!(
         title,
         TestProject::for_source(src)
-            .add_hex_module("shapes", "pub type Shape { Rectangle, Circle }"),
+            .add_hex_module("shapes", "pub record Shape { Rectangle, Circle }"),
         find_position_of("shapes").select_until(find_position_of("."))
     );
 }

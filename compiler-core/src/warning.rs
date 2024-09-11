@@ -167,7 +167,7 @@ pub enum DeprecatedSyntaxWarning {
     DeprecatedListPrepend { location: SrcSpan },
 
     /// If someone uses the deprecated syntax to pattern match on a list:
-    /// ```gleam
+    /// ```rakun
     /// case list {
     ///   [first..rest] -> todo
     ///   //    ^^ notice there's no comma!
@@ -179,7 +179,7 @@ pub enum DeprecatedSyntaxWarning {
 
     /// If someone uses the deprecated syntax to match on all lists instead of
     /// a common `_`:
-    /// ```gleam
+    /// ```rakun
     /// case list {
     ///   [..] -> todo
     /// //^^^^ this matches on all lists so a `_` should be used instead!
@@ -190,7 +190,7 @@ pub enum DeprecatedSyntaxWarning {
     DeprecatedListCatchAllPattern { location: SrcSpan },
 
     /// If a record pattern has a spread that is not preceded by a comma:
-    /// ```gleam
+    /// ```rakun
     /// case wibble {
     ///   Wibble(arg1: name ..) -> todo
     /// //                  ^^ this should be preceded by a comma!
@@ -668,11 +668,11 @@ need to know if the list is empty or not.
                         "The module `{module}` is being imported, but \
 `{package}`, the package it belongs to, is not a direct dependency of your \
 package.
-In a future version of Gleam this may become a compile error.
+In a future version of Rakun this may become a compile error.
 
 Run this command to add it to your dependencies:
 
-    gleam add {package}
+    rakun add {package}
 "
                     ));
                     Diagnostic {
@@ -766,7 +766,7 @@ A case expression can take multiple subjects separated by commas like this:
       _, _ -> todo
     }}
 
-See: https://tour.gleam.run/flow-control/multiple-subjects/"
+See: https://tour.rakun.run/flow-control/multiple-subjects/"
                     ));
 
                     Diagnostic {
@@ -804,23 +804,6 @@ can already tell which branch is going to match with this value.",
                         extra_labels: Vec::new(),
                     }),
                 },
-
-                type_::Warning::OpaqueExternalType { location } => Diagnostic {
-                    title: "Opaque external type".into(),
-                    text: "This type has no constructors so making it opaque is redundant.".into(),
-                    hint: Some("Remove the `opaque` qualifier from the type definition.".into()),
-                    level: diagnostic::Level::Warning,
-                    location: Some(Location {
-                        src: src.clone(),
-                        path: path.to_path_buf(),
-                        label: diagnostic::Label {
-                            text: None,
-                            span: *location,
-                        },
-                        extra_labels: Vec::new(),
-                    }),
-                },
-
                 type_::Warning::UnusedValue { location } => Diagnostic {
                     title: "Unused value".into(),
                     text: "".into(),
@@ -923,7 +906,7 @@ hidden from the package's documentation.",
                         _ => text.push_str(&format!(
                             "\n\nHint: if you want to display an error message you should write
 `{name} as \"my error message\"`
-See: https://tour.gleam.run/advanced-features/{name}/"
+See: https://tour.rakun.run/advanced-features/{name}/"
                         )),
                     }
 
@@ -982,7 +965,7 @@ Your code will crash before reaching this point.",
                         "This function capture is redundant since the value is already piped as \
 the first argument of this call.
 
-See: https://tour.gleam.run/functions/pipelines/",
+See: https://tour.rakun.run/functions/pipelines/",
                     ),
                     hint: None,
                     level: diagnostic::Level::Warning,

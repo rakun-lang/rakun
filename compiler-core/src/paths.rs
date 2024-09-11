@@ -2,7 +2,7 @@ use crate::build::{Mode, Target};
 
 use camino::{Utf8Path, Utf8PathBuf};
 
-pub const ARTEFACT_DIRECTORY_NAME: &str = "_gleam_artefacts";
+pub const ARTEFACT_DIRECTORY_NAME: &str = "_rakun_artefacts";
 
 #[derive(Debug, Clone)]
 pub struct ProjectPaths {
@@ -29,7 +29,7 @@ impl ProjectPaths {
     }
 
     pub fn root_config(&self) -> Utf8PathBuf {
-        self.root.join("gleam.toml")
+        self.root.join("rakun.toml")
     }
 
     pub fn readme(&self) -> Utf8PathBuf {
@@ -66,7 +66,7 @@ impl ProjectPaths {
 
     // build_deps_package_config
     pub fn build_packages_package_config(&self, package_name: &str) -> Utf8PathBuf {
-        self.build_packages_package(package_name).join("gleam.toml")
+        self.build_packages_package(package_name).join("rakun.toml")
     }
 
     pub fn build_export_hex_tarball(&self, package_name: &str, version: &str) -> Utf8PathBuf {
@@ -113,12 +113,12 @@ impl ProjectPaths {
             .join("ebin")
     }
 
-    /// A path to a special file that contains the version of gleam that last built
-    /// the artifacts. If this file does not match the current version of gleam we
+    /// A path to a special file that contains the version of rakun that last built
+    /// the artifacts. If this file does not match the current version of rakun we
     /// will rebuild from scratch
-    pub fn build_gleam_version(&self, mode: Mode, target: Target) -> Utf8PathBuf {
+    pub fn build_rakun_version(&self, mode: Mode, target: Target) -> Utf8PathBuf {
         self.build_directory_for_target(mode, target)
-            .join("gleam_version")
+            .join("rakun_version")
     }
 }
 
@@ -127,17 +127,17 @@ pub fn global_package_cache_package_tarball(package_name: &str, version: &str) -
 }
 
 fn global_packages_cache() -> Utf8PathBuf {
-    default_global_gleam_cache()
+    default_global_rakun_cache()
         .join("hex")
         .join("hexpm")
         .join("packages")
 }
 
-pub fn default_global_gleam_cache() -> Utf8PathBuf {
+pub fn default_global_rakun_cache() -> Utf8PathBuf {
     Utf8PathBuf::from_path_buf(
         dirs_next::cache_dir()
             .expect("Failed to determine user cache directory")
-            .join("gleam"),
+            .join("rakun"),
     )
     .expect("Non Utf8 Path")
 }
@@ -152,13 +152,13 @@ pub fn unnest(within: &Utf8Path) -> Utf8PathBuf {
 
 #[test]
 fn paths() {
-    assert!(default_global_gleam_cache().ends_with("gleam"));
+    assert!(default_global_rakun_cache().ends_with("rakun"));
 
     assert!(global_packages_cache().ends_with("hex/hexpm/packages"));
 
     assert!(
-        global_package_cache_package_tarball("gleam_stdlib", "0.17.1")
-            .ends_with("hex/hexpm/packages/gleam_stdlib-0.17.1.tar")
+        global_package_cache_package_tarball("rakun_stdlib", "0.17.1")
+            .ends_with("hex/hexpm/packages/rakun_stdlib-0.17.1.tar")
     );
 
     assert!(global_package_cache_package_tarball("elli", "1.0.0")

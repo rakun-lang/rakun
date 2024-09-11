@@ -7,12 +7,12 @@ fn example1() {
 
 #[test]
 fn example2() {
-    assert_format!("type Box(a)\n");
+    assert_format!("type Box<a>\n");
 }
 
 #[test]
 fn example3() {
-    assert_format!("type Box(a, b, zero)\n");
+    assert_format!("type Box<a, b, zero>\n");
 }
 
 #[test]
@@ -22,10 +22,10 @@ fn example4() {
 
 #[test]
 fn example5() {
-    assert_format!("pub type Box(a)\n");
+    assert_format!("pub type Box<a>\n");
 }
 
 #[test]
 fn example6() {
-    assert_format!("pub type Box(a, b, zero)\n");
+    assert_format!("pub type Box<a, b, zero>\n");
 }

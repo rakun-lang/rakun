@@ -1,0 +1,8 @@
+---
+source: compiler-core/src/javascript/tests/prelude.rs
+expression: "import rakun\npub fn go() { rakun.Ok(1) }\n"
+---
+import type * as $rakun from "../rakun.d.mts";
+import type * as _ from "../rakun.d.mts";
+
+export function go(): _.Result<number, any>;

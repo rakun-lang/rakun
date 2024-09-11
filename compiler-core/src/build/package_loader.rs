@@ -192,22 +192,22 @@ where
         Ok(module)
     }
 
-    pub fn is_gleam_path(&self, path: &Utf8Path, dir: &Utf8Path) -> bool {
+    pub fn is_rakun_path(&self, path: &Utf8Path, dir: &Utf8Path) -> bool {
         use regex::Regex;
         use std::cell::OnceCell;
         const RE: OnceCell<Regex> = OnceCell::new();
 
         RE.get_or_init(|| {
             Regex::new(&format!(
-                "^({module}{slash})*{module}\\.gleam$",
+                "^({module}{slash})*{module}\\.rakun$",
                 module = "[a-z][_a-z0-9]*",
                 slash = "(/|\\\\)",
             ))
-            .expect("is_gleam_path() RE regex")
+            .expect("is_rakun_path() RE regex")
         })
         .is_match(
             path.strip_prefix(dir)
-                .expect("is_gleam_path(): strip_prefix")
+                .expect("is_rakun_path(): strip_prefix")
                 .as_str(),
         )
     }
@@ -233,13 +233,13 @@ where
         };
 
         // Src
-        for path in self.io.gleam_source_files(&src) {
-            // If the there is a .gleam file with a path that would be an
+        for path in self.io.rakun_source_files(&src) {
+            // If the there is a .rakun file with a path that would be an
             // invalid module name it does not get loaded. For example, if it
             // has a uppercase letter in it.
             // Emit a warning so that the programmer understands why it has been
             // skipped.
-            if !self.is_gleam_path(&path, &src) {
+            if !self.is_rakun_path(&path, &src) {
                 self.warnings.emit(crate::Warning::InvalidSource { path });
                 continue;
             }
@@ -254,8 +254,8 @@ where
             loader.origin = Origin::Test;
             loader.source_directory = &test;
 
-            for path in self.io.gleam_source_files(&test) {
-                if !self.is_gleam_path(&path, &test) {
+            for path in self.io.rakun_source_files(&test) {
+                if !self.is_rakun_path(&path, &test) {
                     self.warnings.emit(crate::Warning::InvalidSource { path });
                     continue;
                 }
@@ -267,13 +267,13 @@ where
         // If we are compiling for Erlang then modules all live in a single
         // namespace. If we were to name a module the same as a module that
         // is included in the standard Erlang distribution then this new
-        // Gleam module would overwrite the existing Erlang one, likely
+        // Rakun module would overwrite the existing Erlang one, likely
         // resulting in cryptic errors.
         // This would most commonly happen for modules like "user" and
         // "code". Emit an error so this never happens.
         if self.target.is_erlang() {
             for input in inputs.collection.values() {
-                ensure_gleam_module_does_not_overwrite_standard_erlang_module(&input)?;
+                ensure_rakun_module_does_not_overwrite_standard_erlang_module(&input)?;
             }
         }
 
@@ -354,7 +354,7 @@ where
     }
 }
 
-fn ensure_gleam_module_does_not_overwrite_standard_erlang_module(input: &Input) -> Result<()> {
+fn ensure_rakun_module_does_not_overwrite_standard_erlang_module(input: &Input) -> Result<()> {
     // We only need to check uncached modules as it's not possible for these
     // to have compiled successfully.
     let Input::New(input) = input else {
@@ -1629,7 +1629,7 @@ fn ensure_gleam_module_does_not_overwrite_standard_erlang_module(input: &Input) 
         _ => return Ok(()),
     }
 
-    Err(Error::GleamModuleWouldOverwriteStandardErlangModule {
+    Err(Error::RakunModuleWouldOverwriteStandardErlangModule {
         name: input.name.clone(),
         path: input.path.to_owned(),
     })

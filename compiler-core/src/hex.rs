@@ -24,7 +24,7 @@ J1i2xWFndWa6nfFnRxZmCStCOZWYYPlaxr+FZceFbpMwzTNs4g3d4tLNUcbKAIH4
 ";
 
 fn key_name(hostname: &str) -> String {
-    format!("gleam-{hostname}")
+    format!("rakun-{hostname}")
 }
 
 pub async fn publish_package<Http: HttpClient>(

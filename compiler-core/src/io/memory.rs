@@ -138,18 +138,18 @@ impl FileSystemReader for InMemoryFileSystem {
         Ok(path.to_path_buf())
     }
 
-    fn gleam_source_files(&self, dir: &Utf8Path) -> Vec<Utf8PathBuf> {
+    fn rakun_source_files(&self, dir: &Utf8Path) -> Vec<Utf8PathBuf> {
         self.files
             .deref()
             .borrow()
             .iter()
             .map(|(file_path, _)| file_path.to_path_buf())
             .filter(|file_path| file_path.starts_with(dir))
-            .filter(|file_path| file_path.extension() == Some("gleam"))
+            .filter(|file_path| file_path.extension() == Some("rakun"))
             .collect()
     }
 
-    fn gleam_cache_files(&self, dir: &Utf8Path) -> Vec<Utf8PathBuf> {
+    fn rakun_cache_files(&self, dir: &Utf8Path) -> Vec<Utf8PathBuf> {
         self.files
             .deref()
             .borrow()

@@ -500,10 +500,10 @@ impl<'a, 'b> PatternTyper<'a, 'b> {
                                 .position(|a| a.label.is_some())
                                 .unwrap_or(pattern_args.len());
 
-                            // In Gleam we can pass in positional unlabelled args to a constructor
+                            // In Rakun we can pass in positional unlabelled args to a constructor
                             // even if the field was defined as labelled
                             //
-                            //     pub type Wibble {
+                            //     pub record Wibble {
                             //       Wibble(Int, two: Int, three: Int, four: Int)
                             //     }
                             //     Wibble(1, 2, 3, 4)

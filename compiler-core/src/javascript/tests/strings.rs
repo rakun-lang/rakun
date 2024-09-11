@@ -49,7 +49,7 @@ fn string_literals() {
     assert_js!(
         r#"
 fn go() {
-  "Hello, Gleam!"
+  "Hello, Rakun!"
 }
 "#,
     );
@@ -100,7 +100,7 @@ fn string_concat() {
     assert_js!(
         r#"
 fn go() {
-  "Hello, " <> "Joe"
+  "Hello, " ++ "Joe"
 }
 "#,
     );
@@ -112,7 +112,7 @@ fn string_prefix() {
         r#"
 pub fn go(x) {
   case x {
-    "Hello, " <> name -> name
+    "Hello, " ++ name -> name
     _ -> "Unknown"
   }
 }
@@ -126,23 +126,23 @@ fn string_prefix_utf16() {
         r#"
 pub fn go(x) {
   case "Θ wibble wobble" {
-    "Θ" <> rest -> rest
+    "Θ" ++ rest -> rest
     _ -> ""
   }
   case "🫥 is neutral dotted" {
-    "🫥" <> rest -> rest
+    "🫥" ++ rest -> rest
     _ -> ""
   }
   case "🇺🇸 is a cluster" {
-    "🇺🇸" <> rest -> rest
+    "🇺🇸" ++ rest -> rest
     _ -> ""
   }
   case "\" is a an escaped quote" {
-    "\"" <> rest -> rest
+    "\"" ++ rest -> rest
     _ -> ""
   }
   case "\\ is a an escaped backslash" {
-    "\\" <> rest -> rest
+    "\\" ++ rest -> rest
     _ -> ""
   }
 }
@@ -157,7 +157,7 @@ fn discard_concat_rest_pattern() {
         r#"
 pub fn go(x) {
   case x {
-    "Hello, " <> _ -> Nil
+    "Hello, " ++ _ -> Nil
     _ -> Nil
   }
 }
@@ -171,7 +171,7 @@ fn string_prefix_assignment() {
         r#"
 pub fn go(x) {
   case x {
-    "Hello, " as greeting <> name -> greeting
+    "Hello, " as greeting ++ name -> greeting
     _ -> "Unknown"
   }
 }
@@ -185,10 +185,10 @@ fn string_prefix_assignment_with_utf_escape_sequence() {
         r#"
 pub fn go(x) {
   case x {
-    "\u{0032} " as greeting <> name -> greeting
-    "\u{0007ff} " as greeting <> name -> greeting
-    "\u{00ffff} " as greeting <> name -> greeting
-    "\u{10ffff} " as greeting <> name -> greeting
+    "\u{0032} " as greeting ++ name -> greeting
+    "\u{0007ff} " as greeting ++ name -> greeting
+    "\u{00ffff} " as greeting ++ name -> greeting
+    "\u{10ffff} " as greeting ++ name -> greeting
     _ -> "Unknown"
   }
 }
@@ -202,7 +202,7 @@ fn string_prefix_shadowing() {
         r#"
 pub fn go(x) {
   case x {
-    "Hello, " as x <> name -> x
+    "Hello, " as x ++ name -> x
     _ -> "Unknown"
   }
 }
@@ -210,14 +210,14 @@ pub fn go(x) {
     )
 }
 
-// https://github.com/gleam-lang/gleam/issues/2471
+// https://github.com/rakun-lang/rakun/issues/2471
 #[test]
 fn string_prefix_assignment_with_multiple_subjects() {
     assert_js!(
         r#"
 pub fn go(x) {
   case x {
-    "1" as prefix <> _ | "11" as prefix <> _ -> prefix
+    "1" as prefix ++ _ | "11" as prefix ++ _ -> prefix
     _ -> "Unknown"
   }
 }
@@ -230,7 +230,7 @@ fn const_concat() {
     assert_js!(
         r#"
 const cute = "cute"
-const cute_bee = cute <> "bee"
+const cute_bee = cute ++ "bee"
 
 pub fn main() {
   cute_bee
@@ -244,8 +244,8 @@ fn const_concat_multiple() {
     assert_js!(
         r#"
 const cute = "cute"
-const cute_bee = cute <> "bee"
-const cute_cute_bee_buzz = cute <> cute_bee <> "buzz"
+const cute_bee = cute ++ "bee"
+const cute_cute_bee_buzz = cute ++ cute_bee ++ "buzz"
 
 pub fn main() {
   cute_cute_bee_buzz

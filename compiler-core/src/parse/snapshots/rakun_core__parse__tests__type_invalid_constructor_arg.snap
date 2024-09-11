@@ -1,0 +1,14 @@
+---
+source: compiler-core/src/parse/tests.rs
+assertion_line: 1052
+expression: "\nrecord A {\n    A(type: String)\n}\n"
+---
+error: Syntax error
+  ┌─ /src/parse/error.rakun:3:7
+  │
+3 │     A(type: String)
+  │       ^^^^ I was not expecting this
+
+Found the keyword `type`, expected one of: 
+- `)`
+- a constructor argument name

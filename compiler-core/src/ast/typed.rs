@@ -167,7 +167,7 @@ impl TypedExpr {
         match fun {
             TypedExpr::ModuleSelect {
                 label, module_name, ..
-            } => label == "println" && module_name == "gleam/io",
+            } => label == "println" && module_name == "rakun/io",
             _ => false,
         }
     }

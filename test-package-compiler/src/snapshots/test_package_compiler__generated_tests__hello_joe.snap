@@ -3,19 +3,19 @@ source: test-package-compiler/src/generated_tests.rs
 assertion_line: 118
 expression: "./cases/hello_joe"
 ---
-//// /out/lib/the_package/_gleam_artefacts/hello_joe.cache
+//// /out/lib/the_package/_rakun_artefacts/hello_joe.cache
 <.cache binary>
 
-//// /out/lib/the_package/_gleam_artefacts/hello_joe.cache_meta
+//// /out/lib/the_package/_rakun_artefacts/hello_joe.cache_meta
 <57 byte binary>
 
-//// /out/lib/the_package/_gleam_artefacts/hello_joe.erl
+//// /out/lib/the_package/_rakun_artefacts/hello_joe.erl
 -module(hello_joe).
 -compile([no_auto_import, nowarn_unused_vars, nowarn_unused_function, nowarn_nomatch]).
 
 -export([main/0]).
 
--file("src/hello_joe.gleam", 1).
+-file("src/hello_joe.rakun", 1).
 -spec main() -> binary().
 main() ->
     <<"Hello, Joe!"/utf8>>.

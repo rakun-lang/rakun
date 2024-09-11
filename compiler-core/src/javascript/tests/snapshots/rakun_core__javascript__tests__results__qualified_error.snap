@@ -1,0 +1,9 @@
+---
+source: compiler-core/src/javascript/tests/results.rs
+expression: "import rakun\npub fn main() { rakun.Error(1) }"
+---
+import * as $rakun from "../rakun.mjs";
+
+export function main() {
+  return new $rakun.Error(1);
+}

@@ -87,7 +87,7 @@ fn record_accessors() {
     // We can use record accessors for types with only one constructor
     assert_erl!(
         r#"
-pub type Person { Person(name: String, age: Int) }
+pub record Person { Person(name: String, age: Int) }
 pub fn get_age(person: Person) { person.age }
 pub fn get_name(person: Person) { person.name }
 "#
@@ -99,7 +99,7 @@ fn record_accessor_multiple_variants() {
     // We can access fields on custom types with multiple variants
     assert_erl!(
         "
-pub type Person {
+pub record Person {
     Teacher(name: String, title: String)
     Student(name: String, age: Int)
 }
@@ -113,7 +113,7 @@ fn record_accessor_multiple_variants_positions_other_than_first() {
     // In positions other than the 1st field
     assert_erl!(
         "
-pub type Person {
+pub record Person {
     Teacher(name: String, age: Int, title: String)
     Student(name: String, age: Int)
 }
@@ -128,9 +128,9 @@ fn record_accessor_multiple_variants_parameterised_types() {
     // In positions other than the 1st field
     assert_erl!(
         "
-pub type Person {
-    Teacher(name: String, age: List(Int), title: String)
-    Student(name: String, age: List(Int))
+pub record Person {
+    Teacher(name: String, age: List<Int>, title: String)
+    Student(name: String, age: List<Int>)
 }
 pub fn get_name(person: Person) { person.name }
 pub fn get_age(person: Person) { person.age }"
@@ -143,7 +143,7 @@ fn record_accessor_multiple_with_first_position_different_types() {
     // In positions other than the 1st field
     assert_erl!(
         "
-pub type Person {
+pub record Person {
     Teacher(name: Nil, age: Int)
     Student(name: String, age: Int)
 }
@@ -156,7 +156,7 @@ fn record_spread() {
     // Test binding to a record field with the spread operator
     assert_erl!(
         r#"
-type Triple {
+record Triple {
     Triple(a: Int, b: Int, c: Int)
 }
 
@@ -175,7 +175,7 @@ fn record_spread1() {
     // Test binding to a record field with the spread operator and a labelled argument
     assert_erl!(
         r#"
-type Triple {
+record Triple {
   Triple(a: Int, b: Int, c: Int)
 }
 
@@ -193,7 +193,7 @@ fn record_spread2() {
     // Test binding to a record field with the spread operator with both a labelled argument and a positional argument
     assert_erl!(
         r#"
-type Triple {
+record Triple {
   Triple(a: Int, b: Int, c: Int)
 }
 
@@ -211,7 +211,7 @@ fn record_spread3() {
     // Test binding to a record field with the spread operator in a match
     assert_erl!(
         r#"
-type Triple {
+record Triple {
   Triple(a: Int, b: Int, c: Int)
 }
 
@@ -230,7 +230,7 @@ fn record_updates() {
     // Record updates
     assert_erl!(
         r#"
-pub type Person { Person(name: String, age: Int) }
+pub record Person { Person(name: String, age: Int) }
 
 fn main() {
     let p = Person("Quinn", 27)
@@ -246,7 +246,7 @@ fn record_updates1() {
     // Record updates with field accesses
     assert_erl!(
         r#"
-pub type Person { Person(name: String, age: Int) }
+pub record Person { Person(name: String, age: Int) }
 
 fn main() {
     let p = Person("Quinn", 27)
@@ -262,7 +262,7 @@ fn record_updates2() {
     // Record updates with multiple fields
     assert_erl!(
         r#"
-pub type Person { Person(name: String, age: Int) }
+pub record Person { Person(name: String, age: Int) }
 
 fn main() {
     let p = Person("Quinn", 27)
@@ -278,7 +278,7 @@ fn record_updates3() {
     // Record updates when record is returned from function
     assert_erl!(
         r#"
-pub type Person { Person(name: String, age: Int) }
+pub record Person { Person(name: String, age: Int) }
 
 fn main() {
     let new_p = Person(..return_person(), age: 28)
@@ -297,8 +297,8 @@ fn record_updates4() {
     // Record updates when record is field on another record
     assert_erl!(
         r#"
-pub type Car { Car(make: String, model: String, driver: Person) }
-pub type Person { Person(name: String, age: Int) }
+pub record Car { Car(make: String, model: String, driver: Person) }
+pub record Person { Person(name: String, age: Int) }
 
 fn main() {
     let car = Car(make: "Amphicar", model: "Model 770", driver: Person(name: "John Doe", age: 27))
@@ -312,17 +312,17 @@ fn main() {
 #[test]
 fn record_constants() {
     assert_erl!(
-        "pub type Test { A }
+        "pub record Test { A }
 const some_test = A
 pub fn a() { A }"
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1698
+// https://github.com/rakun-lang/rakun/issues/1698
 #[test]
 fn pipe_update_subject() {
     assert_erl!(
-        "pub type Thing {
+        "pub record Thing {
   Thing(a: Int, b: Int)
 }
 
@@ -335,11 +335,11 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1698
+// https://github.com/rakun-lang/rakun/issues/1698
 #[test]
 fn record_access_block() {
     assert_erl!(
-        "pub type Thing {
+        "pub record Thing {
   Thing(a: Int, b: Int)
 }
 
@@ -352,11 +352,15 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1981
+// https://github.com/rakun-lang/rakun/issues/1981
 #[test]
 fn imported_qualified_constructor_as_fn_name_escape() {
     assert_erl!(
-        ("other_package", "other_module", "pub type Let { Let(Int) }"),
+        (
+            "other_package",
+            "other_module",
+            "pub record Let { Let(Int) }"
+        ),
         "import other_module
 
 pub fn main() {

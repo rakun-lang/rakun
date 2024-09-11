@@ -48,54 +48,54 @@ fn git_init_already_in_git() {
 fn exclude_build_dir() {
     /*
     a
-    |-- gleam.toml
+    |-- rakun.toml
     |-- build
-    |  |-- f.gleam  # do not count as gleam file
+    |  |-- f.rakun  # do not count as rakun file
     b
     |-- build
-    |  |-- f.gleam  # count as gleam file
+    |  |-- f.rakun  # count as rakun file
      */
 
     let tmp_dir = tempfile::tempdir().unwrap();
     let path = Utf8Path::from_path(tmp_dir.path()).expect("Non Utf-8 Path");
 
-    // excluded gleam file
+    // excluded rakun file
     {
-        let gleam_toml = path.join("a/gleam.toml").to_path_buf();
-        super::write(&gleam_toml, "").unwrap();
+        let rakun_toml = path.join("a/rakun.toml").to_path_buf();
+        super::write(&rakun_toml, "").unwrap();
 
-        let gleam_file = path.join("a/build/f.gleam").to_path_buf();
-        super::write(&gleam_file, "").unwrap();
+        let rakun_file = path.join("a/build/f.rakun").to_path_buf();
+        super::write(&rakun_file, "").unwrap();
     };
 
-    // included gleam file
-    let gleam_file = path.join("b/build/f.gleam").to_path_buf();
-    super::write(&gleam_file, "").unwrap();
+    // included rakun file
+    let rakun_file = path.join("b/build/f.rakun").to_path_buf();
+    super::write(&rakun_file, "").unwrap();
 
-    let files = super::gleam_files_excluding_gitignore(path).collect::<Vec<_>>();
+    let files = super::rakun_files_excluding_gitignore(path).collect::<Vec<_>>();
 
-    assert_eq!(files, vec![gleam_file]);
+    assert_eq!(files, vec![rakun_file]);
 }
 
 #[test]
-fn is_gleam_path_test() {
-    assert!(super::is_gleam_path(
-        Utf8Path::new("/some-prefix/a.gleam"),
+fn is_rakun_path_test() {
+    assert!(super::is_rakun_path(
+        Utf8Path::new("/some-prefix/a.rakun"),
         Utf8Path::new("/some-prefix/")
     ));
 
-    assert!(super::is_gleam_path(
-        Utf8Path::new("/some-prefix/one_two/a.gleam"),
+    assert!(super::is_rakun_path(
+        Utf8Path::new("/some-prefix/one_two/a.rakun"),
         Utf8Path::new("/some-prefix/")
     ));
 
-    assert!(super::is_gleam_path(
-        Utf8Path::new("/some-prefix/one_two/a123.gleam"),
+    assert!(super::is_rakun_path(
+        Utf8Path::new("/some-prefix/one_two/a123.rakun"),
         Utf8Path::new("/some-prefix/")
     ));
 
-    assert!(super::is_gleam_path(
-        Utf8Path::new("/some-prefix/one_2/a123.gleam"),
+    assert!(super::is_rakun_path(
+        Utf8Path::new("/some-prefix/one_2/a123.rakun"),
         Utf8Path::new("/some-prefix/")
     ));
 }

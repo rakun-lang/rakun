@@ -1,6 +1,6 @@
 use crate::assert_format;
 
-// https://github.com/gleam-lang/gleam/issues/2119
+// https://github.com/rakun-lang/rakun/issues/2119
 #[test]
 fn assignment() {
     assert_format!(
@@ -15,7 +15,7 @@ fn assignment() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2131
+// https://github.com/rakun-lang/rakun/issues/2131
 #[test]
 fn comment() {
     assert_format!(

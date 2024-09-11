@@ -1,5 +1,5 @@
 [package]
-name = "gleam"
+name = "rakun"
 version = "1.4.1"
 authors = ["Louis Pilfold <louis@lpil.uk>"]
 edition = "2021"
@@ -7,7 +7,7 @@ license-file = "LICENCE"
 
 [dependencies]
 # The pure compiler
-gleam-core = { path = "../compiler-core" }
+rakun-core = { path = "../compiler-core" }
 # OS SIGINT and SIGTERM signal handling
 ctrlc = { version = "3", features = ["termination"] }
 # Command line interface

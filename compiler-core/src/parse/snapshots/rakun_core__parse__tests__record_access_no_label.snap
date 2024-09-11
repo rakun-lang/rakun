@@ -1,0 +1,181 @@
+---
+source: compiler-core/src/parse/tests.rs
+assertion_line: 1139
+expression: "\nrecord Wibble {\n    Wibble(wibble: String)\n}\n\nfn wobble() {\n  Wibble(\"a\").\n}\n"
+---
+Parsed {
+    module: Module {
+        name: "",
+        documentation: [],
+        type_info: (),
+        definitions: [
+            TargetedDefinition {
+                definition: CustomType(
+                    CustomType {
+                        location: SrcSpan {
+                            start: 1,
+                            end: 14,
+                        },
+                        end_position: 45,
+                        name: "Wibble",
+                        name_location: SrcSpan {
+                            start: 8,
+                            end: 14,
+                        },
+                        publicity: Private,
+                        constructors: [
+                            RecordConstructor {
+                                location: SrcSpan {
+                                    start: 21,
+                                    end: 43,
+                                },
+                                name_location: SrcSpan {
+                                    start: 21,
+                                    end: 27,
+                                },
+                                name: "Wibble",
+                                arguments: [
+                                    RecordConstructorArg {
+                                        label: Some(
+                                            (
+                                                SrcSpan {
+                                                    start: 28,
+                                                    end: 34,
+                                                },
+                                                "wibble",
+                                            ),
+                                        ),
+                                        ast: Constructor(
+                                            TypeAstConstructor {
+                                                location: SrcSpan {
+                                                    start: 36,
+                                                    end: 42,
+                                                },
+                                                module: None,
+                                                name: "String",
+                                                arguments: [],
+                                            },
+                                        ),
+                                        location: SrcSpan {
+                                            start: 28,
+                                            end: 42,
+                                        },
+                                        type_: (),
+                                        doc: None,
+                                    },
+                                ],
+                                documentation: None,
+                            },
+                        ],
+                        documentation: None,
+                        deprecation: NotDeprecated,
+                        mode: Record,
+                        opaque: false,
+                        parameters: [],
+                        typed_parameters: [],
+                    },
+                ),
+                target: None,
+            },
+            TargetedDefinition {
+                definition: Function(
+                    Function {
+                        location: SrcSpan {
+                            start: 47,
+                            end: 58,
+                        },
+                        end_position: 77,
+                        name: Some(
+                            (
+                                SrcSpan {
+                                    start: 50,
+                                    end: 56,
+                                },
+                                "wobble",
+                            ),
+                        ),
+                        arguments: [],
+                        body: [
+                            Expression(
+                                FieldAccess {
+                                    location: SrcSpan {
+                                        start: 63,
+                                        end: 75,
+                                    },
+                                    label_location: SrcSpan {
+                                        start: 74,
+                                        end: 75,
+                                    },
+                                    label: "",
+                                    container: Call {
+                                        location: SrcSpan {
+                                            start: 63,
+                                            end: 74,
+                                        },
+                                        fun: Var {
+                                            location: SrcSpan {
+                                                start: 63,
+                                                end: 69,
+                                            },
+                                            name: "Wibble",
+                                        },
+                                        arguments: [
+                                            CallArg {
+                                                label: None,
+                                                location: SrcSpan {
+                                                    start: 70,
+                                                    end: 73,
+                                                },
+                                                value: String {
+                                                    location: SrcSpan {
+                                                        start: 70,
+                                                        end: 73,
+                                                    },
+                                                    value: "a",
+                                                },
+                                                implicit: None,
+                                            },
+                                        ],
+                                    },
+                                },
+                            ),
+                        ],
+                        publicity: Private,
+                        deprecation: NotDeprecated,
+                        return_annotation: None,
+                        return_type: (),
+                        documentation: None,
+                        external_erlang: None,
+                        external_javascript: None,
+                        implementations: Implementations {
+                            rakun: true,
+                            can_run_on_erlang: true,
+                            can_run_on_javascript: true,
+                            uses_erlang_externals: false,
+                            uses_javascript_externals: false,
+                        },
+                    },
+                ),
+                target: None,
+            },
+        ],
+    },
+    extra: ModuleExtra {
+        module_comments: [],
+        doc_comments: [],
+        comments: [],
+        empty_lines: [
+            46,
+        ],
+        new_lines: [
+            0,
+            16,
+            43,
+            45,
+            46,
+            60,
+            75,
+            77,
+        ],
+    },
+}

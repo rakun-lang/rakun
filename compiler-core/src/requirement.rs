@@ -124,7 +124,7 @@ mod tests {
             short = "~> 0.5"
             hex = { version = "~> 1.0.0" }
             local = { path = "/path/to/package" }
-            github = { git = "https://github.com/gleam-lang/otp.git" }
+            github = { git = "https://github.com/rakun-lang/otp.git" }
         "#;
         let deps: HashMap<String, Requirement> = toml::from_str(toml).unwrap();
         assert_eq!(deps["short"], Requirement::hex("~> 0.5"));
@@ -132,7 +132,7 @@ mod tests {
         assert_eq!(deps["local"], Requirement::path("/path/to/package"));
         assert_eq!(
             deps["github"],
-            Requirement::git("https://github.com/gleam-lang/otp.git")
+            Requirement::git("https://github.com/rakun-lang/otp.git")
         );
     }
 }

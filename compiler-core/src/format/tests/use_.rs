@@ -248,7 +248,7 @@ fn patterns() {
 fn patterns_with_annotation() {
     assert_format!(
         r#"pub fn main() {
-  use Box(x): Box(Int) <- apply(Box(1))
+  use Box(x): Box<Int> <- apply(Box(1))
   x
 }
 "#
@@ -327,7 +327,7 @@ fn multiple_long_annotations() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2114
+// https://github.com/rakun-lang/rakun/issues/2114
 #[test]
 fn comment() {
     assert_format!(

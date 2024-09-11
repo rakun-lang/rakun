@@ -1,6 +1,6 @@
 use camino::{Utf8Path, Utf8PathBuf};
 use clap::ValueEnum;
-use gleam_core::{
+use rakun_core::{
     erlang,
     error::{Error, FileIoAction, FileKind, InvalidProjectNameReason},
     parse, Result,
@@ -15,7 +15,7 @@ mod tests;
 
 use crate::{fs::get_current_directory, NewOptions};
 
-const GLEAM_STDLIB_REQUIREMENT: &str = ">= 0.34.0 and < 2.0.0";
+const RAKUN_STDLIB_REQUIREMENT: &str = ">= 0.34.0 and < 2.0.0";
 const GLEEUNIT_REQUIREMENT: &str = ">= 1.0.0 and < 2.0.0";
 const ERLANG_OTP_VERSION: &str = "26.0.2";
 const REBAR3_VERSION: &str = "3";
@@ -36,7 +36,7 @@ pub struct Creator {
     test: Utf8PathBuf,
     github: Utf8PathBuf,
     workflows: Utf8PathBuf,
-    gleam_version: &'static str,
+    rakun_version: &'static str,
     options: NewOptions,
     project_name: String,
 }
@@ -47,7 +47,7 @@ enum FileToCreate {
     Gitignore,
     SrcModule,
     TestModule,
-    GleamToml,
+    RakunToml,
     GithubCi,
 }
 
@@ -60,11 +60,11 @@ impl FileToCreate {
             Self::Gitignore => creator.root.join(Utf8PathBuf::from(".gitignore")),
             Self::SrcModule => creator
                 .src
-                .join(Utf8PathBuf::from(format!("{project_name}.gleam"))),
+                .join(Utf8PathBuf::from(format!("{project_name}.rakun"))),
             Self::TestModule => creator
                 .test
-                .join(Utf8PathBuf::from(format!("{project_name}_test.gleam"))),
-            Self::GleamToml => creator.root.join(Utf8PathBuf::from("gleam.toml")),
+                .join(Utf8PathBuf::from(format!("{project_name}_test.rakun"))),
+            Self::RakunToml => creator.root.join(Utf8PathBuf::from("rakun.toml")),
             Self::GithubCi => creator.workflows.join(Utf8PathBuf::from("test.yml")),
         }
     }
@@ -73,7 +73,7 @@ impl FileToCreate {
         let project_name = &creator.project_name;
         let skip_git = creator.options.skip_git;
         let skip_github = creator.options.skip_github;
-        let gleam_version = creator.gleam_version;
+        let rakun_version = creator.rakun_version;
 
         match self {
             Self::Readme => Some(format!(
@@ -83,9 +83,9 @@ impl FileToCreate {
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/{project_name}/)
 
 ```sh
-gleam add {project_name}@1
+rakun add {project_name}@1
 ```
-```gleam
+```rakun
 import {project_name}
 
 pub fn main() {{
@@ -98,8 +98,8 @@ Further documentation can be found at <https://hexdocs.pm/{project_name}>.
 ## Development
 
 ```sh
-gleam run   # Run the project
-gleam test  # Run the tests
+rakun run   # Run the project
+rakun test  # Run the tests
 ```
 "#,
             )),
@@ -114,7 +114,7 @@ erl_crash.dump
             ),
 
             Self::SrcModule => Some(format!(
-                r#"import gleam/io
+                r#"import rakun/io
 
 pub fn main() {{
   io.println("Hello from {project_name}!")
@@ -139,7 +139,7 @@ pub fn hello_world_test() {
                 .into(),
             ),
 
-            Self::GleamToml => Some(format!(
+            Self::RakunToml => Some(format!(
                 r#"name = "{project_name}"
 version = "1.0.0"
 
@@ -152,10 +152,10 @@ version = "1.0.0"
 # links = [{{ title = "Website", href = "" }}]
 #
 # For a full reference of all the available options, you can have a look at
-# https://gleam.run/writing-gleam/gleam-toml/.
+# https://rakun.run/writing-rakun/rakun-toml/.
 
 [dependencies]
-gleam_stdlib = "{GLEAM_STDLIB_REQUIREMENT}"
+rakun_stdlib = "{RAKUN_STDLIB_REQUIREMENT}"
 
 [dev-dependencies]
 gleeunit = "{GLEEUNIT_REQUIREMENT}"
@@ -180,12 +180,12 @@ jobs:
       - uses: erlef/setup-beam@v1
         with:
           otp-version: "{ERLANG_OTP_VERSION}"
-          gleam-version: "{gleam_version}"
+          rakun-version: "{rakun_version}"
           rebar3-version: "{REBAR3_VERSION}"
           # elixir-version: "{ELIXIR_VERSION}"
-      - run: gleam deps download
-      - run: gleam test
-      - run: gleam format --check src test
+      - run: rakun deps download
+      - run: rakun test
+      - run: rakun format --check src test
 "#,
             )),
             Self::GithubCi | Self::Gitignore => None,
@@ -194,7 +194,7 @@ jobs:
 }
 
 impl Creator {
-    fn new(options: NewOptions, gleam_version: &'static str) -> Result<Self, Error> {
+    fn new(options: NewOptions, rakun_version: &'static str) -> Result<Self, Error> {
         let project_name = if let Some(name) = options.name.clone() {
             name
         } else {
@@ -216,7 +216,7 @@ impl Creator {
             test,
             github,
             workflows,
-            gleam_version,
+            rakun_version,
             options,
             project_name,
         };
@@ -267,10 +267,10 @@ pub fn create(options: NewOptions, version: &'static str) -> Result<()> {
     };
 
     println!(
-        "Your Gleam project {} has been successfully created.
+        "Your Rakun project {} has been successfully created.
 The project can be compiled and tested by running these commands:
 
-{}\tgleam test
+{}\trakun test
 ",
         creator.project_name, cd_folder,
     );
@@ -315,10 +315,10 @@ fn validate_root_folder(creator: &Creator) -> Result<(), Error> {
 }
 
 fn validate_name(name: &str) -> Result<(), Error> {
-    if name.starts_with("gleam_") {
+    if name.starts_with("rakun_") {
         Err(Error::InvalidProjectName {
             name: name.to_string(),
-            reason: InvalidProjectNameReason::GleamPrefix,
+            reason: InvalidProjectNameReason::RakunPrefix,
         })
     } else if erlang::is_erlang_reserved_word(name) {
         Err(Error::InvalidProjectName {
@@ -333,12 +333,12 @@ fn validate_name(name: &str) -> Result<(), Error> {
     } else if parse::lexer::str_to_keyword(name).is_some() {
         Err(Error::InvalidProjectName {
             name: name.to_string(),
-            reason: InvalidProjectNameReason::GleamReservedWord,
+            reason: InvalidProjectNameReason::RakunReservedWord,
         })
-    } else if name == "gleam" {
+    } else if name == "rakun" {
         Err(Error::InvalidProjectName {
             name: name.to_string(),
-            reason: InvalidProjectNameReason::GleamReservedModule,
+            reason: InvalidProjectNameReason::RakunReservedModule,
         })
     } else if !regex::Regex::new("^[a-z][a-z0-9_]*$")
         .expect("new name regex could not be compiled")

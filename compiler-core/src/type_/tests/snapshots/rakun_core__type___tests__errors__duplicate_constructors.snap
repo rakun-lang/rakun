@@ -1,0 +1,14 @@
+---
+source: compiler-core/src/type_/tests/errors.r
+expression: "record Box { Box(x: Int) }\nrecord Boxy { Box(Int) }"
+---
+error: Duplicate definition
+  ┌─ /src/one/two.rakun:1:14
+  │
+1 │ record Box { Box(x: Int) }
+  │              ^^^^^^^^^^^ First defined here
+2 │ record Boxy { Box(Int) }
+  │               ^^^^^^^^ Redefined here
+
+`Box` has been defined multiple times.
+Names in a Rakun module must be unique so one will need to be renamed.

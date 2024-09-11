@@ -1,4 +1,4 @@
-// Gleam Parser
+// Rakun Parser
 //
 // Terminology:
 //   Expression Unit:
@@ -57,13 +57,13 @@ mod token;
 use crate::analyse::Inferred;
 use crate::ast::{
     Arg, ArgNames, AssignName, Assignment, AssignmentKind, BinOp, BitArrayOption, BitArraySegment,
-    CallArg, Clause, ClauseGuard, Constant, CustomType, Definition, Function, HasLocation, Import,
-    Module, ModuleConstant, Pattern, Publicity, RecordConstructor, RecordConstructorArg,
-    RecordUpdateSpread, SrcSpan, Statement, TargetedDefinition, TodoKind, TypeAlias, TypeAst,
-    TypeAstConstructor, TypeAstFn, TypeAstHole, TypeAstTuple, TypeAstVar, UnqualifiedImport,
-    UntypedArg, UntypedClause, UntypedClauseGuard, UntypedConstant, UntypedDefinition, UntypedExpr,
-    UntypedModule, UntypedPattern, UntypedRecordUpdateArg, UntypedStatement, Use, UseAssignment,
-    CAPTURE_VARIABLE,
+    CallArg, Clause, ClauseGuard, Constant, CustomType, CustomTypeMode, Definition, Function,
+    HasLocation, Import, Module, ModuleConstant, Pattern, Publicity, RecordConstructor,
+    RecordConstructorArg, RecordUpdateSpread, SrcSpan, Statement, TargetedDefinition, TodoKind,
+    TypeAlias, TypeAst, TypeAstConstructor, TypeAstFn, TypeAstHole, TypeAstTuple, TypeAstVar,
+    UnqualifiedImport, UntypedArg, UntypedClause, UntypedClauseGuard, UntypedConstant,
+    UntypedDefinition, UntypedExpr, UntypedModule, UntypedPattern, UntypedRecordUpdateArg,
+    UntypedStatement, Use, UseAssignment, CAPTURE_VARIABLE,
 };
 use crate::build::Target;
 use crate::error::wrap;
@@ -329,22 +329,31 @@ where
             }
 
             // Custom Types, and Type Aliases
-            (Some((start, Token::Type, _)), _) => {
+            (Some((start, Token::Record, _)), _) => {
                 self.advance();
-                self.parse_custom_type(start, false, false, &mut attributes)
+                self.parse_record_type(start, false, false, &mut attributes)
             }
             (Some((start, Token::Pub, _)), Some((_, Token::Opaque, _))) => {
                 self.advance();
                 self.advance();
-                let _ = self.expect_one(&Token::Type)?;
-                self.parse_custom_type(start, true, true, &mut attributes)
+                let _ = self.expect_one(&Token::Record)?;
+                self.parse_record_type(start, true, true, &mut attributes)
+            }
+            (Some((start, Token::Pub, _)), Some((_, Token::Record, _))) => {
+                self.advance();
+                self.advance();
+                self.parse_record_type(start, true, false, &mut attributes)
+            }
+            // Custom Types, and Type Aliases
+            (Some((start, Token::Type, _)), _) => {
+                self.advance();
+                self.parse_aliases_type(start, false, &mut attributes)
             }
             (Some((start, Token::Pub, _)), Some((_, Token::Type, _))) => {
                 self.advance();
                 self.advance();
-                self.parse_custom_type(start, true, false, &mut attributes)
+                self.parse_aliases_type(start, true, &mut attributes)
             }
-
             (t0, _) => {
                 self.tok0 = t0;
                 Ok(None)
@@ -1065,14 +1074,14 @@ where
                 self.advance();
 
                 // A variable is not permitted on the left hand side of a `<>`
-                if let Some((_, Token::LtGt, _)) = self.tok0.as_ref() {
+                if let Some((_, Token::PlusPlus, _)) = self.tok0.as_ref() {
                     return concat_pattern_variable_left_hand_side_error(start, end);
                 }
 
                 if self.maybe_one(&Token::Dot).is_some() {
                     // We're doing this to get a better error message instead of a generic
                     // `I was expecting a type`, you can have a look at this issue to get
-                    // a better idea: https://github.com/gleam-lang/gleam/issues/2841.
+                    // a better idea: https://github.com/rakun-lang/rakun/issues/2841.
                     match self.expect_constructor_pattern(Some((start, name, end))) {
                         Ok(result) => result,
                         Err(ParseError {
@@ -1111,7 +1120,7 @@ where
                 self.advance();
 
                 // A discard is not permitted on the left hand side of a `<>`
-                if let Some((_, Token::LtGt, _)) = self.tok0.as_ref() {
+                if let Some((_, Token::PlusPlus, _)) = self.tok0.as_ref() {
                     return concat_pattern_variable_left_hand_side_error(start, end);
                 }
 
@@ -1127,7 +1136,7 @@ where
 
                 match self.tok0 {
                     // String matching with assignment, it could either be a
-                    // String prefix matching: "Hello, " as greeting <> name -> ...
+                    // String prefix matching: "Hello, " as greeting ++ name -> ...
                     // or a full string matching: "Hello, World!" as greeting -> ...
                     Some((_, Token::As, _)) => {
                         self.advance();
@@ -1139,8 +1148,8 @@ where
 
                         match self.tok0 {
                             // String prefix matching with assignment
-                            // "Hello, " as greeting <> name -> ...
-                            Some((_, Token::LtGt, _)) => {
+                            // "Hello, " as greeting ++ name -> ...
+                            Some((_, Token::PlusPlus, _)) => {
                                 self.advance();
                                 let (r_start, right, r_end) = self.expect_assign_name()?;
                                 Pattern::StringPrefix {
@@ -1173,8 +1182,8 @@ where
                     }
 
                     // String prefix matching with no left side assignment
-                    // "Hello, " <> name -> ...
-                    Some((_, Token::LtGt, _)) => {
+                    // "Hello, " ++ name -> ...
+                    Some((_, Token::PlusPlus, _)) => {
                         self.advance();
                         let (r_start, right, r_end) = self.expect_assign_name()?;
                         Pattern::StringPrefix {
@@ -1852,7 +1861,7 @@ where
             external_erlang: attributes.external_erlang.take(),
             external_javascript: attributes.external_javascript.take(),
             implementations: Implementations {
-                gleam: true,
+                rakun: true,
                 can_run_on_erlang: true,
                 can_run_on_javascript: true,
                 uses_erlang_externals: false,
@@ -2104,58 +2113,19 @@ where
     }
 
     //
-    // Parse Custom Types
+    // Parse Aliases Types
     //
 
-    // examples:
-    //   type A { A }
-    //   type A { A(String) }
-    //   type Box(inner_type) { Box(inner: inner_type) }
-    //   type NamedBox(inner_type) { Box(String, inner: inner_type) }
-    fn parse_custom_type(
+    fn parse_aliases_type(
         &mut self,
         start: u32,
         public: bool,
-        opaque: bool,
         attributes: &mut Attributes,
     ) -> Result<Option<UntypedDefinition>, ParseError> {
         let documentation = self.take_documentation(start);
         let (name_start, name, parameters, end, name_end) = self.expect_type_name()?;
         let name_location = SrcSpan::new(name_start, name_end);
-        let (constructors, end_position) = if self.maybe_one(&Token::LeftBrace).is_some() {
-            // Custom Type
-            let constructors = Parser::series_of(
-                self,
-                &|p| {
-                    if let Some((c_s, c_n, c_e)) = Parser::maybe_upname(p) {
-                        let documentation = p.take_documentation(c_s);
-                        let (args, args_e) = Parser::parse_type_constructor_args(p)?;
-                        let end = args_e.max(c_e);
-                        Ok(Some(RecordConstructor {
-                            location: SrcSpan { start: c_s, end },
-                            name_location: SrcSpan {
-                                start: c_s,
-                                end: c_e,
-                            },
-                            name: c_n,
-                            arguments: args,
-                            documentation,
-                        }))
-                    } else {
-                        Ok(None)
-                    }
-                },
-                // No separator
-                None,
-            )?;
-            let (_, close_end) = self.expect_custom_type_close(&name, public, opaque)?;
-            (constructors, close_end)
-        } else if let Some((eq_s, eq_e)) = self.maybe_one(&Token::Equal) {
-            // Type Alias
-            if opaque {
-                return parse_error(ParseErrorType::OpaqueTypeAlias, SrcSpan { start, end });
-            }
-
+        if let Some((eq_s, eq_e)) = self.maybe_one(&Token::Equal) {
             if let Some(t) = self.parse_type()? {
                 let type_end = t.location().end;
                 return Ok(Some(Definition::TypeAlias(TypeAlias {
@@ -2172,19 +2142,81 @@ where
             } else {
                 return parse_error(ParseErrorType::ExpectedType, SrcSpan::new(eq_s, eq_e));
             }
-        } else {
-            (vec![], end)
-        };
+        }
+
         Ok(Some(Definition::CustomType(CustomType {
             documentation,
             location: SrcSpan { start, end },
-            end_position,
+            end_position: end,
+            publicity: self.publicity(public, attributes.internal)?,
+            opaque: false,
+            name,
+            name_location,
+            parameters,
+            mode: CustomTypeMode::Type,
+            constructors: vec![],
+            typed_parameters: vec![],
+            deprecation: std::mem::take(&mut attributes.deprecated),
+        })))
+    }
+    //
+    // Parse Record Types
+    //
+
+    // examples:
+    //   record A { A }
+    //   record A { A(String) }
+    //   record Box(inner_type) { Box(inner: inner_type) }
+    //   record NamedBox(inner_type) { Box(String, inner: inner_type) }
+    fn parse_record_type(
+        &mut self,
+        start: u32,
+        public: bool,
+        opaque: bool,
+        attributes: &mut Attributes,
+    ) -> Result<Option<UntypedDefinition>, ParseError> {
+        let documentation = self.take_documentation(start);
+        let (name_start, name, parameters, end, name_end) = self.expect_type_name()?;
+        let name_location = SrcSpan::new(name_start, name_end);
+        let _ = self.expect_one(&Token::LeftBrace)?;
+        // Record Type
+        let constructors = Parser::series_of(
+            self,
+            &|p| {
+                if let Some((c_s, c_n, c_e)) = Parser::maybe_upname(p) {
+                    let documentation = p.take_documentation(c_s);
+                    let (args, args_e) = Parser::parse_type_constructor_args(p)?;
+                    let end = args_e.max(c_e);
+                    Ok(Some(RecordConstructor {
+                        location: SrcSpan { start: c_s, end },
+                        name_location: SrcSpan {
+                            start: c_s,
+                            end: c_e,
+                        },
+                        name: c_n,
+                        arguments: args,
+                        documentation,
+                    }))
+                } else {
+                    Ok(None)
+                }
+            },
+            // No separator
+            None,
+        )?;
+        let (_, close_end) = self.expect_custom_type_close(&name, public, opaque)?;
+
+        Ok(Some(Definition::CustomType(CustomType {
+            documentation,
+            location: SrcSpan { start, end },
+            end_position: close_end,
             publicity: self.publicity(public, attributes.internal)?,
             opaque,
             name,
             name_location,
             parameters,
-            constructors,
+            mode: CustomTypeMode::Record,
+            constructors: constructors,
             typed_parameters: vec![],
             deprecation: std::mem::take(&mut attributes.deprecated),
         })))
@@ -2197,10 +2229,10 @@ where
         &mut self,
     ) -> Result<(u32, EcoString, Vec<SpannedString>, u32, u32), ParseError> {
         let (start, upname, end) = self.expect_upname()?;
-        if self.maybe_one(&Token::LeftParen).is_some() {
+        if self.maybe_one(&Token::Less).is_some() {
             let args =
                 Parser::series_of(self, &|p| Ok(Parser::maybe_name(p)), Some(&Token::Comma))?;
-            let (_, par_e) = self.expect_one_following_series(&Token::RightParen, "a name")?;
+            let (_, par_e) = self.expect_one_following_series(&Token::Greater, "a name")?;
             let args2 = args
                 .into_iter()
                 .map(|(start, name, end)| (SrcSpan { start, end }, name))
@@ -2390,9 +2422,9 @@ where
         name: EcoString,
         end: u32,
     ) -> Result<Option<TypeAst>, ParseError> {
-        if self.maybe_one(&Token::LeftParen).is_some() {
+        if self.maybe_one(&Token::Less).is_some() {
             let args = self.parse_types()?;
-            let (_, par_e) = self.expect_one(&Token::RightParen)?;
+            let (_, par_e) = self.expect_one(&Token::Greater)?;
             Ok(Some(TypeAst::Constructor(TypeAstConstructor {
                 location: SrcSpan { start, end: par_e },
                 module,
@@ -2612,7 +2644,7 @@ where
                 type_: (),
                 deprecation: attributes.deprecated.clone(),
                 implementations: Implementations {
-                    gleam: true,
+                    rakun: true,
                     can_run_on_erlang: true,
                     can_run_on_javascript: true,
                     uses_erlang_externals: false,
@@ -2635,7 +2667,7 @@ where
     //   "hi"
     //   True
     //   [1,2,3]
-    //   foo <> "bar"
+    //   foo ++ "bar"
     fn parse_const_value(&mut self) -> Result<Option<UntypedConstant>, ParseError> {
         let constant_result = self.parse_const_value_unit();
         if let Ok(Some(constant)) = constant_result {
@@ -2812,7 +2844,7 @@ where
         left: UntypedConstant,
     ) -> Result<Option<UntypedConstant>, ParseError> {
         match self.tok0.take() {
-            Some((op_start, Token::LtGt, op_end)) => {
+            Some((op_start, Token::PlusPlus, op_end)) => {
                 self.advance();
 
                 if let Ok(Some(right_constant_value)) = self.parse_const_value() {
@@ -3052,7 +3084,7 @@ where
             // invalid
             _ => self.next_tok_unexpected(vec![
                 "A valid bit array segment type".into(),
-                "See: https://tour.gleam.run/data-types/bit-arrays/".into(),
+                "See: https://tour.rakun.run/data-types/bit-arrays/".into(),
             ]),
         }
     }
@@ -3149,7 +3181,7 @@ where
                                 (&Token::Fn { .. }, _)
                                 | (&Token::Pub, Some((_, Token::Fn { .. }, _))) => {
                                     let text =
-                                        "Gleam is not an object oriented programming language so
+                                        "Rakun is not an object oriented programming language so
 functions are declared separately from types.";
                                     Some(wrap(text).into())
                                 }
@@ -3687,7 +3719,7 @@ fn tok_to_binop(t: &Token) -> Option<BinOp> {
         Token::StarDot => Some(BinOp::MultFloat),
         Token::Slash => Some(BinOp::DivInt),
         Token::SlashDot => Some(BinOp::DivFloat),
-        Token::LtGt => Some(BinOp::Concatenate),
+        Token::PlusPlus => Some(BinOp::Concatenate),
         _ => None,
     }
 }

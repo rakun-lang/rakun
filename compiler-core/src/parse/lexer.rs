@@ -42,6 +42,7 @@ pub fn str_to_keyword(word: &str) -> Option<Token> {
         "test" => Some(Token::Test),
         "todo" => Some(Token::Todo),
         "type" => Some(Token::Type),
+        "record" => Some(Token::Record),
         "use" => Some(Token::Use),
         _ => None,
     }
@@ -215,6 +216,10 @@ where
                     let _ = self.next_char();
                     let tok_end = self.get_pos();
                     self.emit((tok_start, Token::PlusDot, tok_end));
+                } else if let Some('+') = self.chr0 {
+                    let _ = self.next_char();
+                    let tok_end = self.get_pos();
+                    self.emit((tok_start, Token::PlusPlus, tok_end));
                 } else {
                     let tok_end = self.get_pos();
                     self.emit((tok_start, Token::Plus, tok_end));

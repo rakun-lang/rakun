@@ -135,7 +135,7 @@ fn variable_used_in_pattern_and_assignment() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1253
+// https://github.com/rakun-lang/rakun/issues/1253
 #[test]
 fn correct_variable_renaming_in_assigned_functions() {
     assert_js!(
@@ -173,19 +173,19 @@ pub const compound: #(Int, Int) = #(int, int_alias)
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2443
+// https://github.com/rakun-lang/rakun/issues/2443
 #[test]
 fn let_assert_string_prefix() {
     assert_js!(
         r#"
 pub fn main() {
-  let assert "Game " <> id = "Game 1"
+  let assert "Game " ++ id = "Game 1"
 }
 "#
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2931
+// https://github.com/rakun-lang/rakun/issues/2931
 #[test]
 fn keyword_assignment() {
     assert_js!(
@@ -198,7 +198,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3004
+// https://github.com/rakun-lang/rakun/issues/3004
 #[test]
 fn escaped_variables_in_constants() {
     assert_js!(

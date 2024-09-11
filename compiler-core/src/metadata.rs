@@ -1,4 +1,4 @@
-//! Seriaisation and deserialisation of Gleam compiler metadata into binary files
+//! Seriaisation and deserialisation of Rakun compiler metadata into binary files
 //! using the Cap'n Proto schema.
 
 mod module_decoder;

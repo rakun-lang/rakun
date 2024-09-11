@@ -1,0 +1,7 @@
+pub record Wibble {
+  Woo
+}
+
+pub fn wobble() -> Wibble {
+  Woo
+}

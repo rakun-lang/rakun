@@ -1,0 +1,13 @@
+---
+source: compiler-core/src/parse/tests.rs
+expression: "\nrecord A {\n    One\n    Two\n    3\n}\n"
+---
+error: Syntax error
+  ┌─ /src/parse/error.rakun:5:5
+  │
+5 │     3
+  │     ^ I was not expecting this
+
+Found an Int, expected one of: 
+- `}`
+- a record constructor

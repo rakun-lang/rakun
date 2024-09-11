@@ -214,7 +214,7 @@ Nil
 fn invalid_callback_type_2() {
     assert_error!(
         r#"
-let x = fn(f) { "Hello, " <> f() }
+let x = fn(f) { "Hello, " ++ f() }
 use <- x()
 let n = 1
 n + 2
@@ -226,7 +226,7 @@ n + 2
 fn invalid_callback_type_3() {
     assert_error!(
         r#"
-let x = fn(f) { "Hello, " <> f() }
+let x = fn(f) { "Hello, " ++ f() }
 let y = fn(f) { 1 + f() }
 use <- x()
 use <- y()
@@ -240,7 +240,7 @@ n + 1
 fn invalid_callback_type_4() {
     assert_error!(
         r#"
-let x = fn(f) { "Hello, " <> f() }
+let x = fn(f) { "Hello, " ++ f() }
 let y = fn(f) { 1 + f() }
 let z = fn(f) { 1.0 +. f() }
 use <- x()
@@ -256,7 +256,7 @@ use <- z()
 fn wrong_callback_arity() {
     assert_error!(
         r#"
-let x = fn(f) { "Hello, " <> f() }
+let x = fn(f) { "Hello, " ++ f() }
 use _ <- x()
 "Giacomo!"
 "#
@@ -267,7 +267,7 @@ use _ <- x()
 fn wrong_callback_arity_2() {
     assert_error!(
         r#"
-let x = fn(f) { "Hello, " <> f(1) }
+let x = fn(f) { "Hello, " ++ f(1) }
 use <- x()
 "Giacomo!"
 "#
@@ -278,7 +278,7 @@ use <- x()
 fn wrong_callback_arity_3() {
     assert_error!(
         r#"
-let x = fn(f) { "Hello, " <> f(1) }
+let x = fn(f) { "Hello, " ++ f(1) }
 use _, _ <- x()
 "Giacomo!"
 "#
@@ -289,9 +289,9 @@ use _, _ <- x()
 fn wrong_callback_arg() {
     assert_error!(
         r#"
-let x = fn(f) { "Hello, " <> f(1) }
+let x = fn(f) { "Hello, " ++ f(1) }
 use n <- x()
-n <> "Giacomo!"
+n ++ "Giacomo!"
 "#
     );
 }
@@ -300,9 +300,9 @@ n <> "Giacomo!"
 fn wrong_callback_arg_with_wrong_annotation() {
     assert_error!(
         r#"
-let x = fn(f) { "Hello, " <> f(1) }
+let x = fn(f) { "Hello, " ++ f(1) }
 use n: String <- x()
-n <> "Giacomo!"
+n ++ "Giacomo!"
 "#
     );
 }
@@ -311,12 +311,12 @@ n <> "Giacomo!"
 fn wrong_callback_arg_2() {
     assert_module_error!(
         r#"
-pub type Box {
+pub record Box {
   Box(Int)
 }
 
 pub fn main() {
-  let x = fn(f) { "Hello, " <> f(Box(1)) }
+  let x = fn(f) { "Hello, " ++ f(Box(1)) }
   use Box("hi") <- x()
   "Giacomo!"
 }
@@ -328,12 +328,12 @@ pub fn main() {
 fn wrong_callback_arg_3() {
     assert_module_error!(
         r#"
-pub type Box {
+pub record Box {
   Box(Int)
 }
 
 pub fn main() {
-  let x = fn(f) { "Hello, " <> f(1) }
+  let x = fn(f) { "Hello, " ++ f(1) }
   use Box(1) <- x()
   "Giacomo!"
 }
@@ -406,7 +406,7 @@ pub fn main() {
   x
 }
 
-type Box(a) {
+record Box<a> {
   Box(a)
 }
 
@@ -427,7 +427,7 @@ pub fn main() {
   x + y + z
 }
 
-type Box(a) {
+record Box<a> {
   Box(a)
 }
 
@@ -444,11 +444,11 @@ fn typed_pattern() {
     assert_module_infer!(
         r#"
 pub fn main() {
-  use Box(x): Box(Int), Box(y), Box(z) <- apply(Box(1))
+  use Box(x): Box<Int>, Box(y), Box(z) <- apply(Box(1))
   x + y + z
 }
 
-type Box(a) {
+record Box<a> {
   Box(a)
 }
 
@@ -465,11 +465,11 @@ fn typed_pattern_wrong_type() {
     assert_module_error!(
         r#"
 pub fn main() {
-  use Box(x): Box(Bool), Box(y), Box(z) <- apply(Box(1))
+  use Box(x): Box<Bool>, Box(y), Box(z) <- apply(Box(1))
   x + y + z
 }
 
-type Box(a) {
+record Box<a> {
   Box(a)
 }
 

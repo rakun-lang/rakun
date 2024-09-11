@@ -1,6 +1,6 @@
 # Compiler documentation
 
-Hello! Welcome to the documentation for the Gleam compiler. I hope you have fun
+Hello! Welcome to the documentation for the Rakun compiler. I hope you have fun
 with the project!
 
 <!-- vscode-markdown-toc -->
@@ -20,7 +20,7 @@ with the project!
 
 The project is made up of several Rust crates (projects):
 
-- `compiler-core`: This project parses, analyses, and compiles Gleam projects.
+- `compiler-core`: This project parses, analyses, and compiles Rakun projects.
   It is entirely pure and has no IO so that is provided by the other Rust crates
   that wrap this one.
 - `compiler-cli`: A command line interface that wraps the core compiler and
@@ -31,24 +31,24 @@ The project is made up of several Rust crates (projects):
 In addition to the Rust code there are these components:
 
 - `Makefile`: A makefile that defines shortcut commands for common tasks when
-  working in the Gleam codebase. Run `make help` to view them.
-- `test`: A collection of (mostly) Gleam projects that serve as integration tests for the
+  working in the Rakun codebase. Run `make help` to view them.
+- `test`: A collection of (mostly) Rakun projects that serve as integration tests for the
   compiler.
 - `deny.toml`: Configuration for the `cargo-deny` tool which is used to ensure
   that the Rust libraries the compiler depends on adhere to our expectations.
 - `containers`: A collection of docker-files used to produce OCI containers for
-  each Gleam release.
+  each Rakun release.
 - `.github/workflows`: GitHub Actions workflow definitions, used to build, test,
   and release new versions of the project.
 - `docs`: You're looking at it pal.
 
 ## <a name='Compilationflow'></a>Compilation flow
 
-The process for compiling Gleam modules within the compiler looks roughly like
+The process for compiling Rakun modules within the compiler looks roughly like
 this:
 
 ```text
-  Gleam source code       .cache binaries
+  Rakun source code       .cache binaries
           ▼                         ▼
 ┌────────────────────┐ ┌───────────────────────┐
 │       Parser       │ │ Metadata deserializer │
@@ -100,7 +100,7 @@ doing what we expect it do as we make changes.
   `test/language`.
 - `make language-test-watch`: Run said tests when files are saved.
 - `make javascript-prelude-test`: Run the unit tests for the JavaScript code
-  that implements the Gleam prelude when compiling to JavaScript.
+  that implements the Rakun prelude when compiling to JavaScript.
 - `make javascript-prelude-test-watch`: Run said tests when files are saved.
 
 The `*-watch` commands require the [`watchexec`][watchexec] program to be

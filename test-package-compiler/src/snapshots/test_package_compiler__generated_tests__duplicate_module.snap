@@ -7,6 +7,6 @@ error: Duplicate module
 
 The module `main` is defined multiple times.
 
-First:  src/main.gleam
-Second: test/main.gleam
+First:  src/main.rakun
+Second: test/main.rakun
 

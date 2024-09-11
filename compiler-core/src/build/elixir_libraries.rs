@@ -54,7 +54,7 @@ where
     }
 
     fn paths_cache_filename(&self) -> &'static str {
-        "gleam_elixir_paths"
+        "rakun_elixir_paths"
     }
 
     fn paths_cache_path(&self) -> Utf8PathBuf {

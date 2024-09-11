@@ -1,0 +1,12 @@
+---
+source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 867
+expression: "record Thing { Thing(unknown: x) }"
+---
+error: Unknown type
+  ┌─ /src/one/two.rakun:1:31
+  │
+1 │ record Thing { Thing(unknown: x) }
+  │                               ^
+
+The type `x` is not defined or imported in this module.

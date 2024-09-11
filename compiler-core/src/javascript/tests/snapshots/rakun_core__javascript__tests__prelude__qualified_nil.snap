@@ -1,0 +1,9 @@
+---
+source: compiler-core/src/javascript/tests/prelude.rs
+expression: "import rakun\npub fn go() { rakun.Nil }\n"
+---
+import * as $rakun from "../rakun.mjs";
+
+export function go() {
+  return undefined;
+}

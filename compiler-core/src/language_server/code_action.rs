@@ -84,7 +84,7 @@ impl CodeActionBuilder {
 ///
 /// The following case expression:
 ///
-/// ```gleam
+/// ```rakun
 /// case #(1, 2) {
 ///     #(a, b) -> 0
 /// }
@@ -92,7 +92,7 @@ impl CodeActionBuilder {
 ///
 /// Becomes:
 ///
-/// ```gleam
+/// ```rakun
 /// case 1, 2 {
 ///     a, b -> 0
 /// }
@@ -102,7 +102,7 @@ impl CodeActionBuilder {
 ///
 /// The following case expression does not produce any code action
 ///
-/// ```gleam
+/// ```rakun
 /// case #(1, 2) {
 ///     a -> 0 // <- the pattern is not a tuple
 /// }

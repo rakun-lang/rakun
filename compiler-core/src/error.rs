@@ -57,7 +57,7 @@ pub struct ImportCycleLocationDetails {
 
 #[derive(Debug, Eq, PartialEq, Error, Clone)]
 pub enum Error {
-    #[error("failed to parse Gleam source code")]
+    #[error("failed to parse Rakun source code")]
     Parse {
         path: Utf8PathBuf,
         src: EcoString,
@@ -183,7 +183,7 @@ file_names.iter().map(|x| x.as_str()).join(", "))]
     #[error("unable to find project root")]
     UnableToFindProjectRoot { path: String },
 
-    #[error("gleam.toml version {toml_ver} does not match .app version {app_ver}")]
+    #[error("rakun.toml version {toml_ver} does not match .app version {app_ver}")]
     VersionDoesNotMatch { toml_ver: String, app_ver: String },
 
     #[error("metadata decoding failed")]
@@ -260,13 +260,13 @@ file_names.iter().map(|x| x.as_str()).join(", "))]
     FailedToOpenDocs { path: Utf8PathBuf, error: String },
 
     #[error(
-        "The package {package} requires a Gleam version satisfying \
-{required_version} and you are using v{gleam_version}"
+        "The package {package} requires a Rakun version satisfying \
+{required_version} and you are using v{rakun_version}"
     )]
     IncompatibleCompilerVersion {
         package: String,
         required_version: String,
-        gleam_version: String,
+        rakun_version: String,
     },
 
     #[error("The --javascript-prelude flag must be given when compiling to JavaScript")]
@@ -284,8 +284,8 @@ file_names.iter().map(|x| x.as_str()).join(", "))]
     #[error("Corrupt manifest.toml")]
     CorruptManifest,
 
-    #[error("The Gleam module {path} would overwrite the Erlang module {name}")]
-    GleamModuleWouldOverwriteStandardErlangModule { name: EcoString, path: Utf8PathBuf },
+    #[error("The Rakun module {path} would overwrite the Erlang module {name}")]
+    RakunModuleWouldOverwriteStandardErlangModule { name: EcoString, path: Utf8PathBuf },
 
     #[error("Version already published")]
     HexPublishReplaceRequired { version: String },
@@ -394,7 +394,7 @@ impl Error {
                 collect_conflicting_packages(&derivation_tree, &mut conflicting_packages);
 
                 wrap_format!("Unable to find compatible versions for \
-the version constraints in your gleam.toml. \
+the version constraints in your rakun.toml. \
 The conflicting packages are:
 
 {}
@@ -471,11 +471,11 @@ impl From<capnp::NotInSchema> for Error {
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum InvalidProjectNameReason {
     Format,
-    GleamPrefix,
+    RakunPrefix,
     ErlangReservedWord,
     ErlangStandardLibraryModule,
-    GleamReservedWord,
-    GleamReservedModule,
+    RakunReservedWord,
+    RakunReservedModule,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -752,7 +752,7 @@ package deletion or account suspension.
 
             Error::MetadataDecodeError { error } => {
                 let mut text = "A problem was encountered when decoding the metadata for one \
-of the Gleam dependency modules."
+of the Rakun dependency modules."
                     .to_string();
                 if let Some(error) = error {
                     text.push_str("\nThe error from the decoder library was:\n\n");
@@ -779,17 +779,17 @@ Please try again with a different project name.",
                             "is a reserved word in Erlang.",
                         InvalidProjectNameReason::ErlangStandardLibraryModule =>
                             "is a standard library module in Erlang.",
-                        InvalidProjectNameReason::GleamReservedWord =>
-                            "is a reserved word in Gleam.",
-                        InvalidProjectNameReason::GleamReservedModule =>
-                            "is a reserved module name in Gleam.",
+                        InvalidProjectNameReason::RakunReservedWord =>
+                            "is a reserved word in Rakun.",
+                        InvalidProjectNameReason::RakunReservedModule =>
+                            "is a reserved module name in Rakun.",
                         InvalidProjectNameReason::Format =>
                             "does not have the correct format. Project names \
 must start with a lowercase letter and may only contain lowercase letters, \
 numbers and underscores.",
-                        InvalidProjectNameReason::GleamPrefix =>
-                            "has the reserved prefix `gleam_`. \
-This prefix is intended for official Gleam packages only.",
+                        InvalidProjectNameReason::RakunPrefix =>
+                            "has the reserved prefix `rakun_`. \
+This prefix is intended for official Rakun packages only.",
                     }
                 );
 
@@ -817,7 +817,7 @@ forward slash and must not end with a slash."
             Error::ModuleDoesNotExist { module, suggestion } => {
                 let hint = match suggestion {
                     Some(suggestion) => format!("Did you mean `{suggestion}`?"),
-                    None => format!("Try creating the file `src/{module}.gleam`."),
+                    None => format!("Try creating the file `src/{module}.rakun`."),
                 };
                 vec![Diagnostic {
                     title: "Module does not exist".into(),
@@ -837,7 +837,7 @@ forward slash and must not end with a slash."
                 location: None,
                 hint: Some(format!(
                     "Add a public `main` function to \
-to `src/{module}.gleam`."
+to `src/{module}.rakun`."
                 )),
             }],
 
@@ -972,7 +972,7 @@ Please make sure internal types do not appear in public functions and try again.
 
             Error::UnableToFindProjectRoot { path } => {
                 let text = wrap_format!(
-                    "We were unable to find gleam.toml.
+                    "We were unable to find rakun.toml.
 
 We searched in {path} and all parent directories."
                 );
@@ -987,7 +987,7 @@ We searched in {path} and all parent directories."
 
             Error::VersionDoesNotMatch { toml_ver, app_ver } => {
                 let text = format!(
-                    "The version in gleam.toml \"{toml_ver}\" does not match the version in
+                    "The version in rakun.toml \"{toml_ver}\" does not match the version in
 your app.src file \"{app_ver}\"."
                 );
                 vec![Diagnostic {
@@ -1006,12 +1006,12 @@ your app.src file \"{app_ver}\"."
                     "erl" | "erlc" | "escript" => text.push_str(
                         "
 Documentation for installing Erlang can be viewed here:
-https://gleam.run/getting-started/installing/",
+https://rakun.run/getting-started/installing/",
                     ),
                     "rebar3" => text.push_str(
                         "
 Documentation for installing rebar3 can be viewed here:
-https://gleam.run/getting-started/installing/",
+https://rakun.run/getting-started/installing/",
                     ),
                     _ => (),
                 }
@@ -1395,7 +1395,7 @@ also be labelled.");
                 } => {
                     let text = format!(
                         "`{name}` has been imported multiple times.
-Names in a Gleam module must be unique so one will need to be renamed."
+Names in a Rakun module must be unique so one will need to be renamed."
                     );
                     Diagnostic {
                         title: "Duplicate import".into(),
@@ -1433,7 +1433,7 @@ Names in a Gleam module must be unique so one will need to be renamed."
                     };
                     let text = format!(
                         "`{name}` has been defined multiple times.
-Names in a Gleam module must be unique so one will need to be renamed."
+Names in a Rakun module must be unique so one will need to be renamed."
                     );
                     Diagnostic {
                         title: "Duplicate definition".into(),
@@ -1466,7 +1466,7 @@ Names in a Gleam module must be unique so one will need to be renamed."
                 } => {
                     let text = format!(
                         "The type `{name}` has been defined multiple times.
-Names in a Gleam module must be unique so one will need to be renamed."
+Names in a Rakun module must be unique so one will need to be renamed."
                     );
                     Diagnostic {
                         title: "Duplicate type definition".into(),
@@ -1617,12 +1617,12 @@ same position and has the same type in all variants to enable direct accessor sy
                         RecordVariants::NoVariants => (),
                     }
 
-                    // Give a hint about Gleam not having OOP methods if it
+                    // Give a hint about Rakun not having OOP methods if it
                     // looks like they might be trying to call one.
                     match usage {
                         FieldAccessUsage::MethodCall => {
                             let msg = wrap(
-                                "Gleam is not object oriented, so if you are trying \
+                                "Rakun is not object oriented, so if you are trying \
 to call a method on this value you may want to use the function syntax instead.",
                             );
                             text.push_str("\n\n");
@@ -2406,7 +2406,7 @@ function and try again.");
 
                             bit_array::ErrorType::SignednessUsedOnNonInt { type_ } => (
                                 "Signedness is only valid with int types",
-                                vec![format!("Hint: This segment has a type of {type_}")],
+                                vec![format!("Hint: This segment has a record of {type_}")],
                             ),
                             bit_array::ErrorType::TypeDoesNotAllowSize { type_ } => (
                                 "Size cannot be specified here",
@@ -2431,7 +2431,7 @@ function and try again.");
                                 vec!["Hint: If you specify unit() you must also specify size().".into()],
                             ),
                         };
-                    extra.push("See: https://tour.gleam.run/data-types/bit-arrays/".into());
+                    extra.push("See: https://tour.rakun.run/data-types/bit-arrays/".into());
                     let text = extra.join("\n");
                     Diagnostic {
                         title: "Invalid bit array segment".into(),
@@ -2882,7 +2882,7 @@ the right hand side of `<-`, but this value has type:
 
 {}
 
-See: https://tour.gleam.run/advanced-features/use/",
+See: https://tour.rakun.run/advanced-features/use/",
                         printer.pretty_print(type_, 4)
                     );
 
@@ -2909,7 +2909,7 @@ See: https://tour.gleam.run/advanced-features/use/",
 takes no arguments, but it has to take at least \
 one argument, a callback function.
 
-See: https://tour.gleam.run/advanced-features/use/");
+See: https://tour.rakun.run/advanced-features/use/");
                     Diagnostic {
                         title: "Incorrect arity".into(),
                         text,
@@ -2956,7 +2956,7 @@ and the final one is the `use` callback function.\n"));
 so it cannot take the the `use` callback function as a final argument.\n")
                     };
 
-                    text.push_str("\nSee: https://tour.gleam.run/advanced-features/use/");
+                    text.push_str("\nSee: https://tour.rakun.run/advanced-features/use/");
 
                     Diagnostic {
                         title: "Incorrect arity".into(),
@@ -2983,7 +2983,7 @@ But the last argument of this function has type:
 
 {}
 
-See: https://tour.gleam.run/advanced-features/use/",
+See: https://tour.rakun.run/advanced-features/use/",
                         printer.pretty_print(actual, 4)
                     );
                     Diagnostic {
@@ -3019,7 +3019,7 @@ See: https://tour.gleam.run/advanced-features/use/",
                     let text = wrap_format!("This function takes a callback that expects {expected}. \
 But {specified} on the left hand side of `<-`.
 
-See: https://tour.gleam.run/advanced-features/use/");
+See: https://tour.rakun.run/advanced-features/use/");
                     Diagnostic {
                         title: "Incorrect arity".into(),
                         text,
@@ -3131,7 +3131,7 @@ Try: _{}", kind_str.to_title_case(), name.to_snake_case()),
                 let mod_names = modules.iter().map(|m| m.0.clone()).collect_vec();
                 write_cycle(&mut text, &mod_names);
                 text.push_str(
-                    "Gleam doesn't support dependency cycles like these, please break the
+                    "Rakun doesn't support dependency cycles like these, please break the
 cycle to continue.",
                 );
                 vec![Diagnostic {
@@ -3157,7 +3157,7 @@ cycle to continue.",
                 .into();
                 write_cycle(&mut text, packages);
                 text.push_str(
-                    "Gleam doesn't support dependency cycles like these, please break the
+                    "Rakun doesn't support dependency cycles like these, please break the
 cycle to continue.",
                 );
                 vec![Diagnostic {
@@ -3358,7 +3358,7 @@ The error from the version resolver library was:
 
             Error::GitDependencyUnsupported => vec![Diagnostic {
                 title: "Git dependencies are not currently supported".into(),
-                text: "Please remove all git dependencies from the gleam.toml file".into(),
+                text: "Please remove all git dependencies from the rakun.toml file".into(),
                 hint: None,
                 location: None,
                 level: Level::Error,
@@ -3403,7 +3403,7 @@ The error from the version resolver library was:
             Error::DuplicateDependency(name) => {
                 let text = format!(
                     "The package `{name}` is specified in both the dependencies and
-dev-dependencies sections of the gleam.toml file."
+dev-dependencies sections of the rakun.toml file."
                 );
                 vec![Diagnostic {
                     title: "Dependency duplicated".into(),
@@ -3423,16 +3423,16 @@ dev-dependencies sections of the gleam.toml file."
 package to Hex.\n"
                         .to_string();
                 text.push_str(if *description_missing && *licence_missing {
-                    r#"Add the licences and description fields to your gleam.toml file.
+                    r#"Add the licences and description fields to your rakun.toml file.
 
 description = ""
 licences = ["Apache-2.0"]"#
                 } else if *description_missing {
-                    r#"Add the description field to your gleam.toml file.
+                    r#"Add the description field to your rakun.toml file.
 
 description = """#
                 } else {
-                    r#"Add the licences field to your gleam.toml file.
+                    r#"Add the licences field to your rakun.toml file.
 
 licences = ["Apache-2.0"]"#
                 });
@@ -3463,10 +3463,10 @@ because dependency `{package}` is not a Hex dependency.",
             } => {
                 let text = wrap_format!(
                     "The package `{}` cannot be built as it does not use \
-a build tool supported by Gleam. It uses {:?}.
+a build tool supported by Rakun. It uses {:?}.
 
 If you would like us to support this package please let us know by opening an \
-issue in our tracker: https://github.com/gleam-lang/gleam/issues",
+issue in our tracker: https://github.com/rakun-lang/rakun/issues",
                     package,
                     build_tools
                 );
@@ -3499,14 +3499,14 @@ issue in our tracker: https://github.com/gleam-lang/gleam/issues",
             Error::IncompatibleCompilerVersion {
                 package,
                 required_version,
-                gleam_version,
+                rakun_version,
             } => {
                 let text = format!(
-                    "The package `{package}` requires a Gleam version \
-satisfying {required_version} but you are using v{gleam_version}.",
+                    "The package `{package}` requires a Rakun version \
+satisfying {required_version} but you are using v{rakun_version}.",
                 );
                 vec![Diagnostic {
-                    title: "Incompatible Gleam version".into(),
+                    title: "Incompatible Rakun version".into(),
                     text,
                     hint: None,
                     location: None,
@@ -3552,10 +3552,10 @@ satisfying {required_version} but you are using v{gleam_version}.",
                 text: "The `manifest.toml` file is corrupt.".into(),
                 level: Level::Error,
                 location: None,
-                hint: Some("Please run `gleam update` to fix it.".into()),
+                hint: Some("Please run `rakun update` to fix it.".into()),
             }],
 
-            Error::GleamModuleWouldOverwriteStandardErlangModule { name, path } =>
+            Error::RakunModuleWouldOverwriteStandardErlangModule { name, path } =>
 vec![Diagnostic {
                 title: "Erlang module name collision".into(),
                 text: wrap_format!("The module `{path}` compiles to an Erlang module \
@@ -3659,7 +3659,7 @@ fn hint_numeric_message(alt: &str, type_: &str) -> String {
 fn hint_string_message() -> String {
     wrap(
         "Strings can be joined using the `append` or `concat` \
-functions from the `gleam/string` module.",
+functions from the `rakun/string` module.",
     )
 }
 

@@ -8,11 +8,11 @@ fn result_type_inferred_count_once() {
             let assert Ok(_) = wobble()
         }
 
-        type Wobble(a) {
+        record Wobble<a> {
             Wobble
         }
 
-        fn wobble() -> Result(a, Wobble(a)) {
+        fn wobble() -> Result<a, Wobble<a>> {
             todo
         }
         "
@@ -23,7 +23,7 @@ fn result_type_inferred_count_once() {
 fn result_type_count_once() {
     assert_erl!(
         "
-        pub fn wibble() -> Result(a, a) {
+        pub fn wibble() -> Result<a, a> {
             todo
         }
         "
@@ -34,7 +34,7 @@ fn result_type_count_once() {
 fn nested_result_type_count_once() {
     assert_erl!(
         "
-        pub fn wibble() -> Result(a, Result(a, b)) {
+        pub fn wibble() -> Result<a, Result(a, b)> {
             todo
         }
         "
@@ -45,11 +45,11 @@ fn nested_result_type_count_once() {
 fn custom_type_nested_result_type_count_once() {
     assert_erl!(
         "
-        pub type Wibble(a) {
+        pub record Wibble<a> {
             Oops
         }
 
-        pub fn wibble() -> Result(a, Wibble(a)) {
+        pub fn wibble() -> Result<a, Wibble<a>> {
             todo
         }
         "
@@ -71,11 +71,11 @@ fn tuple_type_params_count_twice() {
 fn custom_type_named_args_count_once() {
     assert_erl!(
         "
-        pub type Wibble(a, b) {
+        pub record Wibble<a, b> {
             Wibble(a, b)
         }
 
-        pub fn wibble() -> Wibble(a, a) {
+        pub fn wibble() -> Wibble<a, a> {
             todo
         }
         "
@@ -86,11 +86,11 @@ fn custom_type_named_args_count_once() {
 fn custom_type_nested_named_args_count_once() {
     assert_erl!(
         "
-        pub type Wibble(a, b) {
+        pub record Wibble<a, b> {
             Wibble(a, b)
         }
 
-        pub fn wibble() -> Wibble(a, Wibble(a, b)) {
+        pub fn wibble() -> Wibble<a, Wibble<a, b>> {
             todo
         }
         "
@@ -101,7 +101,7 @@ fn custom_type_nested_named_args_count_once() {
 fn custom_type_tuple_type_params_count_twice() {
     assert_erl!(
         "
-        pub type Wibble(a, b) {
+        pub record Wibble<a, b> {
             Wibble(a, b)
         }
 

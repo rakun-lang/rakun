@@ -301,7 +301,7 @@ fn function_arg_and_return_annotation() {
     assert_error!("fn(x: Int) -> Float { x }");
 }
 
-// https://github.com/gleam-lang/gleam/issues/1378
+// https://github.com/rakun-lang/rakun/issues/1378
 #[test]
 fn function_return_annotation_mismatch_with_pipe() {
     assert_module_error!(
@@ -535,7 +535,7 @@ fn extra_var_inalternative3() {
 
 #[test]
 fn tuple_arity() {
-    // https://github.com/gleam-lang/gleam/issues/714
+    // https://github.com/rakun-lang/rakun/issues/714
     assert_error!("case #(1, 2) { #(1, _, _, _) -> 1 }");
 }
 
@@ -583,7 +583,7 @@ fn unknown_field() {
 fn field_not_in_all_variants() {
     assert_module_error!(
         "
-pub type Person {
+pub record Person {
     Teacher(name: String, age: Int, title: String)
     Student(name: String, age: Int)
 }
@@ -595,7 +595,7 @@ pub fn get_title(person: Person) { person.title }"
 fn field_not_in_any_variant() {
     assert_module_error!(
         "
-pub type Person {
+pub record Person {
     Teacher(name: String, age: Int, title: String)
     Student(name: String, age: Int)
 }
@@ -607,7 +607,7 @@ pub fn get_height(person: Person) { person.height }"
 fn field_type_different_between_variants() {
     assert_module_error!(
         "
-pub type Shape {
+pub record Shape {
     Square(x: Int, y: Int)
     Rectangle(x: String, y: String)
 }
@@ -621,7 +621,7 @@ fn accessor_multiple_variants_multiple_positions() {
     // We cannot access fields on custom types with multiple variants where they are in different positions e.g. 2nd and 3rd
     assert_module_error!(
         "
-pub type Person {
+pub record Person {
     Teacher(name: String, title: String, age: Int)
     Student(name: String, age: Int)
 }
@@ -635,7 +635,7 @@ fn accessor_multiple_variants_multiple_positions2() {
     // We cannot access fields on custom types with multiple variants where they are in different positions e.g. 1st and 3rd
     assert_module_error!(
         "
-pub type Person {
+pub record Person {
     Teacher(title: String, age: Int, name: String)
     Student(name: String, age: Int)
 }
@@ -716,14 +716,14 @@ fn module_could_not_unify8() {
 
 #[test]
 fn module_could_not_unify9() {
-    assert_module_error!("fn main() { let assert [1, 2, ..x]: List(String) = [1,2,3] x }");
+    assert_module_error!("fn main() { let assert [1, 2, ..x]: List<String> = [1,2,3] x }");
 }
 
 #[test]
 fn module_could_not_unify10() {
     assert_module_error!(
         "fn main() {
-            let #(y, [..x]): #(x, List(x)) = #(\"one\", [1,2,3])
+            let #(y, [..x]): #(x, List<x>) = #(\"one\", [1,2,3])
             x
         }"
     );
@@ -733,12 +733,12 @@ fn module_could_not_unify10() {
 fn module_could_not_unify11() {
     assert_module_error!(
         "
-        pub type Box(inner) {
+        pub record Box<inner> {
             Box(inner)
         }
 
         pub fn create_int_box(value: Int) {
-            let x: Box(Float) = Box(value)
+            let x: Box<Float> = Box(value)
             x
         }"
     );
@@ -748,7 +748,7 @@ fn module_could_not_unify11() {
 fn module_could_not_unify12() {
     assert_module_error!(
         "
-        pub type Person {
+        pub record Person {
             Person(name: String, age: Int)
         }
 
@@ -761,7 +761,7 @@ fn module_could_not_unify12() {
 
 #[test]
 fn module_arity_error() {
-    assert_module_error!("fn go(x: List(a, b)) -> Int { 1 }");
+    assert_module_error!("fn go(x: List<a, b>) -> Int { 1 }");
 }
 
 #[test]
@@ -810,17 +810,17 @@ pub fn go(x: PrivateType) -> Int"#
 fn module_private_type_leak_5() {
     assert_module_error!(
         r#"type PrivateType
-pub type LeakType { Variant(PrivateType) }"#
+pub record LeakType { Variant(PrivateType) }"#
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3387
+// https://github.com/rakun-lang/rakun/issues/3387
 // Private types should not leak even in internal modules
 #[test]
 fn module_private_type_leak_6() {
     assert_internal_module_error!(
         r#"type PrivateType
-pub type LeakType { Variant(PrivateType) }"#
+pub record LeakType { Variant(PrivateType) }"#
     );
 }
 
@@ -845,7 +845,7 @@ fn unexpected_arg_with_label_shorthand() {
 #[test]
 fn positional_argument_after_labelled() {
     assert_module_error!(
-        r#"type X { X(a: Int, b: Int, c: Int) }
+        r#"record X { X(a: Int, b: Int, c: Int) }
 fn x() { X(b: 1, a: 1, 1) }"#
     );
 }
@@ -853,7 +853,7 @@ fn x() { X(b: 1, a: 1, 1) }"#
 #[test]
 fn positional_argument_after_one_using_label_shorthand() {
     assert_module_error!(
-        r#"type X { X(a: Int, b: Int, c: Int) }
+        r#"record X { X(a: Int, b: Int, c: Int) }
 fn x() {
   let b = 1
   let a = 1
@@ -864,25 +864,25 @@ fn x() {
 
 #[test]
 fn unknown_type() {
-    assert_module_error!(r#"type Thing { Thing(unknown: x) }"#);
+    assert_module_error!(r#"record Thing { Thing(unknown: x) }"#);
 }
 
 #[test]
 fn unknown_type_in_alias() {
     // We cannot refer to unknown types in an alias
-    assert_module_error!("type IntMap = IllMap(Int, Int)");
+    assert_module_error!("type IntMap = IllMap<Int, Int>");
 }
 
 #[test]
 fn unknown_type_in_alias2() {
     // We cannot refer to unknown types in an alias
-    assert_module_error!("type IntMap = Map(Inf, Int)");
+    assert_module_error!("type IntMap = Map<Inf, Int>");
 }
 
 #[test]
 fn unknown_type_var_in_alias2() {
     // We cannot use undeclared type vars in a type alias
-    assert_module_error!("type X = List(a)");
+    assert_module_error!("type X = List<a>");
 }
 
 #[test]
@@ -898,8 +898,8 @@ fn unknown_record_field() {
     // An unknown field should report the possible fields' labels
     assert_module_error!(
         "
-pub type Box(a) { Box(inner: a) }
-pub fn main(box: Box(Int)) { box.unknown }
+pub record Box<a> { Box(inner: a) }
+pub fn main(box: Box<Int>) { box.unknown }
 "
     );
 }
@@ -909,8 +909,8 @@ fn unknown_record_field_2() {
     // An unknown field should report the possible fields' labels
     assert_module_error!(
         "
-pub type Box(a) { Box(inner: a) }
-pub fn main(box: Box(Box(Int))) { box.inner.unknown }"
+pub record Box<a> { Box(inner: a) }
+pub fn main(box: Box<Box<Int>>) { box.inner.unknown }"
     );
 }
 
@@ -918,7 +918,7 @@ pub fn main(box: Box(Box(Int))) { box.inner.unknown }"
 fn unnecessary_spread_operator() {
     assert_module_error!(
         "
-type Triple {
+record Triple {
   Triple(a: Int, b: Int, c: Int)
 }
 
@@ -933,7 +933,7 @@ fn main() {
 fn duplicate_var_in_record_pattern() {
     // Duplicate var in record
     assert_module_error!(
-        r#"type X { X(a: Int, b: Int, c: Int) }
+        r#"record X { X(a: Int, b: Int, c: Int) }
 fn x() {
   case X(1,2,3) { X(x, y, x) -> 1 }
 }"#
@@ -944,7 +944,7 @@ fn x() {
 fn duplicate_label_shorthands_in_record_pattern() {
     // Duplicate var in record
     assert_module_error!(
-        r#"type X { X(a: Int, b: Int, c: Int) }
+        r#"record X { X(a: Int, b: Int, c: Int) }
 fn x() {
   case X(1,2,3) { X(a:, b:, c: a) -> 1 }
 }"#
@@ -955,7 +955,7 @@ fn x() {
 fn guard_record_wrong_arity() {
     // Constructor in guard clause errors
     assert_module_error!(
-        r#"type X { X(a: Int, b: Float) }
+        r#"record X { X(a: Int, b: Float) }
 fn x() {
   case X(1, 2.0) { x if x == X(1) -> 1 _ -> 2 }
 }"#
@@ -965,7 +965,7 @@ fn x() {
 #[test]
 fn subject_int_float_guard_tuple() {
     assert_module_error!(
-        r#"type X { X(a: Int, b: Float) }
+        r#"record X { X(a: Int, b: Float) }
 fn x() { case X(1, 2.0) { x if x == X(2.0, 1) -> 1 _ -> 2 } }"#
     );
 }
@@ -975,12 +975,12 @@ fn type_variables_in_body() {
     // Type variables are shared between function annotations and let annotations within their body
     assert_module_error!(
         "
-pub type Box(a) {
+pub record Box<a> {
   Box(value: a)
 }
-pub fn go(box1: Box(a), box2: Box(b)) {
-  let _: Box(a) = box2
-  let _: Box(b) = box1
+pub fn go(box1: Box<a>, box2: Box<b>) {
+  let _: Box<a> = box2
+  let _: Box<b> = box1
   5
 }"
     );
@@ -1038,8 +1038,8 @@ fn dupe() { 1 }
 fn duplicate_constructors() {
     // We cannot declare two type constructors with the same name in a module
     assert_module_error!(
-        "type Box { Box(x: Int) }
-type Boxy { Box(Int) }"
+        "record Box { Box(x: Int) }
+record Boxy { Box(Int) }"
     );
 }
 
@@ -1047,15 +1047,15 @@ type Boxy { Box(Int) }"
 fn duplicate_constructors2() {
     // We cannot declare two type constructors with the same name in a module
     assert_module_error!(
-        "type Boxy { Box(Int) }
-type Box { Box(x: Int) }"
+        "record Boxy { Box(Int) }
+record Box { Box(x: Int) }"
     );
 }
 
 #[test]
 fn duplicate_constructors3() {
     // We cannot declare two type constructors with the same name in a module
-    assert_module_error!("type Boxy { Box(Int) Box(Float) }");
+    assert_module_error!("record Boxy { Box(Int) Box(Float) }");
 }
 
 #[test]
@@ -1067,7 +1067,7 @@ fn duplicate_alias_names() {
 #[test]
 fn duplicate_custom_type_names() {
     // We cannot declare two types with the same name in a module
-    assert_module_error!("type DupType { A } type DupType { B }");
+    assert_module_error!("record DupType { A } record DupType { B }");
 }
 
 #[test]
@@ -1082,7 +1082,7 @@ pub const duplicate = 1"
 #[test]
 fn duplicate_const_and_function_names_const_fn() {
     // We cannot declare const and functions with the same name in a module
-    // https://github.com/gleam-lang/gleam/issues/2069
+    // https://github.com/rakun-lang/rakun/issues/2069
     assert_module_error!(
         "const duplicate = 1
 fn duplicate() { 2 }"
@@ -1224,17 +1224,17 @@ fn invalid_parameter_label2() {
 
 #[test]
 fn invalid_constructor_name() {
-    assert_module_error!("type MyType { Int_Value(Int) }");
+    assert_module_error!("record MyType { Int_Value(Int) }");
 }
 
 #[test]
 fn invalid_constructor_arg_name() {
-    assert_module_error!("type IntWrapper { IntWrapper(innerInt: Int) }");
+    assert_module_error!("record IntWrapper { IntWrapper(innerInt: Int) }");
 }
 
 #[test]
 fn invalid_custom_type_name() {
-    assert_module_error!("type Boxed_value { Box(Int) }");
+    assert_module_error!("record Boxed_value { Box(Int) }");
 }
 
 #[test]
@@ -1291,14 +1291,14 @@ fn invalid_list_pattern_discard_name() {
 #[test]
 fn invalid_constructor_pattern_name() {
     assert_module_error!(
-        "pub type Box { Box(Int) } pub fn main() { let Box(innerValue) = Box(203) }"
+        "pub record Box { Box(Int) } pub fn main() { let Box(innerValue) = Box(203) }"
     );
 }
 
 #[test]
 fn invalid_constructor_pattern_discard_name() {
     assert_module_error!(
-        "pub type Box { Box(Int) } pub fn main() { let Box(_ignoredInner) = Box(203)}"
+        "pub record Box { Box(Int) } pub fn main() { let Box(_ignoredInner) = Box(203)}"
     );
 }
 
@@ -1324,17 +1324,17 @@ fn invalid_bit_array_pattern_discard_name() {
 
 #[test]
 fn invalid_string_prefix_pattern_name() {
-    assert_error!(r#"let assert "prefix" <> coolSuffix = "prefix-suffix""#);
+    assert_error!(r#"let assert "prefix" ++ coolSuffix = "prefix-suffix""#);
 }
 
 #[test]
 fn invalid_string_prefix_pattern_discard_name() {
-    assert_error!(r#"let assert "prefix" <> _boringSuffix = "prefix-suffix""#);
+    assert_error!(r#"let assert "prefix" ++ _boringSuffix = "prefix-suffix""#);
 }
 
 #[test]
 fn invalid_string_prefix_pattern_alias() {
-    assert_error!(r#"let assert "prefix" as thePrefix <> _suffix = "prefix-suffix""#);
+    assert_error!(r#"let assert "prefix" as thePrefix ++ _suffix = "prefix-suffix""#);
 }
 
 #[test]
@@ -1349,12 +1349,12 @@ fn invalid_case_variable_discard_name() {
 
 #[test]
 fn invalid_type_parameter_name() {
-    assert_module_error!("type Wrapper(innerType) {}");
+    assert_module_error!("record Wrapper<innerType> {}");
 }
 
 #[test]
 fn invalid_type_alias_parameter_name() {
-    assert_module_error!("type GleamOption(okType) = Result(okType, Nil)");
+    assert_module_error!("type RakunOption<okType>= Result<okType, Nil>");
 }
 
 #[test]
@@ -1364,7 +1364,7 @@ fn invalid_function_type_parameter_name() {
 
 #[test]
 fn correct_pipe_arity_error_location() {
-    // https://github.com/gleam-lang/gleam/issues/672
+    // https://github.com/rakun-lang/rakun/issues/672
     assert_module_error!(
         "fn x(x, y) { x }
 fn main() { 1 |> x() }"
@@ -1378,12 +1378,12 @@ fn const_annotation_wrong() {
 
 #[test]
 fn const_annotation_wrong_2() {
-    assert_module_error!("pub const numbers: List(Int) = [1, 2, 2.3]");
+    assert_module_error!("pub const numbers: List<Int> = [1, 2, 2.3]");
 }
 
 #[test]
 fn const_annotation_wrong_3() {
-    assert_module_error!("pub const numbers: List(Int) = [1.1, 2.2, 3.3]");
+    assert_module_error!("pub const numbers: List<Int> = [1.1, 2.2, 3.3]");
 }
 
 #[test]
@@ -1475,7 +1475,7 @@ fn const_heterogenus_list() {
 #[test]
 fn custom_type_module_constants() {
     assert_module_error!(
-        r#"type X { X }
+        r#"record X { X }
 const x = unknown.X"#
     );
 }
@@ -1483,7 +1483,7 @@ const x = unknown.X"#
 #[test]
 fn unknown_label() {
     assert_module_error!(
-        r#"type X { X(a: Int, b: Float) }
+        r#"record X { X(a: Int, b: Float) }
 fn x() {
   let x = X(a: 1, c: 2.0)
   x
@@ -1494,7 +1494,7 @@ fn x() {
 #[test]
 fn unknown_label_shorthand() {
     assert_module_error!(
-        r#"type X { X(a: Int, b: Float) }
+        r#"record X { X(a: Int, b: Float) }
 fn x() {
   let c = 2.0
   let x = X(a: 1, c:)
@@ -1506,7 +1506,7 @@ fn x() {
 #[test]
 fn wrong_type_var() {
     // A unification error should show the type var as named by user
-    // See https://github.com/gleam-lang/gleam/issues/1256
+    // See https://github.com/rakun-lang/rakun/issues/1256
     assert_module_error!(
         r#"fn wibble(x: String) { x }
 fn multi_result(x: some_name) {
@@ -1519,8 +1519,8 @@ fn multi_result(x: some_name) {
 fn wrong_type_arg() {
     assert_module_error!(
         r#"
-fn wibble(x: List(Int)) { x }
-fn main(y: List(something)) {
+fn wibble(x: List<Int>) { x }
+fn main(y: List<something>) {
   wibble(y)
 }"#
     );
@@ -1528,7 +1528,7 @@ fn main(y: List(something)) {
 
 #[test]
 fn wrong_type_ret() {
-    // See https://github.com/gleam-lang/gleam/pull/1407#issuecomment-1001162876
+    // See https://github.com/rakun-lang/rakun/pull/1407#issuecomment-1001162876
     assert_module_error!(
         r#"pub fn main(x: something) -> Int {
   let y = x
@@ -1542,13 +1542,13 @@ fn wrong_type_update() {
     // A variable of the wrong type given to a record update
     assert_module_error!(
         "
- pub type Person {
+ pub record Person {
    Person(name: String, age: Int)
  }
- pub type Box(a) {
+ pub record Box<a> {
    Box(a)
  }
- pub fn update_person(person: Person, box: Box(a)) {
+ pub fn update_person(person: Person, box: Box<a>) {
    Person(..box)
  }"
     );
@@ -1559,7 +1559,7 @@ fn unknown_variable_update() {
     // An undefined variable given to a record update
     assert_module_error!(
         "
-pub type Person {
+pub record Person {
   Person(name: String, age: Int)
 }
 pub fn update_person() {
@@ -1573,7 +1573,7 @@ fn unknown_field_update() {
     // An unknown field given to a record update
     assert_module_error!(
         "
- pub type Person {
+ pub record Person {
    Person(name: String)
  }
  pub fn update_person(person: Person) {
@@ -1587,7 +1587,7 @@ fn unknown_field_update2() {
     // An unknown field given to a record update
     assert_module_error!(
         "
- pub type Person {
+ pub record Person {
    Person(name: String, age: Int, size: Int)
  }
  pub fn update_person(person: Person) {
@@ -1601,7 +1601,7 @@ fn unknown_constructor_update() {
     // An unknown record constructor being used in a record update
     assert_module_error!(
         "
-pub type Person {
+pub record Person {
    Person(name: String, age: Int)
 }
 pub fn update_person(person: Person) {
@@ -1615,7 +1615,7 @@ fn not_a_constructor_update() {
     // Something other than a record constructor being used in a record update
     assert_module_error!(
         "
-pub type Person {
+pub record Person {
   Person(name: String, age: Int)
 }
 pub fn identity(a) { a }
@@ -1630,7 +1630,7 @@ fn expression_constructor_update() {
     // A record update with a constructor returned from an expression
     assert_module_error!(
         "
-pub type Person {
+pub record Person {
   Person(name: String, age: Int)
 }
 pub fn update_person(person: Person) {
@@ -1645,10 +1645,10 @@ fn generic_record_update1() {
     // A record update on polymorphic types with a field of the wrong type
     assert_module_error!(
         "
-pub type Box(a) {
+pub record Box<a> {
   Box(value: a, i: Int)
 }
-pub fn update_box(box: Box(Int), value: String) {
+pub fn update_box(box: Box<Int>, value: String) {
   Box(..box, value: value)
 }"
     );
@@ -1659,10 +1659,10 @@ fn generic_record_update2() {
     // A record update on polymorphic types with generic fields of the wrong type
     assert_module_error!(
         "
-pub type Box(a) {
+pub record Box<a> {
   Box(value: a, i: Int)
 }
-pub fn update_box(box: Box(a), value: b) {
+pub fn update_box(box: Box<a>, value: b) {
   Box(..box, value: value)
 }"
     );
@@ -1670,9 +1670,9 @@ pub fn update_box(box: Box(a), value: b) {
 
 #[test]
 fn type_vars_must_be_declared() {
-    // https://github.com/gleam-lang/gleam/issues/734
+    // https://github.com/rakun-lang/rakun/issues/734
     assert_module_error!(
-        r#"type A(a) { A }
+        r#"record A<a> { A }
 type B = a"#
     );
 }
@@ -1680,7 +1680,7 @@ type B = a"#
 #[test]
 fn type_holes1() {
     // Type holes cannot be used when decaring types or external functions
-    assert_module_error!(r#"type A { A(_) }"#);
+    assert_module_error!(r#"record A { A(_) }"#);
 }
 
 #[test]
@@ -1689,7 +1689,7 @@ fn type_holes2() {
     assert_module_error!(
         r#"
 @external(erlang, "a", "b")
-fn main() -> List(_)
+fn main() -> List<_>
 "#
     );
 }
@@ -1700,7 +1700,7 @@ fn type_holes3() {
     assert_module_error!(
         r#"
 @external(erlang, "a", "b")
-fn main(x: List(_)) -> Nil
+fn main(x: List<_>) -> Nil
 "#
     );
 }
@@ -1708,10 +1708,10 @@ fn main(x: List(_)) -> Nil
 #[test]
 fn type_holes4() {
     // Type holes cannot be used when decaring types or external functions
-    assert_module_error!(r#"type X = List(_)"#);
+    assert_module_error!(r#"type X = List<_>"#);
 }
 
-// https://github.com/gleam-lang/gleam/issues/1263
+// https://github.com/rakun-lang/rakun/issues/1263
 #[test]
 fn missing_variable_in_alternative_pattern() {
     assert_error!("case [] { [x] | [] -> x _ -> 0 }");
@@ -1722,7 +1722,7 @@ fn type_annotations() {
     assert_module_error!("fn inc(x: a) { x + 1 }");
 }
 
-// https://github.com/gleam-lang/gleam/issues/892
+// https://github.com/rakun-lang/rakun/issues/892
 #[test]
 fn case_clause_pipe_diagnostic() {
     assert_module_error!(
@@ -1761,14 +1761,14 @@ fn main(x) {
 
 #[test]
 fn negate_string() {
-    assert_error!(r#"!"Hello Gleam""#);
+    assert_error!(r#"!"Hello Rakun""#);
 }
 
 #[test]
 fn ambiguous_type_error() {
     assert_with_module_error!(
-        ("wibble", "pub type Thing { Thing }"),
-        "import wibble pub type Thing { Thing }
+        ("wibble", "pub record Thing { Thing }"),
+        "import wibble pub record Thing { Thing }
         pub fn main() {
             [Thing] == [wibble.Thing]
         }",
@@ -1809,15 +1809,15 @@ fn ambiguous_import_error_with_unqualified() {
 fn same_imports_multiple_times() {
     assert_with_module_error!(
         (
-            "gleam/wibble",
+            "rakun/wibble",
             "
             pub fn wobble() { 1 }
             pub fn zoo() { 1 }
             "
         ),
         "
-        import gleam/wibble.{wobble}
-        import gleam/wibble.{zoo}
+        import rakun/wibble.{wobble}
+        import rakun/wibble.{zoo}
         pub fn go() { wobble() + zoo() }
         "
     );
@@ -1981,12 +1981,12 @@ fn same_imports_multiple_times_7() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1705
+// https://github.com/rakun-lang/rakun/issues/1705
 #[test]
 fn update_multi_variant_record() {
     assert_module_error!(
         "
-pub type Point {
+pub record Point {
   Point2(a: Int, b: Int)
   Point3(a: Int, b: Int, c: Int)
 }
@@ -2001,7 +2001,7 @@ pub fn main() {
 fn hint_for_method_call() {
     assert_module_error!(
         "
-pub type User {
+pub record User {
   User(id: Int, name: String)
 }
 
@@ -2016,7 +2016,7 @@ pub fn main(user: User) {
 fn no_hint_for_non_method_call() {
     assert_module_error!(
         "
-pub type User {
+pub record User {
   User(id: Int, name: String)
 }
 
@@ -2049,12 +2049,12 @@ pub fn main(_x: two.Thing) {
 fn value_imported_as_type() {
     assert_with_module_error!(
         (
-            "gleam/wibble",
-            "pub type Wibble {
+            "rakun/wibble",
+            "pub record Wibble {
                Wobble
              }"
         ),
-        "import gleam/wibble.{type Wobble}"
+        "import rakun/wibble.{type Wobble}"
     );
 }
 
@@ -2062,12 +2062,12 @@ fn value_imported_as_type() {
 fn type_imported_as_value() {
     assert_with_module_error!(
         (
-            "gleam/wibble",
-            "pub type Wibble {
+            "rakun/wibble",
+            "pub record Wibble {
                Wobble
              }"
         ),
-        "import gleam/wibble.{Wibble}"
+        "import rakun/wibble.{Wibble}"
     );
 }
 
@@ -2117,7 +2117,7 @@ fn() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2371
+// https://github.com/rakun-lang/rakun/issues/2371
 #[test]
 fn list() {
     assert_error!("[1, 2.0]");
@@ -2132,7 +2132,7 @@ fn mismatched_list_tail() {
 fn leak_multiple_private_types() {
     assert_module_error!(
         "
-        type Private {
+        record Private {
             Private
         }
 
@@ -2156,7 +2156,7 @@ fn const_string_concat_invalid_type() {
     assert_module_error!(
         "
 const some_int = 5
-const invalid_concat = some_int <> \"with_string\"
+const invalid_concat = some_int ++ \"with_string\"
 "
     );
 }
@@ -2165,7 +2165,7 @@ const invalid_concat = some_int <> \"with_string\"
 fn invalid_pattern_label_shorthand() {
     assert_module_error!(
         "
-pub type Wibble { Wibble(arg: Int) }
+pub record Wibble { Wibble(arg: Int) }
 pub fn main() {
   let Wibble(not_a_label:) = Wibble(1)
 }
@@ -2178,7 +2178,7 @@ fn no_crash_on_duplicate_definition() {
     // This previous caused the compiler to crash
     assert_module_error!(
         "
-pub type Wibble {
+pub record Wibble {
   Wobble
   Wobble
 }
@@ -2198,7 +2198,7 @@ fn no_crash_on_duplicate_definition2() {
     // This also caused a compiler crash, separate to the above test
     assert_module_error!(
         "
-pub type Wibble {
+pub record Wibble {
   Wibble
   Wobble
   Wobble

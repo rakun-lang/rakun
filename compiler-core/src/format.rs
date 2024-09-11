@@ -249,10 +249,10 @@ impl<'comments> Formatter<'comments> {
     /// Once we find a comment we know we're done with the current import
     /// group and a new one has started.
     ///
-    /// ```gleam
+    /// ```rakun
     /// // This is an import group.
-    /// import gleam/int
-    /// import gleam/string
+    /// import rakun/int
+    /// import rakun/string
     ///
     /// // This marks the beginning of a new import group that can't
     /// // be mushed together with the previous one!
@@ -389,8 +389,8 @@ impl<'comments> Formatter<'comments> {
                 match (default_module_access_name, as_name) {
                     // If the `as name` is the same as the module name that would be
                     // used anyways we won't render it. For example:
-                    // ```gleam
-                    // import gleam/int as int
+                    // ```rakun
+                    // import rakun/int as int
                     //                  ^^^^^^ this is redundant and removed
                     // ```
                     (Some(module_name), Some((AssignName::Variable(name), _)))
@@ -512,7 +512,7 @@ impl<'comments> Formatter<'comments> {
 
             Constant::StringConcatenation { left, right, .. } => self
                 .const_expr(left)
-                .append(break_("", " ").append("<>".to_doc()))
+                .append(break_("", " ").append("++".to_doc()))
                 .nest(INDENT)
                 .append(" ")
                 .append(self.const_expr(right)),
@@ -809,7 +809,7 @@ impl<'comments> Formatter<'comments> {
         //       the last argument of a function and it goes over the line
         //       limit with just its arguments we don't get some strange
         //       splitting.
-        //       See https://github.com/gleam-lang/gleam/issues/2571
+        //       See https://github.com/rakun-lang/rakun/issues/2571
         //
         // There's many ways we could be smarter than this. For example:
         //  - still split the arguments like it did in the example shown in the
@@ -1609,7 +1609,15 @@ impl<'comments> Formatter<'comments> {
 
         let doc = attributes
             .append(pub_(ct.publicity))
-            .append(if ct.opaque { "opaque type " } else { "type " })
+            .append(if ct.mode == CustomTypeMode::Record {
+                if ct.opaque {
+                    "opaque record "
+                } else {
+                    "record "
+                }
+            } else {
+                "type "
+            })
             .append(if ct.parameters.is_empty() {
                 Document::EcoString(ct.name.clone())
             } else {
@@ -1712,7 +1720,7 @@ impl<'comments> Formatter<'comments> {
             ArgNames::Named { name, .. } => name.to_doc(),
             ArgNames::NamedLabelled { label, name, .. } => docvec![label, " ", name],
             // We remove the underscore from discarded function arguments since we don't want to
-            // expose this kind of detail: https://github.com/gleam-lang/gleam/issues/2561
+            // expose this kind of detail: https://github.com/rakun-lang/rakun/issues/2561
             ArgNames::Discard { name, .. } => name.strip_prefix('_').unwrap_or(name).to_doc(),
             ArgNames::LabelledDiscard { label, name, .. } => {
                 docvec![label, " ", name.strip_prefix('_').unwrap_or(name).to_doc()]
@@ -1839,7 +1847,7 @@ impl<'comments> Formatter<'comments> {
         // its own line to improve legibility.
         //
         // This looks like this:
-        // ```gleam
+        // ```rakun
         // case wibble, wobble {
         //   Wibble(_),  // pretend this goes over the line limit
         //     Wobble(_)
@@ -1908,7 +1916,7 @@ impl<'comments> Formatter<'comments> {
             .map(|(alternative_index, p)| {
                 // Here `p` is a single pattern that can be comprised of
                 // multiple subjects.
-                // ```gleam
+                // ```rakun
                 // case wibble, wobble {
                 //   True, False
                 // //^^^^^^^^^^^ This is a single pattern with multiple subjects
@@ -1923,7 +1931,7 @@ impl<'comments> Formatter<'comments> {
                     // The first ever pattern that appears in a case clause (that is
                     // the first subject of the first alternative) must not be nested
                     // further; otherwise, when broken, it would have 2 extra spaces
-                    // of indentation: https://github.com/gleam-lang/gleam/issues/2940.
+                    // of indentation: https://github.com/rakun-lang/rakun/issues/2940.
                     let is_first_subject = subject_index == 0;
                     let is_first_pattern_of_clause = is_first_subject && is_first_alternative;
                     let subject_doc = self.pattern(subject);
@@ -2119,8 +2127,8 @@ impl<'comments> Formatter<'comments> {
                     AssignName::Discard(name) => name.to_doc(),
                 };
                 match left_assign {
-                    Some((name, _)) => docvec![left, " as ", name, " <> ", right],
-                    None => docvec![left, " <> ", right],
+                    Some((name, _)) => docvec![left, " as ", name, " ++ ", right],
+                    None => docvec![left, " ++ ", right],
                 }
             }
 
@@ -2577,7 +2585,7 @@ impl<'comments> Formatter<'comments> {
     /// doc comment that might be preceding those.
     /// For example:
     ///
-    /// ```gleam
+    /// ```rakun
     /// /// Doc
     /// // comment
     ///
@@ -2693,7 +2701,7 @@ impl<'a> Documentable<'a> for &'a BinOp {
             BinOp::DivInt => "/",
             BinOp::DivFloat => "/.",
             BinOp::RemainderInt => "%",
-            BinOp::Concatenate => "<>",
+            BinOp::Concatenate => "++",
         }
         .to_doc()
     }

@@ -5,7 +5,7 @@ use crate::{
 };
 use camino::Utf8Path;
 use ecow::EcoString;
-use gleam_core::{
+use rakun_core::{
     build::{
         Mode, NullTelemetry, PackageCompiler, StaleTracker, Target, TargetCodegenConfiguration,
     },

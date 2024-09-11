@@ -21,8 +21,8 @@ use crate::build::{Module, Package};
 pub struct PackageInterface {
     name: EcoString,
     version: EcoString,
-    /// The Gleam version constraint that the package specifies in its `gleam.toml`.
-    gleam_version_constraint: Option<EcoString>,
+    /// The Rakun version constraint that the package specifies in its `rakun.toml`.
+    rakun_version_constraint: Option<EcoString>,
     /// A map from module name to its interface.
     #[serde(serialize_with = "ordered_map")]
     modules: HashMap<EcoString, ModuleInterface>,
@@ -58,9 +58,9 @@ pub struct TypeDefinitionInterface {
     /// this field will hold the reason of the deprecation.
     deprecation: Option<DeprecationInterface>,
     /// The number of type variables in the type definition.
-    /// ```gleam
+    /// ```rakun
     /// /// This type has 2 type variables.
-    /// type Result(a, b) {
+    /// record Result<a, b> {
     ///   Ok(a)
     ///   Error(b)
     /// }
@@ -78,16 +78,16 @@ pub struct TypeConstructorInterface {
     /// `///`).
     documentation: Option<EcoString>,
     /// The name of the type constructor.
-    /// ```gleam
-    /// pub type Box(a) {
+    /// ```rakun
+    /// pub record Box<a> {
     ///   MyBox(value: a)
     /// //^^^^^ This is the constructor's name
     /// }
     /// ```
     name: EcoString,
     /// A list of the parameters needed by the constructor.
-    /// ```gleam
-    /// pub type Box(a) {
+    /// ```rakun
+    /// pub record Box<a> {
     ///   MyBox(value: a)
     /// //      ^^^^^^^^ This is the constructor's parameter.
     /// }
@@ -105,14 +105,14 @@ pub struct TypeAliasInterface {
     /// this field will hold the reason of the deprecation.
     deprecation: Option<DeprecationInterface>,
     /// The number of type variables in the type alias definition.
-    /// ```gleam
+    /// ```rakun
     /// /// This type alias has 2 type variables.
-    /// type Results(a, b) = List(Restul(a, b))
+    /// type Results<a, b>= List<Restul(a, b)>
     /// ```
     parameters: usize,
     /// The aliased type.
-    /// ```gleam
-    /// type Ints = List(Int)
+    /// ```rakun
+    /// type Ints = List<Int>
     /// //          ^^^^^^^^^ This is the aliased type in a type alias.
     /// ```
     alias: TypeInterface,
@@ -154,14 +154,14 @@ pub struct FunctionInterface {
 #[derive(Debug, Serialize, Copy, Clone)]
 #[serde(rename_all = "kebab-case")]
 pub struct ImplementationsInterface {
-    /// Set to `true` if the const/function has a pure Gleam implementation
+    /// Set to `true` if the const/function has a pure Rakun implementation
     /// (that is, it never uses external code).
-    /// Being pure Gleam means that the function will support all Gleam
+    /// Being pure Rakun means that the function will support all Rakun
     /// targets, even future ones that are not present to this day.
     ///
     /// Consider the following function:
     ///
-    /// ```gleam
+    /// ```rakun
     /// @external(erlang, "wibble", "wobble")
     /// pub fn a_random_number() -> Int {
     ///   4
@@ -173,7 +173,7 @@ pub struct ImplementationsInterface {
     ///
     /// ```json
     /// {
-    ///   gleam: true,
+    ///   rakun: true,
     ///   can_run_on_erlang: true,
     ///   can_run_on_javascript: true,
     ///   uses_erlang_externals: true,
@@ -181,8 +181,8 @@ pub struct ImplementationsInterface {
     /// }
     /// ```
     ///
-    /// - `gleam: true` means that the function has a pure Gleam implementation
-    ///   and thus it can be used on all Gleam targets with no problems.
+    /// - `rakun: true` means that the function has a pure Rakun implementation
+    ///   and thus it can be used on all Rakun targets with no problems.
     /// - `can_run_on_erlang: false` the function can be called on the Erlang
     ///   target.
     /// - `can_run_on_javascript: true` the function can be called on the JavaScript
@@ -191,9 +191,9 @@ pub struct ImplementationsInterface {
     ///   external code when compiled to the Erlang target.
     /// - `uses_javascript_externals: false` means that the function won't use
     ///   JavaScript external code when compiled to JavaScript. The function can
-    ///   still be used on the JavaScript target since it has a pure Gleam
+    ///   still be used on the JavaScript target since it has a pure Rakun
     ///   implementation.
-    gleam: bool,
+    rakun: bool,
     /// Set to `true` if the const/function is defined using Erlang external
     /// code. That means that the function will use Erlang code through FFI when
     /// compiled for the Erlang target.
@@ -204,7 +204,7 @@ pub struct ImplementationsInterface {
     ///
     /// Let's have a look at an example:
     ///
-    /// ```gleam
+    /// ```rakun
     /// @external(javascript, "wibble", "wobble")
     /// pub fn javascript_only() -> Int
     /// ```
@@ -213,7 +213,7 @@ pub struct ImplementationsInterface {
     ///
     /// ```json
     /// {
-    ///   gleam: false,
+    ///   rakun: false,
     ///   can_run_on_erlang: false,
     ///   can_run_on_javascript: true,
     ///   uses_erlang_externals: false,
@@ -221,7 +221,7 @@ pub struct ImplementationsInterface {
     /// }
     /// ```
     ///
-    /// - `gleam: false` means that the function doesn't have a pure Gleam
+    /// - `rakun: false` means that the function doesn't have a pure Rakun
     ///   implementations. This means that the function is only defined using
     ///   externals and can only be used on some targets.
     /// - `can_run_on_erlang: false` the function cannot be called on the Erlang
@@ -234,11 +234,11 @@ pub struct ImplementationsInterface {
     ///   external code.
     uses_javascript_externals: bool,
     /// Whether the function can be called on the Erlang target, either due to a
-    /// pure Gleam implementation or an implementation that uses some Erlang
+    /// pure Rakun implementation or an implementation that uses some Erlang
     /// externals.
     can_run_on_erlang: bool,
     /// Whether the function can be called on the JavaScript target, either due
-    /// to a pure Gleam implementation or an implementation that uses some
+    /// to a pure Rakun implementation or an implementation that uses some
     /// JavaScript externals.
     can_run_on_javascript: bool,
 }
@@ -255,7 +255,7 @@ impl ImplementationsInterface {
         // This pattern matching makes sure we will remember to handle any change
         // in the `Implementations` struct.
         let Implementations {
-            gleam,
+            rakun,
             uses_erlang_externals,
             uses_javascript_externals,
 
@@ -264,7 +264,7 @@ impl ImplementationsInterface {
         } = implementations;
 
         ImplementationsInterface {
-            gleam: *gleam,
+            rakun: *rakun,
             uses_erlang_externals: *uses_erlang_externals,
             uses_javascript_externals: *uses_javascript_externals,
             can_run_on_erlang: *can_run_on_erlang,
@@ -307,20 +307,20 @@ pub enum TypeInterface {
         return_: Box<TypeInterface>,
     },
     /// A type variable.
-    /// ```gleam
+    /// ```rakun
     /// pub fn wibble(value: a) -> a {}
     /// //                   ^ This is a type variable.
     /// ```
     Variable { id: u64 },
     /// A custom named type.
-    /// ```gleam
+    /// ```rakun
     /// let value: Bool = True
     ///            ^^^^ This is a named type.
     /// ```
     ///
     /// All prelude types - like Bool, String, etc. - are named types as well.
     /// In that case their package is an empty string `""` and their module
-    /// name is the string `"gleam"`.
+    /// name is the string `"rakun"`.
     ///
     Named {
         name: EcoString,
@@ -329,7 +329,7 @@ pub enum TypeInterface {
         /// The module the type is defined in.
         module: EcoString,
         /// The type parameters that might be needed to define a named type.
-        /// ```gleam
+        /// ```rakun
         /// let result: Result(Int, e) = Ok(1)
         /// //                 ^^^^^^ The `Result` named type has 2 parameters.
         /// //                        In this case it's the Int type and a type
@@ -343,14 +343,14 @@ pub enum TypeInterface {
 #[serde(rename_all = "kebab-case")]
 pub struct ParameterInterface {
     /// If the parameter is labelled this will hold the label's name.
-    /// ```gleam
-    /// pub fn repeat(times n: Int) -> List(Int)
+    /// ```rakun
+    /// pub fn repeat(times n: Int) -> List<Int>
     /// //            ^^^^^ This is the parameter's label.
     /// ```
     label: Option<EcoString>,
     /// The parameter's type.
-    /// ```gleam
-    /// pub fn repeat(times n: Int) -> List(Int)
+    /// ```rakun
+    /// pub fn repeat(times n: Int) -> List<Int>
     /// //                     ^^^ This is the parameter's type.
     /// ```
     #[serde(rename = "type")]
@@ -362,9 +362,9 @@ impl PackageInterface {
         PackageInterface {
             name: package.config.name.clone(),
             version: package.config.version.to_string().into(),
-            gleam_version_constraint: package
+            rakun_version_constraint: package
                 .config
-                .gleam_version
+                .rakun_version
                 .clone()
                 .map(|version| EcoString::from(version.to_string())),
             modules: package
@@ -397,6 +397,7 @@ impl ModuleInterface {
                     parameters: _,
                     location: _,
                     name_location: _,
+                    mode: _,
                     end_position: _,
                 }) => {
                     let mut id_map = IdMap::new();
@@ -592,7 +593,7 @@ fn from_type_helper(type_: &Type, id_map: &mut IdMap) -> TypeInterface {
             // Since package serialisation happens after inference there
             // should be no unbound type variables.
             // TODO: This branch should be `unreachable!()` but because of
-            //       https://github.com/gleam-lang/gleam/issues/2533
+            //       https://github.com/rakun-lang/rakun/issues/2533
             //       we sometimes end up with those in top level
             //       definitions.
             //       However, `Unbound` and `Generic` ids are generated

@@ -54,7 +54,7 @@ pub fn expect_module_error(src: &str) -> String {
             .expect_err("should not parse");
     let error = crate::error::Error::Parse {
         src: src.into(),
-        path: Utf8PathBuf::from("/src/parse/error.gleam"),
+        path: Utf8PathBuf::from("/src/parse/error.rakun"),
         error: result,
     };
     error.pretty_string()
@@ -64,7 +64,7 @@ pub fn expect_error(src: &str) -> String {
     let result = crate::parse::parse_statement_sequence(src).expect_err("should not parse");
     let error = crate::error::Error::Parse {
         src: src.into(),
-        path: Utf8PathBuf::from("/src/parse/error.gleam"),
+        path: Utf8PathBuf::from("/src/parse/error.rakun"),
         error: result,
     };
     error.pretty_string()
@@ -319,7 +319,7 @@ fn bit_array2() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3125
+// https://github.com/rakun-lang/rakun/issues/3125
 #[test]
 fn triple_equals() {
     assert_error!(
@@ -349,7 +349,7 @@ fn triple_equals_with_whitespace() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1231
+// https://github.com/rakun-lang/rakun/issues/1231
 #[test]
 fn pointless_spread() {
     assert_error!(
@@ -361,7 +361,7 @@ fn pointless_spread() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1358
+// https://github.com/rakun-lang/rakun/issues/1358
 #[test]
 fn lowcase_bool_in_pattern() {
     assert_error!(
@@ -373,7 +373,7 @@ fn lowcase_bool_in_pattern() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1613
+// https://github.com/rakun-lang/rakun/issues/1613
 #[test]
 fn anonymous_function_labeled_arguments() {
     assert_error!(
@@ -440,7 +440,7 @@ fn with_let_binding3() {
 
 #[test]
 fn with_let_binding3_and_annotation() {
-    assert_parse!("let assert [x]: List(Int) = [2]");
+    assert_parse!("let assert [x]: List<Int> = [2]");
 }
 
 #[test]
@@ -501,7 +501,7 @@ fn discard_left_hand_side_of_concat_pattern() {
     assert_error!(
         r#"
         case "" {
-          _ <> rest -> rest
+          _ ++ rest -> rest
         }
         "#
     );
@@ -512,19 +512,19 @@ fn assign_left_hand_side_of_concat_pattern() {
     assert_error!(
         r#"
         case "" {
-          first <> rest -> rest
+          first ++ rest -> rest
         }
         "#
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1890
+// https://github.com/rakun-lang/rakun/issues/1890
 #[test]
 fn valueless_list_spread_expression() {
     assert_error!(r#"let x = [1, 2, 3, ..]"#);
 }
 
-// https://github.com/gleam-lang/gleam/issues/2035
+// https://github.com/rakun-lang/rakun/issues/2035
 #[test]
 fn semicolons() {
     assert_error!(r#"{ 2 + 3; - -5; }"#);
@@ -535,25 +535,25 @@ fn bare_expression() {
     assert_parse!(r#"1"#);
 }
 
-// https://github.com/gleam-lang/gleam/issues/1991
+// https://github.com/rakun-lang/rakun/issues/1991
 #[test]
 fn block_of_one() {
     assert_parse!(r#"{ 1 }"#);
 }
 
-// https://github.com/gleam-lang/gleam/issues/1991
+// https://github.com/rakun-lang/rakun/issues/1991
 #[test]
 fn block_of_two() {
     assert_parse!(r#"{ 1 2 }"#);
 }
 
-// https://github.com/gleam-lang/gleam/issues/1991
+// https://github.com/rakun-lang/rakun/issues/1991
 #[test]
 fn nested_block() {
     assert_parse!(r#"{ 1 { 1.0 2.0 } 3 }"#);
 }
 
-// https://github.com/gleam-lang/gleam/issues/1831
+// https://github.com/rakun-lang/rakun/issues/1831
 #[test]
 fn argument_scope() {
     assert_error!(
@@ -787,7 +787,7 @@ pub fn main() -> Nil {
 }
 
 // Tests for nested tuples and structs in tuples
-// https://github.com/gleam-lang/gleam/issues/1980
+// https://github.com/rakun-lang/rakun/issues/1980
 
 #[test]
 fn nested_tuples() {
@@ -884,7 +884,7 @@ fn private_internal_type() {
     assert_module_error!(
         "
 @internal
-type Wibble {
+record Wibble {
   Wibble
 }
 "
@@ -1003,7 +1003,7 @@ fn main() {
 fn type_invalid_constructor() {
     assert_module_error!(
         "
-type A {
+record A {
     A(String)
     type
 }
@@ -1013,13 +1013,13 @@ type A {
 
 // Tests whether diagnostic presents an example of how to formulate a proper
 // record constructor based off a common user error pattern.
-// https://github.com/gleam-lang/gleam/issues/3324
+// https://github.com/rakun-lang/rakun/issues/3324
 
 #[test]
 fn type_invalid_record_constructor() {
     assert_module_error!(
         "
-pub type User {
+pub record User {
     name: String,
 }
 "
@@ -1030,7 +1030,7 @@ pub type User {
 fn type_invalid_record_constructor_without_field_type() {
     assert_module_error!(
         "
-pub opaque type User {
+pub opaque record User {
     name
 }
 "
@@ -1041,7 +1041,7 @@ pub opaque type User {
 fn type_invalid_record_constructor_invalid_field_type() {
     assert_module_error!(
         r#"
-type User {
+record User {
     name: "Test User",
 }
 "#
@@ -1052,7 +1052,7 @@ type User {
 fn type_invalid_type_name() {
     assert_module_error!(
         "
-type A(a, type) {
+record A<a, type> {
     A
 }
 "
@@ -1063,7 +1063,7 @@ type A(a, type) {
 fn type_invalid_constructor_arg() {
     assert_module_error!(
         "
-type A {
+record A {
     A(type: String)
 }
 "
@@ -1074,7 +1074,7 @@ type A {
 fn type_invalid_record() {
     assert_module_error!(
         "
-type A {
+record A {
     One
     Two
     3
@@ -1099,7 +1099,7 @@ fn function_invalid_signature() {
     assert_module_error!(
         r#"
 fn f(a, "b") -> String {
-    a <> b
+    a ++ b
 }
 "#
     );
@@ -1136,7 +1136,7 @@ const a = <<1, 2, <->>
 fn const_invalid_record_constructor() {
     assert_module_error!(
         "
-type A {
+record A {
     A(String, Int)
 }
 const a = A(\"a\", let)
@@ -1149,7 +1149,7 @@ const a = A(\"a\", let)
 fn record_access_no_label() {
     assert_parse_module!(
         "
-type Wibble {
+record Wibble {
     Wibble(wibble: String)
 }
 
@@ -1174,7 +1174,7 @@ fn newline_tokens() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1756
+// https://github.com/rakun-lang/rakun/issues/1756
 #[test]
 fn arithmetic_in_guards() {
     assert_parse!(
@@ -1190,7 +1190,7 @@ fn const_string_concat() {
     assert_parse_module!(
         "
 const cute = \"cute\"
-const cute_bee = cute <> \"bee\"
+const cute_bee = cute ++ \"bee\"
 "
     );
 }
@@ -1199,7 +1199,7 @@ const cute_bee = cute <> \"bee\"
 fn const_string_concat_naked_right() {
     assert_module_error!(
         "
-const no_cute_bee = \"cute\" <>
+const no_cute_bee = \"cute\" ++
 "
     );
 }
@@ -1439,7 +1439,7 @@ pub fn main() {
 
 #[test]
 fn error_message_on_variable_starting_with_underscore() {
-    // https://github.com/gleam-lang/gleam/issues/3504
+    // https://github.com/rakun-lang/rakun/issues/3504
     assert_module_error!(
         "
   pub fn main() {
@@ -1461,7 +1461,7 @@ pub fn main() {
 
 #[test]
 fn error_message_on_variable_starting_with_underscore2() {
-    // https://github.com/gleam-lang/gleam/issues/3504
+    // https://github.com/rakun-lang/rakun/issues/3504
     assert_module_error!(
         "
   pub fn main() {
@@ -1476,7 +1476,7 @@ fn error_message_on_variable_starting_with_underscore2() {
 fn function_inside_a_type() {
     assert_module_error!(
         r#"
-type Wibble {
+record Wibble {
   fn wobble() {}
 }
 "#
@@ -1487,7 +1487,7 @@ type Wibble {
 fn pub_function_inside_a_type() {
     assert_module_error!(
         r#"
-type Wibble {
+record Wibble {
   pub fn wobble() {}
 }
 "#

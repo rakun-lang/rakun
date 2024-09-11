@@ -440,8 +440,8 @@ pub fn main() {
 pub fn help_with_labelled_constructor() {
     assert_signature_help!(
         r#"
-pub type Pokemon {
-    Pokemon(name: String, types: List(String), moves: List(String))
+pub record Pokemon {
+    Pokemon(name: String, types: List<String>, moves: List<String>)
 }
 
 pub fn main() {

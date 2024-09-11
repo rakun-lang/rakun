@@ -1,34 +1,34 @@
 use camino::{Utf8Path, Utf8PathBuf};
-use gleam_core::{
+use rakun_core::{
     error::{FileIoAction, FileKind},
     Error, Result,
 };
 
 pub fn run() -> Result<()> {
-    for path in crate::fs::gleam_files_excluding_gitignore(Utf8Path::new(".")) {
+    for path in crate::fs::rakun_files_excluding_gitignore(Utf8Path::new(".")) {
         fix_file(path)?;
     }
 
-    // Set the version requirement in gleam.toml
-    let mut toml = crate::fs::read("gleam.toml")?
+    // Set the version requirement in rakun.toml
+    let mut toml = crate::fs::read("rakun.toml")?
         .parse::<toml_edit::DocumentMut>()
         .map_err(|e| Error::FileIo {
             kind: FileKind::File,
             action: FileIoAction::Parse,
-            path: Utf8PathBuf::from("gleam.toml"),
+            path: Utf8PathBuf::from("rakun.toml"),
             err: Some(e.to_string()),
         })?;
 
     #[allow(clippy::indexing_slicing)]
     {
-        toml["gleam"] = toml_edit::value(">= 0.32.0");
+        toml["rakun"] = toml_edit::value(">= 0.32.0");
     }
 
     // Write the updated config
-    crate::fs::write(Utf8Path::new("gleam.toml"), &toml.to_string())?;
+    crate::fs::write(Utf8Path::new("rakun.toml"), &toml.to_string())?;
 
     println!(
-        "Your Gleam code has been fixed!
+        "Your Rakun code has been fixed!
 
 If you have any JavaScript code that used the BitString class
 you will need to update it to use the BitArray class instead.
@@ -39,7 +39,7 @@ you will need to update it to use the BitArray class instead.
 
 fn fix_file(path: Utf8PathBuf) -> Result<()> {
     let src = crate::fs::read(&path)?;
-    let out = gleam_core::fix::parse_fix_and_format(&src.into(), &path)?;
+    let out = rakun_core::fix::parse_fix_and_format(&src.into(), &path)?;
     crate::fs::write(&path, &out)?;
     Ok(())
 }

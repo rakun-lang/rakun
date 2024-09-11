@@ -335,10 +335,10 @@ pub enum Error {
     ///
     /// # Examples
     ///
-    /// ```gleam
+    /// ```rakun
     /// fn main(x, x) { Nil }
     /// ```
-    /// ```gleam
+    /// ```rakun
     /// fn main() {
     ///   fn(x, x) { Nil }
     /// }
@@ -370,7 +370,7 @@ pub enum Error {
         kind: MissingAnnotation,
     },
 
-    /// A function has been given without either a Gleam implementation or an
+    /// A function has been given without either a Rakun implementation or an
     /// external one.
     NoImplementation {
         location: SrcSpan,
@@ -416,7 +416,7 @@ pub enum Error {
     ///
     /// For example, here `unused` is not used
     ///
-    /// ```gleam
+    /// ```rakun
     /// pub type Wibble(unused) =
     ///   Int
     /// ```
@@ -427,12 +427,12 @@ pub enum Error {
 
     /// A definition has two type parameters with the same name.
     ///
-    /// ```gleam
+    /// ```rakun
     /// pub type Wibble(a, a) =
     ///   Int
     /// ```
-    /// ```gleam
-    /// pub type Wibble(a, a) {
+    /// ```rakun
+    /// pub record Wibble<a, a> {
     ///   Wibble
     /// }
     /// ```
@@ -447,7 +447,7 @@ pub enum Error {
     ///
     /// For example, if compiling to Erlang:
     ///
-    /// ```gleam
+    /// ```rakun
     /// @external(javascript, "one", "two")
     /// pub fn wobble() -> Int
     /// ```
@@ -462,7 +462,7 @@ pub enum Error {
     ///
     /// For example:
     ///
-    /// ```gleam
+    /// ```rakun
     /// use <- "wibble"
     /// todo
     /// ```
@@ -486,7 +486,7 @@ pub enum Error {
     ///
     /// For example:
     ///
-    /// ```gleam
+    /// ```rakun
     /// use _, _ <- result.try(res)
     /// todo
     /// ```
@@ -503,7 +503,7 @@ pub enum Error {
     ///
     /// For example:
     ///
-    /// ```gleam
+    /// ```rakun
     /// use <- io.println
     /// ```
     ///
@@ -512,12 +512,12 @@ pub enum Error {
         actual_type: Option<Type>,
     },
 
-    /// When the name assigned to a variable or function doesn't follow the gleam
+    /// When the name assigned to a variable or function doesn't follow the rakun
     /// naming conventions.
     ///
     /// For example:
     ///
-    /// ```gleam
+    /// ```rakun
     /// let myBadName = 42
     /// ```
     BadName {
@@ -687,14 +687,14 @@ pub enum Warning {
     /// This happens when someone tries to write a case expression where one of
     /// the subjects is a literal tuple, list or bit array for example:
     ///
-    /// ```gleam
+    /// ```rakun
     /// case #(wibble, wobble) { ... }
     /// ```
     ///
     /// Matching on a literal collection of elements is redundant since we can
     /// always pass the single items it's made of separated by a comma:
     ///
-    /// ```gleam
+    /// ```rakun
     /// case wibble, wobble { ... }
     /// ```
     ///
@@ -706,7 +706,7 @@ pub enum Warning {
     /// This happens if someone tries to match on some kind of literal value
     /// like an Int, a String, an empty List etc.
     ///
-    /// ```gleam
+    /// ```rakun
     /// case #() { ... }
     /// ```
     ///
@@ -721,25 +721,11 @@ pub enum Warning {
         location: SrcSpan,
     },
 
-    /// This happens when someone defines an external type (with no
-    /// constructors) and marks it as opqaue:
-    ///
-    /// ```gleam
-    /// opaque type External
-    /// ```
-    ///
-    /// Since an external type already has no constructors, marking it as
-    /// opaque is redundant.
-    ///
-    OpaqueExternalType {
-        location: SrcSpan,
-    },
-
     /// This happens when an internal type is accidentally exposed in the public
     /// API. Since internal types are excluded from documentation, completions
     /// and the package interface, this would lead to poor developer experience.
     ///
-    /// ```gleam
+    /// ```rakun
     /// @internal type Wibble
     ///
     /// pub fn wibble(thing: Wibble) { todo }
@@ -759,7 +745,7 @@ pub enum Warning {
     /// When a `todo` or `panic` is used as a function instead of providing the
     /// error message with the `as` syntax.
     ///
-    /// ```gleam
+    /// ```rakun
     /// todo("this won't appear in the error message")
     /// ```
     ///
@@ -778,7 +764,7 @@ pub enum Warning {
     /// When a function capture is used in a pipe to pipe into the first
     /// argument of a function:
     ///
-    /// ```gleam
+    /// ```rakun
     /// wibble |> wobble(_, 1)
     ///                  ^ Redundant and can be removed
     /// ```
@@ -981,7 +967,6 @@ impl Warning {
             | Warning::UnreachableCaseClause { location, .. }
             | Warning::CaseMatchOnLiteralCollection { location, .. }
             | Warning::CaseMatchOnLiteralValue { location, .. }
-            | Warning::OpaqueExternalType { location, .. }
             | Warning::InternalTypeLeak { location, .. }
             | Warning::RedundantAssertAssignment { location, .. }
             | Warning::TodoOrPanicUsedAsFunction { location, .. }

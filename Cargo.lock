@@ -792,125 +792,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "40ecd4077b5ae9fd2e9e169b102c6c330d0605168eb0e8bf79952b256dbefffd"
 
 [[package]]
-name = "gleam"
-version = "1.4.1"
-dependencies = [
- "async-trait",
- "base16",
- "bytes",
- "camino",
- "clap",
- "ctrlc",
- "debug-ignore",
- "ecow",
- "flate2",
- "fs_extra",
- "fslock",
- "futures",
- "gleam-core",
- "hexpm",
- "hostname",
- "http",
- "ignore",
- "im",
- "itertools",
- "lsp-server",
- "lsp-types",
- "opener",
- "pretty_assertions",
- "pubgrub",
- "regex",
- "reqwest",
- "rpassword",
- "same-file",
- "serde",
- "serde_json",
- "sha2",
- "static_vcruntime",
- "strum",
- "tar",
- "tempfile",
- "termcolor",
- "tokio",
- "toml",
- "toml_edit",
- "tracing",
- "tracing-subscriber",
- "walkdir",
-]
-
-[[package]]
-name = "gleam-core"
-version = "1.4.1"
-dependencies = [
- "askama",
- "async-trait",
- "base16",
- "bincode",
- "bytes",
- "camino",
- "capnp",
- "capnpc",
- "codespan-reporting",
- "debug-ignore",
- "dirs-next",
- "ecow",
- "flate2",
- "futures",
- "globset",
- "heck",
- "hexpm",
- "http",
- "id-arena",
- "im",
- "insta",
- "itertools",
- "lsp-server",
- "lsp-types",
- "pathdiff",
- "petgraph",
- "pretty_assertions",
- "pubgrub",
- "pulldown-cmark",
- "rand",
- "regex",
- "serde",
- "serde_derive",
- "serde_json",
- "spdx",
- "strsim",
- "strum",
- "tar",
- "termcolor",
- "textwrap",
- "thiserror",
- "toml",
- "tracing",
- "vec1",
- "xxhash-rust",
-]
-
-[[package]]
-name = "gleam-wasm"
-version = "1.4.1"
-dependencies = [
- "camino",
- "console_error_panic_hook",
- "getrandom",
- "gleam-core",
- "hexpm",
- "im",
- "itertools",
- "serde",
- "serde-wasm-bindgen",
- "termcolor",
- "tracing",
- "tracing-wasm",
- "wasm-bindgen",
- "wasm-bindgen-test",
-]
-
-[[package]]
 name = "globset"
 version = "0.4.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1707,6 +1588,125 @@ dependencies = [
 ]
 
 [[package]]
+name = "rakun"
+version = "1.4.1"
+dependencies = [
+ "async-trait",
+ "base16",
+ "bytes",
+ "camino",
+ "clap",
+ "ctrlc",
+ "debug-ignore",
+ "ecow",
+ "flate2",
+ "fs_extra",
+ "fslock",
+ "futures",
+ "hexpm",
+ "hostname",
+ "http",
+ "ignore",
+ "im",
+ "itertools",
+ "lsp-server",
+ "lsp-types",
+ "opener",
+ "pretty_assertions",
+ "pubgrub",
+ "rakun-core",
+ "regex",
+ "reqwest",
+ "rpassword",
+ "same-file",
+ "serde",
+ "serde_json",
+ "sha2",
+ "static_vcruntime",
+ "strum",
+ "tar",
+ "tempfile",
+ "termcolor",
+ "tokio",
+ "toml",
+ "toml_edit",
+ "tracing",
+ "tracing-subscriber",
+ "walkdir",
+]
+
+[[package]]
+name = "rakun-core"
+version = "1.4.1"
+dependencies = [
+ "askama",
+ "async-trait",
+ "base16",
+ "bincode",
+ "bytes",
+ "camino",
+ "capnp",
+ "capnpc",
+ "codespan-reporting",
+ "debug-ignore",
+ "dirs-next",
+ "ecow",
+ "flate2",
+ "futures",
+ "globset",
+ "heck",
+ "hexpm",
+ "http",
+ "id-arena",
+ "im",
+ "insta",
+ "itertools",
+ "lsp-server",
+ "lsp-types",
+ "pathdiff",
+ "petgraph",
+ "pretty_assertions",
+ "pubgrub",
+ "pulldown-cmark",
+ "rand",
+ "regex",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "spdx",
+ "strsim",
+ "strum",
+ "tar",
+ "termcolor",
+ "textwrap",
+ "thiserror",
+ "toml",
+ "tracing",
+ "vec1",
+ "xxhash-rust",
+]
+
+[[package]]
+name = "rakun-wasm"
+version = "1.4.1"
+dependencies = [
+ "camino",
+ "console_error_panic_hook",
+ "getrandom",
+ "hexpm",
+ "im",
+ "itertools",
+ "rakun-core",
+ "serde",
+ "serde-wasm-bindgen",
+ "termcolor",
+ "tracing",
+ "tracing-wasm",
+ "wasm-bindgen",
+ "wasm-bindgen-test",
+]
+
+[[package]]
 name = "rand"
 version = "0.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2272,10 +2272,10 @@ name = "test-package-compiler"
 version = "1.4.1"
 dependencies = [
  "camino",
- "gleam-core",
  "im",
  "insta",
  "itertools",
+ "rakun-core",
  "regex",
  "toml",
  "walkdir",

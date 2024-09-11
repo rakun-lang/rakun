@@ -5,7 +5,7 @@ expression: "./cases/overwriting_erlang_module"
 ---
 error: Erlang module name collision
 
-The module `src/code.gleam` compiles to an Erlang module named `code`.
+The module `src/code.rakun` compiles to an Erlang module named `code`.
 
 By default Erlang includes a module with the same name so if we were to
 compile and load your module it would overwrite the Erlang one, potentially

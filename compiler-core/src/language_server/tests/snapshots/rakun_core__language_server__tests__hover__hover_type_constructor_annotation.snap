@@ -1,0 +1,16 @@
+---
+source: compiler-core/src/language_server/tests/hover.rs
+expression: "\nrecord Wibble {\n    Wibble(arg: String)\n}\n"
+---
+record Wibble {
+    Wibble(arg: String)
+                ▔▔▔▔↑▔ 
+}
+
+
+----- Hover content -----
+Scalar(
+    String(
+        "```rakun\nString\n```\n",
+    ),
+)

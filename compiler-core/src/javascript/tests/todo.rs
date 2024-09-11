@@ -38,14 +38,14 @@ fn with_message_expr() {
     assert_js!(
         r#"
 fn go() {
-  let x = "I should " <> "do this"
+  let x = "I should " ++ "do this"
   todo as x
 }
 "#,
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1238
+// https://github.com/rakun-lang/rakun/issues/1238
 #[test]
 fn as_expression() {
     assert_js!(

@@ -11,7 +11,7 @@ build: ## Build the compiler
 	cargo build --release
 
 .PHONY: install
-install: ## Build the Gleam compiler and place it on PATH
+install: ## Build the Rakun compiler and place it on PATH
 	cd compiler-cli && cargo install --path . --force --locked
 
 .PHONY: test
@@ -44,10 +44,10 @@ javascript-prelude-test-watch: ## Run the JavaScript prelude core tests when fil
 
 .PHONY: test-watch
 test-watch: ## Run compiler tests when files change
-	watchexec -e rs,toml,gleam,html,capnp "cargo test --quiet"
+	watchexec -e rs,toml,rakun,html,capnp "cargo test --quiet"
 
 .PHONY: export-hex-tarball-test
-export-hex-tarball-test: ## Run `gleam export hex-tarball` and verify it is created
+export-hex-tarball-test: ## Run `rakun export hex-tarball` and verify it is created
 	cd test/hextarball && make test
 
 # Debug print vars with `make print-VAR_NAME`
