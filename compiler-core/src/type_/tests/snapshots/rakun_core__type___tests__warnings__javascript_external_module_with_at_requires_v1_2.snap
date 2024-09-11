@@ -1,0 +1,17 @@
+---
+source: compiler-core/src/type_/tests/warnings.rs
+expression: "\n@external(javascript, \"module@module\", \"func\")\npub fn main() { Nil }\n"
+---
+warning: Incompatible rakun version range
+  ┌─ /src/warning/wrn.rakun:2:1
+  │
+2 │ @external(javascript, "module@module", "func")
+  │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ This requires a Rakun version >= 1.2.0
+
+The ability to have `@` in a Javascript module's name was introduced in
+version v1.2.0. But the Rakun version range specified in your `rakun.toml`
+would allow this code to run on an earlier version like v1.0.0, resulting
+in compilation errors!
+Hint: Remove the version constraint from your `rakun.toml` or update it to be:
+
+    rakun = ">= 1.2.0"

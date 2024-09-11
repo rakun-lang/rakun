@@ -57,7 +57,7 @@ fn imports() {
 "
     );
     assert_format!(
-        "import gleam/result.{
+        "import rakun/result.{
   Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, Abcde,
   End,
 }
@@ -86,25 +86,25 @@ pub type Four
 #[test]
 fn type_alias() {
     assert_format!(
-        "type Option(a) =
-  Result(a, Nil)
+        "type Option<a> =
+  Result<a, Nil>
 "
     );
 
     assert_format!(
-        "pub type Option(a) =
-  Result(a, Nil)
+        "pub type Option<a> =
+  Result<a, Nil>
 "
     );
 
     assert_format!(
-        "pub type Pair(a, b) =
+        "pub type Pair<a, b> =
   #(a, b)
 "
     );
 
     assert_format!(
-        "pub type Sixteen(element) =
+        "pub type Sixteen<element> =
   #(
     element,
     element,
@@ -127,7 +127,7 @@ fn type_alias() {
     );
 
     assert_format!(
-        "pub type Sixteen(element) =
+        "pub type Sixteen<element> =
   fn(
     element,
     element,
@@ -168,14 +168,14 @@ fn type_alias() {
     );
 
     //    assert_format!(
-    //        "pub type Curried(element) =
+    //        "pub type Curried<element>=
     //  fn() ->
     //  elementttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt
     //"
     //    );
 
     //    assert_format!(
-    //        "pub type Sixteen(element) =
+    //        "pub type Sixteen<element>=
     //  fn(element) ->
     //  #(
     //    element,
@@ -199,13 +199,13 @@ fn type_alias() {
     //    );
 
     assert_format!(
-        "pub type Curried(element) =
+        "pub type Curried<element> =
   fn(element) -> fn(element) -> element
 "
     );
 
     //    assert_format!(
-    //        "pub type Curried(element) =
+    //        "pub type Curried<element>=
     //  fn(element)
     //  -> fn(element)
     //  -> fn(element)
@@ -223,36 +223,36 @@ fn type_alias() {
 
     assert_format!(
         "type WowThisTypeHasJustTheLongestName =
-  Container(
+  Container<
     Int,
     String,
-    List(a),
+    List<a>,
     SomethingElse,
     WowThisTypeHasJustTheLongestName,
-  )
+  >
 "
     );
 
     assert_format!(
-        "type WowThisTypeHasJustTheLongestName(
+        "type WowThisTypeHasJustTheLongestName<
   some_long_type_variable,
   and_another,
   and_another_again,
-) =
-  Container(
+> =
+  Container<
     Int,
     String,
-    List(a),
+    List<a>,
     SomethingElse,
     WowThisTypeHasJustTheLongestName,
-  )
+  >
 "
     );
 
     assert_format!(
         "///
-type Many(a) =
-  List(a)
+type Many<a> =
+  List<a>
 "
     );
 }
@@ -260,18 +260,18 @@ type Many(a) =
 #[test]
 fn custom_types() {
     assert_format!(
-        "type WowThisTypeHasJustTheLongestName(
+        "record WowThisTypeHasJustTheLongestName<
   some_long_type_variable,
   and_another,
   and_another_again,
-) {
+> {
   Make
 }
 "
     );
 
     assert_format!(
-        "type Result(a, e) {
+        "record Result<a, e> {
   Ok(a)
   Error(e)
 }
@@ -279,7 +279,7 @@ fn custom_types() {
     );
 
     assert_format!(
-        "type Result(a, e) {
+        "record Result<a, e> {
   Ok(value: a)
   Error(error: e)
 }
@@ -287,7 +287,7 @@ fn custom_types() {
     );
 
     assert_format!(
-        "type SillyResult(a, e) {
+        "record SillyResult<a, e> {
   Ok(
     first_value_with_really_long_name: a,
     second_value_with_really_long_name: a,
@@ -298,12 +298,12 @@ fn custom_types() {
     );
 
     assert_format!(
-        "type SillyResult(a, e) {
+        "record SillyResult<a, e> {
   Ok(
     first_value_with_really_long_name: a,
-    second_value_with_really_long_name: List(
-      #(Int, fn(a, a, a, a, a, a, a) -> List(a)),
-    ),
+    second_value_with_really_long_name: List<
+      #(Int, fn(a, a, a, a, a, a, a) -> List<a>),
+    >,
   )
   Error(error: e)
 }
@@ -311,7 +311,7 @@ fn custom_types() {
     );
 
     assert_format!(
-        "type X {
+        "record X {
   X(
     start: fn() -> a_reall_really_long_name_goes_here,
     stop: fn() -> a_reall_really_long_name_goes_here,
@@ -321,7 +321,7 @@ fn custom_types() {
     );
 
     assert_format!(
-        "pub opaque type X {
+        "pub opaque record X {
   X
 }
 "
@@ -329,7 +329,7 @@ fn custom_types() {
 
     assert_format!(
         "///
-pub type Option(a) {
+pub record Option<a> {
   None
 }
 "
@@ -392,7 +392,7 @@ fn expr_fn() {
     assert_format!(
         r#"fn main() {
   fn() {
-    let x: Box(_) = call()
+    let x: Box<_> = call()
     x
   }
 }
@@ -402,7 +402,7 @@ fn expr_fn() {
     assert_format!(
         r#"fn main() {
   fn() {
-    let x: Box(_whatever) = call()
+    let x: Box<_whatever> = call()
     x
   }
 }
@@ -657,7 +657,7 @@ fn expr_tuple() {
         r#"fn main() {
   #(
     atom.create_from_string("module"),
-    atom.create_from_string("gleam@otp@actor"),
+    atom.create_from_string("rakun@otp@actor"),
   )
 }
 "#
@@ -769,7 +769,7 @@ fn statement_fn4() {
 
 #[test]
 fn statement_fn5() {
-    // https://github.com/gleam-lang/gleam/issues/613
+    // https://github.com/rakun-lang/rakun/issues/613
     assert_format!(
         r#"fn main() {
   Nil
@@ -796,12 +796,12 @@ fn statement_fn6() {
 #[test]
 fn statement_fn7() {
     assert_format!(
-        r#"fn main() -> Loooooooooooooooooooong(
+        r#"fn main() -> Loooooooooooooooooooong<
   Looooooooooooooong,
   Looooooooooooooooooong,
   Loooooooooooooooooooooong,
   Looooooooooooooooooooooooong,
-) {
+> {
   Nil
 }
 "#
@@ -811,9 +811,9 @@ fn statement_fn7() {
 #[test]
 fn statement_fn8() {
     assert_format!(
-        r#"fn main() -> Loooooooooooooooooooong(
+        r#"fn main() -> Loooooooooooooooooooong<
   Loooooooooooooooooooooooooooooooooooooooooong,
-) {
+> {
   Nil
 }
 "#
@@ -834,9 +834,9 @@ fn statement_fn9() {
 fn statement_fn10() {
     assert_format!(
         "fn order(
-  first: Set(member),
-  second: Set(member),
-) -> #(Set(member), Set(member), a) {
+  first: Set<member>,
+  second: Set<member>,
+) -> #(Set<member>, Set<member>, a) {
   Nil
 }
 "
@@ -848,9 +848,9 @@ fn statement_fn11() {
     assert_format!(
         "///
 pub fn try_map(
-  over list: List(a),
-  with fun: fn(a) -> Result(b, e),
-) -> Result(List(b), e) {
+  over list: List<a>,
+  with fun: fn(a) -> Result<b, e>,
+) -> Result<List<b>, e> {
   Nil
 }
 "
@@ -2354,7 +2354,7 @@ fn expr_pipe() {
 "#
     );
 
-    // https://github.com/gleam-lang/gleam/issues/618
+    // https://github.com/rakun-lang/rakun/issues/618
 
     assert_format!(
         r#"fn main() {
@@ -2378,7 +2378,7 @@ fn expr_pipe() {
 "#
     );
 
-    // https://github.com/gleam-lang/gleam/issues/658
+    // https://github.com/rakun-lang/rakun/issues/658
     assert_format!(
         r#"fn main() {
   { os.system_time(os.Millisecond) < june_12_2020 * 1_000_000 }
@@ -2508,7 +2508,7 @@ fn expr_let8() {
   let x = fn(
     state: state,
     acc: visitor_acc,
-    visitor: fn(visitor_acc, Pid(a)) -> new_visitor_acc,
+    visitor: fn(visitor_acc, Pid<a>) -> new_visitor_acc,
   ) {
     1
     2
@@ -2526,7 +2526,7 @@ fn expr_let9() {
   let x = fn(
     state: state,
     acc: visitor_acc,
-    visitor: fn(visitor_acc, Pid(a)) -> new_visitor_acc,
+    visitor: fn(visitor_acc, Pid<a>) -> new_visitor_acc,
   ) {
     2
   }
@@ -3009,7 +3009,7 @@ fn expr_case_clause_guards() {
     );
 
     assert_format!(
-        r#"type Test {
+        r#"record Test {
   Test(x: Int, y: Float)
 }
 
@@ -3196,7 +3196,7 @@ fn expr_panic_as() {
 fn expr_panic_as_value() {
     assert_format!(
         r#"fn main() {
-  let x = "panicking" <> "with a value"
+  let x = "panicking" ++ "with a value"
   panic as x
 }
 "#
@@ -3207,7 +3207,7 @@ fn expr_panic_as_value() {
 fn expr_todo_as_value() {
     assert_format!(
         r#"fn main() {
-  let x = "Need to" <> "do this"
+  let x = "Need to" ++ "do this"
   todo as x
 }
 "#
@@ -3307,7 +3307,7 @@ fn doc_comments_5_test() {
     assert_format!(
         r#"/// one
 ///two
-type Whatever {
+record Whatever {
   Whatever
 }
 "#
@@ -3332,7 +3332,7 @@ fn doc_comments_7_test() {
 
 /// one
 ///two
-type Whatever {
+record Whatever {
   Whatever
 }
 "#
@@ -3346,7 +3346,7 @@ fn comments1() {
 
 // one
 //two
-type Whatever {
+record Whatever {
   Whatever
 }
 "#
@@ -3361,7 +3361,7 @@ fn comments2() {
 // one
 //two
 /// three
-type Whatever {
+record Whatever {
   Whatever
 }
 "#
@@ -3427,7 +3427,7 @@ fn comments8() {
     assert_format!(
         r#"// one
 //two
-type Whatever {
+record Whatever {
   Whatever
 }
 "#
@@ -3453,7 +3453,7 @@ import one
 
 // one
 //two
-type Whatever {
+record Whatever {
   Whatever
 }
 "#
@@ -3627,7 +3627,7 @@ fn comment20() {
 #[test]
 fn comment21() {
     assert_format!(
-        "pub type Spec {
+        "pub record Spec {
   Spec(
     // Hello
     hello: Int,
@@ -3755,7 +3755,7 @@ fn commented_binop() {
 #[test]
 fn commented_constructors() {
     assert_format!(
-        "pub type Number {
+        "pub record Number {
   // 1
   One
   // 2
@@ -3769,7 +3769,7 @@ fn commented_constructors() {
     );
 
     assert_format!(
-        "pub type Number {
+        "pub record Number {
   /// 1
   One
   /// 2
@@ -3783,7 +3783,7 @@ fn commented_constructors() {
     );
 
     assert_format!(
-        "pub type Number {
+        "pub record Number {
   // a
   /// 1
   One
@@ -3801,7 +3801,7 @@ fn commented_constructors() {
     );
 
     assert_format!(
-        "pub type Number {
+        "pub record Number {
   /// 1
   One(value: Int)
   /// > 1
@@ -3838,7 +3838,7 @@ fn function_captures_test() {
 #[test]
 fn pattern_record_spread() {
     assert_format!(
-        "type Triple {
+        "record Triple {
   Triple(a: Int, b: Int, c: Int)
 }
 
@@ -3852,7 +3852,7 @@ fn main() {
 
     // Formats the operator spread syntax with long names
     assert_format!(
-        "type Triple {
+        "record Triple {
   Triple(a: Int, b: Int, c: Int)
 }
 
@@ -3868,7 +3868,7 @@ fn main() {
 "
     );
 
-    // https://github.com/gleam-lang/gleam/issues/776
+    // https://github.com/rakun-lang/rakun/issues/776
     assert_format!(
         "fn main() {
   let Triple(..) = triple()
@@ -3915,7 +3915,7 @@ fn empty_lines() {
     );
 
     assert_format!(
-        "pub type Number {
+        "pub record Number {
   One
 
   Two
@@ -3984,7 +3984,7 @@ pub fn main() {
 ////
 ////
 
-type X {
+record X {
   X
 }
 // Hello
@@ -4047,7 +4047,7 @@ fn binary_operator_precedence() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/868
+// https://github.com/rakun-lang/rakun/issues/868
 #[test]
 fn precedence_rhs() {
     assert_format!(
@@ -4240,7 +4240,7 @@ fn main() {
 
 // TODO: improve. This is too wide
 #[test]
-// https://github.com/gleam-lang/gleam/issues/748
+// https://github.com/rakun-lang/rakun/issues/748
 fn assignments_break_value_first_test() {
     assert_format!(
         r#"fn main() {
@@ -4390,7 +4390,7 @@ fn assert_as_expression() {
 #[test]
 fn case_in_call() {
     assert_format!(
-        "fn clause_guard_tests(_fns) -> List(Test) {
+        "fn clause_guard_tests(_fns) -> List<Test> {
   example(fn() {
     assert_equal(0, case Nil {
       _ if yes -> 0
@@ -4402,7 +4402,7 @@ fn case_in_call() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1390
+// https://github.com/rakun-lang/rakun/issues/1390
 #[test]
 fn list_spread_pattern() {
     assert_format!(
@@ -4416,7 +4416,7 @@ fn list_spread_pattern() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1431
+// https://github.com/rakun-lang/rakun/issues/1431
 #[test]
 fn first_argument_capture_special_case_list() {
     assert_format!(
@@ -4429,7 +4429,7 @@ fn first_argument_capture_special_case_list() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1431
+// https://github.com/rakun-lang/rakun/issues/1431
 #[test]
 fn first_argument_capture_special_case_fn() {
     assert_format!(
@@ -4674,7 +4674,7 @@ fn single_empty_line_between_comments4() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1640
+// https://github.com/rakun-lang/rakun/issues/1640
 #[test]
 fn no_newline_before_comments() {
     assert_format!(
@@ -4684,7 +4684,7 @@ fn no_newline_before_comments() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1647
+// https://github.com/rakun-lang/rakun/issues/1647
 #[test]
 fn list_at_end_of_long_expr_line() {
     assert_format!(
@@ -4699,7 +4699,7 @@ fn list_at_end_of_long_expr_line() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1647
+// https://github.com/rakun-lang/rakun/issues/1647
 #[test]
 fn list_at_end_of_long_pattern_line() {
     assert_format!(
@@ -4711,7 +4711,7 @@ fn list_at_end_of_long_pattern_line() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1647
+// https://github.com/rakun-lang/rakun/issues/1647
 #[test]
 fn list_at_end_of_long_constant_line() {
     assert_format!(
@@ -4720,7 +4720,7 @@ fn list_at_end_of_long_constant_line() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1649
+// https://github.com/rakun-lang/rakun/issues/1649
 #[test]
 fn dont_remove_braces_when_accessing_tuple() {
     assert_format!(
@@ -4731,7 +4731,7 @@ fn dont_remove_braces_when_accessing_tuple() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1681
+// https://github.com/rakun-lang/rakun/issues/1681
 #[test]
 fn wrap_case_subjects() {
     assert_format!(
@@ -4893,7 +4893,7 @@ world",
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1724
+// https://github.com/rakun-lang/rakun/issues/1724
 #[test]
 fn case_subject_block() {
     assert_format!(
@@ -4936,11 +4936,11 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1757
+// https://github.com/rakun-lang/rakun/issues/1757
 #[test]
 fn multiple_line_custom_type_constructor_field_doc_comments() {
     assert_format!(
-        r#"pub type Thingy {
+        r#"pub record Thingy {
   Thingy(
     /// One?
     /// One!
@@ -4954,7 +4954,7 @@ fn multiple_line_custom_type_constructor_field_doc_comments() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1872
+// https://github.com/rakun-lang/rakun/issues/1872
 #[test]
 fn multiple_line_spread_list_comments() {
     assert_format!(
@@ -4972,7 +4972,7 @@ fn multiple_line_spread_list_comments() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1872
+// https://github.com/rakun-lang/rakun/issues/1872
 #[test]
 fn list_spread_comment_pattern() {
     assert_format!(
@@ -4988,7 +4988,7 @@ fn list_spread_comment_pattern() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1872
+// https://github.com/rakun-lang/rakun/issues/1872
 #[test]
 fn list_spread_discard_comment_pattern() {
     assert_format!(
@@ -5004,14 +5004,14 @@ fn list_spread_discard_comment_pattern() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1786
+// https://github.com/rakun-lang/rakun/issues/1786
 #[test]
 fn multiple_line_documentation_comment_statement_grouping() {
     assert_format!(
         r#"/// This is the first line of the documentation comment.
 /// This is the second line of the documentation comment.
 /// This is the third line of the documentation comment.
-pub type Map(key, value)
+pub type Map<key, value>
 "#
     );
 }
@@ -5250,7 +5250,7 @@ fn wrap_long_line_with_bool_negation() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1977
+// https://github.com/rakun-lang/rakun/issues/1977
 #[test]
 fn preserve_single_expression_blocks() {
     assert_format!(
@@ -5318,7 +5318,7 @@ fn calling_pipeline_1_list() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2119
+// https://github.com/rakun-lang/rakun/issues/2119
 #[test]
 fn empty_line_after_fn_with_return_annotation() {
     assert_format!(
@@ -5331,17 +5331,17 @@ fn empty_line_after_fn_with_return_annotation() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2174
+// https://github.com/rakun-lang/rakun/issues/2174
 #[test]
 fn empty_line_after_crash() {
     assert_format_rewrite!(
-        r#"pub type One {
+        r#"pub record One {
   One // Comment
 
 }
 
 "#,
-        r#"pub type One {
+        r#"pub record One {
   One
   // Comment
 }
@@ -5349,11 +5349,11 @@ fn empty_line_after_crash() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2196
+// https://github.com/rakun-lang/rakun/issues/2196
 #[test]
 fn comment_at_end_of_type() {
     assert_format!(
-        r#"pub type X {
+        r#"pub record X {
   X
   // Afterwards
 }
@@ -5365,7 +5365,7 @@ fn comment_at_end_of_type() {
 fn deprecated_custom_type() {
     assert_format!(
         r#"@deprecated("Deprecated type")
-pub type One {
+pub record One {
   One
 }
 "#
@@ -5382,13 +5382,13 @@ pub type Tiger =
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2423
+// https://github.com/rakun-lang/rakun/issues/2423
 #[test]
 fn prefix_as() {
     assert_format!(
         r#"pub fn main(x) {
   case x {
-    "0" as digit <> rest | "1" as digit <> rest -> rest
+    "0" as digit ++ rest | "1" as digit ++ rest -> rest
   }
 }
 "#
@@ -5411,7 +5411,7 @@ fn case_splits_function_on_newline() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2442
+// https://github.com/rakun-lang/rakun/issues/2442
 #[test]
 fn single_argument_list() {
     assert_format!(
@@ -5426,7 +5426,7 @@ fn single_argument_list() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2442
+// https://github.com/rakun-lang/rakun/issues/2442
 #[test]
 fn single_argument_function() {
     assert_format!(
@@ -5441,7 +5441,7 @@ fn single_argument_function() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2442
+// https://github.com/rakun-lang/rakun/issues/2442
 #[test]
 fn single_argument_tuple() {
     assert_format!(
@@ -5456,7 +5456,7 @@ fn single_argument_tuple() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2442
+// https://github.com/rakun-lang/rakun/issues/2442
 #[test]
 fn single_argument_call() {
     assert_format!(
@@ -5471,7 +5471,7 @@ fn single_argument_call() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2442
+// https://github.com/rakun-lang/rakun/issues/2442
 #[test]
 fn single_argument_call_nested() {
     assert_format!(
@@ -5488,7 +5488,7 @@ fn single_argument_call_nested() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2442
+// https://github.com/rakun-lang/rakun/issues/2442
 #[test]
 fn single_argument_call_nested_nested() {
     assert_format!(
@@ -5507,7 +5507,7 @@ fn single_argument_call_nested_nested() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2512
+// https://github.com/rakun-lang/rakun/issues/2512
 #[test]
 fn list_with_pipe_format() {
     assert_format!(
@@ -5516,7 +5516,7 @@ fn list_with_pipe_format() {
     "Success!"
       |> ansi(apply: [1, 31]),
     "",
-    "Wrote `" <> bin <> "`, `" <> pwsh_bin <> "`",
+    "Wrote `" ++ bin ++ "`, `" ++ pwsh_bin ++ "`",
   ]
 }
 "#
@@ -5550,7 +5550,7 @@ fn function_call_close_to_line_limit() {
 fn multiline_string_are_not_broken_with_string_concatenation_if_they_fit() {
     assert_format!(
         r#"pub fn main() {
-  "pub fn wibble(" <> arg <> ") ->" <> type_ <> "{
+  "pub fn wibble(" ++ arg ++ ") ->" ++ type_ ++ "{
     body
 }"
 }
@@ -5566,7 +5566,7 @@ fn nesting_goes_back_to_normal_after_multiline_string() {
     "
 1
 2
-" <> long_name_function_call(
+" ++ long_name_function_call(
       1_111_111_111_111_111,
       222_222_222_222,
       3_333_333_333_333_333,
@@ -5681,7 +5681,7 @@ fn pipeline_inside_tuple_is_not_nested_if_only_item() {
     );
 }
 
-// github.com/gleam-lang/gleam/issues/2608
+// github.com/rakun-lang/rakun/issues/2608
 #[test]
 fn comments_are_not_moved_out_of_list_of_literals() {
     assert_format!(
@@ -5695,7 +5695,7 @@ fn comments_are_not_moved_out_of_list_of_literals() {
     );
 }
 
-// github.com/gleam-lang/gleam/issues/2608
+// github.com/rakun-lang/rakun/issues/2608
 #[test]
 fn comments_are_not_moved_out_of_list() {
     assert_format!(
@@ -5710,7 +5710,7 @@ fn comments_are_not_moved_out_of_list() {
     );
 }
 
-// github.com/gleam-lang/gleam/issues/2608
+// github.com/rakun-lang/rakun/issues/2608
 #[test]
 fn comments_are_not_moved_out_of_case_expressions() {
     assert_format!(
@@ -5724,7 +5724,7 @@ fn comments_are_not_moved_out_of_case_expressions() {
     );
 }
 
-// github.com/gleam-lang/gleam/issues/2608
+// github.com/rakun-lang/rakun/issues/2608
 #[test]
 fn comments_are_not_moved_out_of_tuples() {
     assert_format!(
@@ -5739,7 +5739,7 @@ fn comments_are_not_moved_out_of_tuples() {
     );
 }
 
-// github.com/gleam-lang/gleam/issues/2608
+// github.com/rakun-lang/rakun/issues/2608
 #[test]
 fn comments_are_not_moved_out_of_function_calls() {
     assert_format!(
@@ -5754,7 +5754,7 @@ fn comments_are_not_moved_out_of_function_calls() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2607
+// https://github.com/rakun-lang/rakun/issues/2607
 #[test]
 fn function_arguments_after_comment_are_not_indented() {
     assert_format!(
@@ -5769,7 +5769,7 @@ fn function_arguments_after_comment_are_not_indented() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2607
+// https://github.com/rakun-lang/rakun/issues/2607
 #[test]
 fn tuple_items_after_comment_are_not_indented() {
     assert_format!(
@@ -5784,7 +5784,7 @@ fn tuple_items_after_comment_are_not_indented() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2607
+// https://github.com/rakun-lang/rakun/issues/2607
 #[test]
 fn list_items_after_comment_are_not_indented() {
     assert_format!(
@@ -5799,7 +5799,7 @@ fn list_items_after_comment_are_not_indented() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2990
+// https://github.com/rakun-lang/rakun/issues/2990
 #[test]
 fn comments_are_not_moved_out_of_empty_list() {
     assert_format!(
@@ -5831,7 +5831,7 @@ fn empty_lists_with_comment_inside_are_indented_properly() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2890
+// https://github.com/rakun-lang/rakun/issues/2890
 #[test]
 fn piped_blocks_are_not_needlessly_indented() {
     assert_format!(
@@ -5849,7 +5849,7 @@ fn piped_blocks_are_not_needlessly_indented() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2924
+// https://github.com/rakun-lang/rakun/issues/2924
 #[test]
 fn record_update_fields_are_not_needlessly_broken() {
     assert_format!(
@@ -5864,7 +5864,7 @@ fn record_update_fields_are_not_needlessly_broken() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2890
+// https://github.com/rakun-lang/rakun/issues/2890
 #[test]
 fn piped_lists_are_not_needlessly_indented() {
     assert_format!(
@@ -5906,9 +5906,9 @@ fn comments_inside_nested_binop_chain() {
   fun(
     thing
       // A comment
-      <> wibble
+      ++ wibble
       // Another comment
-      <> wobble,
+      ++ wobble,
     thing,
   )
 }
@@ -5922,9 +5922,9 @@ fn comments_inside_binop_chain() {
         r#"pub fn main() {
   thing
   // A comment
-  <> wibble
+  ++ wibble
   // Another comment
-  <> wobble
+  ++ wobble
 }
 "#
     );
@@ -6066,7 +6066,7 @@ fn comments_in_anonymous_function_args() {
 #[test]
 fn comments_after_last_argument_of_record_constructor() {
     assert_format!(
-        r#"type Record {
+        r#"record Record {
   Record(
     field: String,
     // comment_line_1: String,
@@ -6080,7 +6080,7 @@ fn comments_after_last_argument_of_record_constructor() {
 #[test]
 fn only_comments_in_record_constructor() {
     assert_format!(
-        r#"type Record {
+        r#"record Record {
   Record(
     // comment_line_1: String,
     // comment_line_2: String,
@@ -6092,7 +6092,7 @@ fn only_comments_in_record_constructor() {
 #[test]
 fn comment_after_spread_operator() {
     assert_format!(
-        "type Triple {
+        "record Triple {
   Triple(a: Int, b: Int, c: Int)
 }
 
@@ -6125,7 +6125,7 @@ fn multiline_comment_in_case_block() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3190
+// https://github.com/rakun-lang/rakun/issues/3190
 #[test]
 fn trailing_comments_inside_non_empty_bit_arrays_are_not_moved() {
     assert_format!(
@@ -6139,7 +6139,7 @@ fn trailing_comments_inside_non_empty_bit_arrays_are_not_moved() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3210
+// https://github.com/rakun-lang/rakun/issues/3210
 #[test]
 fn newlines_are_not_stripped_if_two_consecutive_anonymous_function_are_passed_as_arguments() {
     assert_format!(
@@ -6160,15 +6160,15 @@ fn newlines_are_not_stripped_if_two_consecutive_anonymous_function_are_passed_as
 #[test]
 fn const_long_concat_string() {
     assert_format_rewrite!(
-        r#"const long_string = "some" <> " very" <> " long" <> " string" <> " indeed" <> " please" <> " break"
+        r#"const long_string = "some" ++ " very" ++ " long" ++ " string" ++ " indeed" ++ " please" ++ " break"
 "#,
         r#"const long_string = "some"
-  <> " very"
-  <> " long"
-  <> " string"
-  <> " indeed"
-  <> " please"
-  <> " break"
+  ++ " very"
+  ++ " long"
+  ++ " string"
+  ++ " indeed"
+  ++ " please"
+  ++ " break"
 "#
     );
 }
@@ -6176,7 +6176,7 @@ fn const_long_concat_string() {
 #[test]
 fn const_concat_short_unbroken() {
     assert_format!(
-        r#"const x = "some" <> "short" <> "string"
+        r#"const x = "some" ++ "short" ++ "string"
 "#
     );
 }
@@ -6184,21 +6184,21 @@ fn const_concat_short_unbroken() {
 #[test]
 fn const_concat_long_including_list() {
     assert_format_rewrite!(
-        r#"const x = "some long string 1" <> "some long string 2" <> ["here is a list", "with several elements", "in order to make it be too long to fit on one line", "so we can see how it breaks", "onto multiple lines"] <> "and a last string"
+        r#"const x = "some long string 1" ++ "some long string 2" ++ ["here is a list", "with several elements", "in order to make it be too long to fit on one line", "so we can see how it breaks", "onto multiple lines"] ++ "and a last string"
 "#,
         r#"const x = "some long string 1"
-  <> "some long string 2"
-  <> [
+  ++ "some long string 2"
+  ++ [
     "here is a list", "with several elements",
     "in order to make it be too long to fit on one line",
     "so we can see how it breaks", "onto multiple lines",
   ]
-  <> "and a last string"
+  ++ "and a last string"
 "#,
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3397
+// https://github.com/rakun-lang/rakun/issues/3397
 #[test]
 fn comment_after_case_branch() {
     assert_format!(
@@ -6213,7 +6213,7 @@ fn comment_after_case_branch() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3397
+// https://github.com/rakun-lang/rakun/issues/3397
 #[test]
 fn comment_after_case_branch_case() {
     assert_format!(
@@ -6307,7 +6307,7 @@ fn function_without_label_shorthand() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2015
+// https://github.com/rakun-lang/rakun/issues/2015
 #[test]
 fn doc_comments_are_split_by_regular_comments() {
     assert_format!(
@@ -6323,7 +6323,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2015
+// https://github.com/rakun-lang/rakun/issues/2015
 #[test]
 fn it_is_easy_to_tell_two_different_doc_comments_apart_when_a_regular_comment_is_separating_those()
 {
@@ -6346,7 +6346,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2015
+// https://github.com/rakun-lang/rakun/issues/2015
 #[test]
 fn multiple_commented_definitions_in_a_row_2() {
     assert_format!(
@@ -6364,7 +6364,7 @@ pub fn wibble() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2015
+// https://github.com/rakun-lang/rakun/issues/2015
 #[test]
 fn only_stray_comments_and_definition_with_no_doc_comments() {
     assert_format!(
@@ -6381,7 +6381,7 @@ pub fn wibble() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2015
+// https://github.com/rakun-lang/rakun/issues/2015
 #[test]
 fn only_stray_comments_and_definition_with_no_doc_comments_2() {
     assert_format_rewrite!(
@@ -6417,8 +6417,8 @@ fn internal_attribute_does_not_change_formatting_of_a_function() {
     assert_format!(
         r#"@internal
 pub fn init(
-  start: #(SupervisorFlags, List(ChildSpecification)),
-) -> Result(#(Dynamic, Dynamic), never) {
+  start: #(SupervisorFlags, List<ChildSpecification>),
+) -> Result<#(Dynamic, Dynamic), never> {
   todo
 }
 "#

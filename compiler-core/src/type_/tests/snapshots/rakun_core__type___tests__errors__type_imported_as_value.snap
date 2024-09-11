@@ -1,0 +1,11 @@
+---
+source: compiler-core/src/type_/tests/errors.rs
+expression: "import rakun/wibble.{Wibble}"
+---
+error: Unknown module value
+  ┌─ /src/one/two.rakun:1:22
+  │
+1 │ import rakun/wibble.{Wibble}
+  │                      ^^^^^^ Did you mean `type Wibble`?
+
+`Wibble` is only a type, it cannot be imported as a value.

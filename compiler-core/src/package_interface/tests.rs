@@ -152,7 +152,7 @@ fn package_from_module(module: Module) -> Package {
                 ],
                 build: Some("build".into()),
             },
-            gleam_version: Some(
+            rakun_version: Some(
                 hexpm::version::Range::new("1.0.0".into())
                     .to_pubgrub()
                     .unwrap(),
@@ -213,12 +213,12 @@ pub fn internal_definitions_are_not_included() {
 
 #[test]
 pub fn opaque_constructors_are_not_exposed() {
-    assert_package_interface!("pub opaque type Wibble { Wob }")
+    assert_package_interface!("pub opaque record Wibble { Wob }")
 }
 
 #[test]
 pub fn type_aliases() {
-    assert_package_interface!("pub type Wibble(a) = List(a)")
+    assert_package_interface!("pub type Wibble<a> = List<a>")
 }
 
 #[test]
@@ -226,7 +226,7 @@ pub fn type_definition() {
     assert_package_interface!(
         "
 /// Wibble's documentation
-pub type Wibble(a, b) {
+pub record Wibble<a, b> {
   Wibble
   Wobble
 }
@@ -250,7 +250,7 @@ pub const bool = True
 pub fn generic_function() {
     assert_package_interface!(
         r#"
-pub type Wob(a) { Wob }
+pub record Wob<a> { Wob }
 @deprecated("deprecation message")
 pub fn main() { Wob }
 "#
@@ -260,10 +260,10 @@ pub fn main() { Wob }
 #[test]
 pub fn imported_type() {
     assert_package_interface!(
-        ("other_package", "other_module", "pub type Element(a)"),
+        ("other_package", "other_module", "pub type Element<a>"),
         r#"
 import other_module.{type Element}
-pub fn main() -> Element(Int) {}
+pub fn main() -> Element<Int> {}
 "#
     );
 }
@@ -271,10 +271,10 @@ pub fn main() -> Element(Int) {}
 #[test]
 pub fn imported_aliased_type_keeps_original_name() {
     assert_package_interface!(
-        ("other_package", "other_module", "pub type Element(a)"),
+        ("other_package", "other_module", "pub type Element<a>"),
         r#"
 import other_module.{type Element as Alias} as module_alias
-pub fn main() -> Alias(module_alias.Element(a)) {}
+pub fn main() -> Alias<module_alias.Element<a>> {}
 "#
     );
 }
@@ -283,8 +283,8 @@ pub fn main() -> Alias(module_alias.Element(a)) {}
 pub fn multiple_type_variables() {
     assert_package_interface!(
         r#"
-pub type Box(a, b)
-pub fn some_type_variables(a: a, b: b, c: Box(c, d)) -> Box(a, d) {}
+pub type Box<a, b>
+pub fn some_type_variables(a: a, b: b, c: Box<c, d>) -> Box<a, d> {}
 "#
     );
 }
@@ -293,7 +293,7 @@ pub fn some_type_variables(a: a, b: b, c: Box(c, d)) -> Box(a, d) {}
 pub fn type_constructors() {
     assert_package_interface!(
         r#"
-pub type Box(a, b) {
+pub record Box<a, b> {
   Box(b, Int)
   OtherBox(message: String, a: a)
 }

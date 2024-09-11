@@ -39,7 +39,7 @@ fn parse_and_order(
             external_erlang: None,
             external_javascript: None,
             implementations: Implementations {
-                gleam: true,
+                rakun: true,
                 uses_erlang_externals: true,
                 uses_javascript_externals: false,
                 can_run_on_erlang: true,
@@ -60,7 +60,7 @@ fn parse_and_order(
                 annotation: None,
                 value: Box::from(const_value),
                 implementations: Implementations {
-                    gleam: true,
+                    rakun: true,
                     uses_erlang_externals: true,
                     uses_javascript_externals: false,
                     can_run_on_erlang: true,
@@ -409,7 +409,7 @@ fn pattern_underscore() {
 #[test]
 fn pattern_concat() {
     let functions = [
-        ("a", [].as_slice(), r#"{ let "a" <> c = b c }"#),
+        ("a", [].as_slice(), r#"{ let "a" ++ c = b c }"#),
         ("b", [].as_slice(), r#"123"#),
         ("c", [].as_slice(), "1"),
     ];
@@ -675,7 +675,7 @@ fn constants_and_functions() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2275
+// https://github.com/rakun-lang/rakun/issues/2275
 #[test]
 fn bug_2275() {
     let functions = [

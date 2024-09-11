@@ -97,7 +97,7 @@ fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2654
+// https://github.com/rakun-lang/rakun/issues/2654
 #[test]
 fn hover_local_function_in_pipe() {
     assert_hover!(
@@ -121,7 +121,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2654
+// https://github.com/rakun-lang/rakun/issues/2654
 #[test]
 fn hover_local_function_in_pipe_1() {
     assert_hover!(
@@ -145,7 +145,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2654
+// https://github.com/rakun-lang/rakun/issues/2654
 #[test]
 fn hover_local_function_in_pipe_2() {
     assert_hover!(
@@ -169,7 +169,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2654
+// https://github.com/rakun-lang/rakun/issues/2654
 #[test]
 fn hover_local_function_in_pipe_3() {
     assert_hover!(
@@ -382,7 +382,7 @@ fn hover_function_definition_with_docs() {
 /// Exciting documentation
 /// Maybe even multiple lines
 fn append(x, y) {
-  x <> y
+  x ++ y
 }
 ",
         find_position_of("append")
@@ -396,7 +396,7 @@ fn hover_function_argument() {
 /// Exciting documentation
 /// Maybe even multiple lines
 fn append(x, y) {
-  x <> y
+  x ++ y
 }
 ",
         find_position_of("append(x, y)").under_char('x')
@@ -409,7 +409,7 @@ fn hover_function_body() {
 /// Exciting documentation
 /// Maybe even multiple lines
 fn append(x, y) {
-  x <> y
+  x ++ y
 }
 ";
 
@@ -424,7 +424,7 @@ fn hover_expressions_in_function_body() {
     assert_hover!(
         "
 fn append(x, y) {
-  x <> y
+  x ++ y
 }
 ",
         find_position_of("x").nth_occurrence(2)
@@ -507,7 +507,7 @@ fn hover_function_arg_annotation_2() {
 /// Exciting documentation
 /// Maybe even multiple lines
 fn append(x: String, y: String) -> String {
-  x <> y
+  x ++ y
 }
 ",
         find_position_of("String").under_char('n')
@@ -521,7 +521,7 @@ fn hover_function_return_annotation() {
 /// Exciting documentation
 /// Maybe even multiple lines
 fn append(x: String, y: String) -> String {
-  x <> y
+  x ++ y
 }
 ",
         find_position_of("String").under_char('n').nth_occurrence(3)
@@ -558,7 +558,7 @@ const one: Int = 1
 fn hover_type_constructor_annotation() {
     assert_hover!(
         "
-type Wibble {
+record Wibble {
     Wibble(arg: String)
 }
 ",
@@ -590,7 +590,7 @@ fn hover_function_arg_annotation_with_documentation() {
         "
 /// Exciting documentation
 /// Maybe even multiple lines
-type Wibble {
+record Wibble {
     Wibble(arg: String)
 }
 
@@ -661,7 +661,7 @@ fn main() -> MyType {
             "
 /// Exciting documentation
 /// Maybe even multiple lines
-pub type MyType {
+pub record MyType {
   MyType
 }"
         ),
@@ -684,7 +684,7 @@ fn valid() { Nil }
 fn hover_for_pattern_spread_ignoring_all_fields() {
     assert_hover!(
         "
-pub type Model {
+pub record Model {
   Model(
     Int,
     Float,
@@ -707,7 +707,7 @@ pub fn main() {
 fn hover_for_pattern_spread_ignoring_some_fields() {
     assert_hover!(
         "
-pub type Model {
+pub record Model {
   Model(
     Int,
     Float,
@@ -730,7 +730,7 @@ pub fn main() {
 fn hover_for_pattern_spread_ignoring_all_positional_fields() {
     assert_hover!(
         "
-pub type Model {
+pub record Model {
   Model(
     Int,
     Float,
@@ -769,7 +769,7 @@ fn main() {
 fn hover_label_shorthand_in_pattern_call_arg() {
     assert_hover!(
         "
-pub type Wibble { Wibble(arg1: Int, arg2: Bool) }
+pub record Wibble { Wibble(arg1: Int, arg2: Bool) }
 
 pub fn main() {
   case todo {
@@ -787,7 +787,7 @@ pub fn main() {
 fn hover_label_shorthand_in_pattern_call_arg_2() {
     assert_hover!(
         "
-pub type Wibble { Wibble(arg1: Int, arg2: Bool) }
+pub record Wibble { Wibble(arg1: Int, arg2: Bool) }
 
 pub fn main() {
   let Wibble(arg2:, ..) = todo

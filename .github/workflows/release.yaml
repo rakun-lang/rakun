@@ -66,15 +66,15 @@ jobs:
           VERSION="${GITHUB_REF#refs/tags/}"
 
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
-            ARCHIVE="gleam-$VERSION-${{ matrix.target }}.zip"
-            cp "target/${{ matrix.target }}/release/gleam.exe" "gleam.exe"
-            7z a "$ARCHIVE" "gleam.exe"
-            rm gleam.exe
+            ARCHIVE="rakun-$VERSION-${{ matrix.target }}.zip"
+            cp "target/${{ matrix.target }}/release/rakun.exe" "rakun.exe"
+            7z a "$ARCHIVE" "rakun.exe"
+            rm rakun.exe
           else
-            ARCHIVE="gleam-$VERSION-${{ matrix.target }}.tar.gz"
-            cp "target/${{ matrix.target }}/release/gleam" "gleam"
-            tar -czvf "$ARCHIVE" "gleam"
-            rm gleam
+            ARCHIVE="rakun-$VERSION-${{ matrix.target }}.tar.gz"
+            cp "target/${{ matrix.target }}/release/rakun" "rakun"
+            tar -czvf "$ARCHIVE" "rakun"
+            rm rakun
           fi
 
           openssl dgst -r -sha256 -out "$ARCHIVE".sha256 "$ARCHIVE"
@@ -87,12 +87,12 @@ jobs:
           case "${{ matrix.target }}" in
             x86_64-pc-windows-msvc)
               7z x "$ASSET"
-              ./gleam.exe --version ;;
+              ./rakun.exe --version ;;
             aarch64*)
               echo "We cannot test an ARM binary on a AMD64 runner" ;;
             *)
               tar -xvzf "$ASSET"
-              ./gleam --version ;;
+              ./rakun --version ;;
           esac
 
       - name: Upload release archive
@@ -132,7 +132,7 @@ jobs:
       - name: Build wasm archive
         run: |
           VERSION="${GITHUB_REF#refs/tags/}"
-          ARCHIVE="gleam-$VERSION-browser.tar.gz"
+          ARCHIVE="rakun-$VERSION-browser.tar.gz"
 
           tar -C compiler-wasm/pkg/ -czvf $ARCHIVE .
 

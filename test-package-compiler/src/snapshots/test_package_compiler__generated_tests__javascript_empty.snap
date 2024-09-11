@@ -2,15 +2,15 @@
 source: test-package-compiler/src/generated_tests.rs
 expression: "./cases/javascript_empty"
 ---
-//// /out/lib/the_package/_gleam_artefacts/empty.cache
+//// /out/lib/the_package/_rakun_artefacts/empty.cache
 <.cache binary>
 
-//// /out/lib/the_package/_gleam_artefacts/empty.cache_meta
+//// /out/lib/the_package/_rakun_artefacts/empty.cache_meta
 <49 byte binary>
 
 //// /out/lib/the_package/empty.mjs
 export {}
 
 
-//// /out/lib/the_package/gleam.mjs
+//// /out/lib/the_package/rakun.mjs
 export * from "../prelude.mjs";

@@ -13,7 +13,7 @@ fn fn_generics_typescript() {
 #[test]
 fn record_generics_typescript() {
     assert_ts_def!(
-        r#"pub type Animal(t) {
+        r#"pub record Animal<t> {
   Cat(type_: t)
   Dog(type_: t)
 }
@@ -50,7 +50,7 @@ fn result_typescript() {
 #[test]
 fn task_typescript() {
     assert_ts_def!(
-        r#"pub type Promise(value)
-    pub type Task(a) = fn() -> Promise(a)"#,
+        r#"pub type Promise<value>
+    pub type Task<a>= fn() -> Promise<a>"#,
     );
 }

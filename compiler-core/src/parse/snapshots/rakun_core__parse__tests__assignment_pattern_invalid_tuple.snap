@@ -1,0 +1,13 @@
+---
+source: compiler-core/src/parse/tests.rs
+expression: "\nfn main() {\n    let #(a, case, c) = #(1, 2, 3)\n}\n"
+---
+error: Syntax error
+  ┌─ /src/parse/error.rakun:3:14
+  │
+3 │     let #(a, case, c) = #(1, 2, 3)
+  │              ^^^^ I was not expecting this
+
+Found the keyword `case`, expected one of: 
+- `)`
+- a pattern

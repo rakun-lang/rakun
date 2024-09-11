@@ -3,7 +3,7 @@ source: test-package-compiler/src/generated_tests.rs
 expression: "./cases/opaque_type_destructure"
 ---
 error: Unknown module value
-  ┌─ src/two.gleam:7:7
+  ┌─ src/two.rakun:7:7
   │
 7 │   let one.User(name: name, score: score) = user
   │       ^
@@ -11,7 +11,7 @@ error: Unknown module value
 The module `one` does not have a `User` value.
 
 error: Unknown variable
-  ┌─ src/two.gleam:8:5
+  ┌─ src/two.rakun:8:5
   │
 8 │   #(name, score)
   │     ^

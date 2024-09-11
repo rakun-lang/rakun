@@ -35,7 +35,7 @@ pub fn for_expression(expr: &TypedExpr) -> Option<SignatureHelp> {
         //
         //   eg. list.map(|)
         //                ^ When the cursor is here we are going to show
-        //                  "list.map(List(a), with: fn(a) -> b) -> List(b)"
+        //                  "list.map(List<a>, with: fn(a) -> b) -> List<b>"
         //                  as the help signature.
         //
         TypedExpr::ModuleSelect {

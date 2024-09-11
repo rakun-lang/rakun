@@ -22,7 +22,7 @@ pub struct TypeNames {
     ///
     /// # Example 1
     ///
-    /// ```gleam
+    /// ```rakun
     /// type Wibble = wobble.Woo
     /// ```
     /// would result in
@@ -31,7 +31,7 @@ pub struct TypeNames {
     ///
     /// # Example 2
     ///
-    /// ```gleam
+    /// ```rakun
     /// import some/module.{type Wibble}
     /// ```
     /// would result in
@@ -40,7 +40,7 @@ pub struct TypeNames {
     ///
     /// # Example 3
     ///
-    /// ```gleam
+    /// ```rakun
     /// import some/module.{type Wibble as Wobble}
     /// ```
     /// would result in
@@ -56,7 +56,7 @@ pub struct TypeNames {
     ///
     /// # Example 1
     ///
-    /// ```gleam
+    /// ```rakun
     /// import mod1 as my_mod
     /// ```
     /// would result in:
@@ -65,7 +65,7 @@ pub struct TypeNames {
     ///
     /// # Example 2
     ///
-    /// ```gleam
+    /// ```rakun
     /// import mod1
     /// ```
     /// would result in:
@@ -82,7 +82,7 @@ pub struct TypeNames {
     ///
     /// # Example 1
     ///
-    /// ```gleam
+    /// ```rakun
     /// fn equal(x: something, y: something) -> Bool {
     ///   arg1 == arg2
     /// }
@@ -335,28 +335,28 @@ fn test_tuple_type() {
             Arc::new(Type::Named {
                 name: "Int".into(),
                 args: vec![],
-                module: "gleam".into(),
+                module: "rakun".into(),
                 publicity: crate::ast::Publicity::Public,
                 package: "".into(),
             }),
             Arc::new(Type::Named {
                 name: "String".into(),
                 args: vec![],
-                module: "gleam".into(),
+                module: "rakun".into(),
                 publicity: crate::ast::Publicity::Public,
                 package: "".into(),
             }),
         ],
     };
 
-    assert_eq!(printer.print_type(&type_), "#(gleam.Int, gleam.String)");
+    assert_eq!(printer.print_type(&type_), "#(rakun.Int, rakun.String)");
 }
 
 #[test]
 fn test_fn_type() {
     let mut names = TypeNames::new("module".into());
-    names.named_type_in_scope("gleam".into(), "Int".into(), "Int".into());
-    names.named_type_in_scope("gleam".into(), "Bool".into(), "Bool".into());
+    names.named_type_in_scope("rakun".into(), "Int".into(), "Int".into());
+    names.named_type_in_scope("rakun".into(), "Bool".into(), "Bool".into());
     let mut printer = Printer::new(&mut names);
 
     let type_ = Type::Fn {
@@ -364,14 +364,14 @@ fn test_fn_type() {
             Arc::new(Type::Named {
                 name: "Int".into(),
                 args: vec![],
-                module: "gleam".into(),
+                module: "rakun".into(),
                 publicity: crate::ast::Publicity::Public,
                 package: "".into(),
             }),
             Arc::new(Type::Named {
                 name: "String".into(),
                 args: vec![],
-                module: "gleam".into(),
+                module: "rakun".into(),
                 publicity: crate::ast::Publicity::Public,
                 package: "".into(),
             }),
@@ -379,13 +379,13 @@ fn test_fn_type() {
         retrn: Arc::new(Type::Named {
             name: "Bool".into(),
             args: vec![],
-            module: "gleam".into(),
+            module: "rakun".into(),
             publicity: crate::ast::Publicity::Public,
             package: "".into(),
         }),
     };
 
-    assert_eq!(printer.print_type(&type_), "fn(Int, gleam.String) -> Bool");
+    assert_eq!(printer.print_type(&type_), "fn(Int, rakun.String) -> Bool");
 }
 
 #[test]

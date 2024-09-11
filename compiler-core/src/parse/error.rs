@@ -44,7 +44,7 @@ impl ParseError {
             ParseErrorType::ExpectedPattern => ("I was expecting a pattern after this", vec![]),
             ParseErrorType::ExpectedType => (
                 "I was expecting a type after this",
-                vec!["See: https://tour.gleam.run/basics/assignments/".into()],
+                vec!["See: https://tour.rakun.run/basics/assignments/".into()],
             ),
             ParseErrorType::ExpectedUpName => ("I was expecting a type name here", vec![]),
             ParseErrorType::ExpectedValue => ("I was expecting a value after this", vec![]),
@@ -61,7 +61,7 @@ impl ParseError {
             ),
             ParseErrorType::ExprLparStart => (
                 "This parenthesis cannot be understood here",
-                vec!["Hint: To group expressions in gleam use \"{\" and \"}\".".into()],
+                vec!["Hint: To group expressions in rakun use \"{\" and \"}\".".into()],
             ),
             ParseErrorType::IncorrectName => (
                 "I'm expecting a lowercase name here",
@@ -85,14 +85,14 @@ contain a-z, A-Z, or 0-9.",
                         "bits, bytes, int, float, utf8, utf16, utf32, utf8_codepoint, \
 utf16_codepoint, utf32_codepoint, signed, unsigned, big, little, native, size, unit.",
                     ),
-                    "See: https://tour.gleam.run/data-types/bit-arrays/".into(),
+                    "See: https://tour.rakun.run/data-types/bit-arrays/".into(),
                 ],
             ),
             ParseErrorType::InvalidBitArrayUnit => (
                 "This is not a valid BitArray unit value",
                 vec![
                     "Hint: unit must be an integer literal >= 1 and <= 256.".into(),
-                    "See: https://tour.gleam.run/data-types/bit-arrays/".into(),
+                    "See: https://tour.rakun.run/data-types/bit-arrays/".into(),
                 ],
             ),
             ParseErrorType::InvalidTailPattern => (
@@ -110,7 +110,7 @@ utf16_codepoint, utf32_codepoint, signed, unsigned, big, little, native, size, u
             ParseErrorType::NestedBitArrayPattern => ("BitArray patterns cannot be nested", vec![]),
             ParseErrorType::NotConstType => (
                 "This type is not allowed in module constants",
-                vec!["See: https://tour.gleam.run/basics/constants/".into()],
+                vec!["See: https://tour.rakun.run/basics/constants/".into()],
             ),
             ParseErrorType::NoExpression => (
                 "There must be an expression in here",
@@ -120,7 +120,7 @@ utf16_codepoint, utf32_codepoint, signed, unsigned, big, little, native, size, u
                 "There must be a 'let' to bind variable to value",
                 vec![
                     "Hint: Use let for binding.".into(),
-                    "See: https://tour.gleam.run/basics/assignments/".into(),
+                    "See: https://tour.rakun.run/basics/assignments/".into(),
                 ],
             ),
             ParseErrorType::NoValueAfterEqual => (
@@ -129,7 +129,7 @@ utf16_codepoint, utf32_codepoint, signed, unsigned, big, little, native, size, u
             ),
             ParseErrorType::OpaqueTypeAlias => (
                 "Type Aliases cannot be opaque",
-                vec!["See: https://tour.gleam.run/basics/type-aliases/".into()],
+                vec!["See: https://tour.rakun.run/basics/type-aliases/".into()],
             ),
             ParseErrorType::OpNakedRight => (
                 "This operator has no value on its right side",
@@ -139,7 +139,7 @@ utf16_codepoint, utf32_codepoint, signed, unsigned, big, little, native, size, u
                 "There is more than 1 argument hole in this function call",
                 vec![
                     "Hint: Function calls can have at most one argument hole.".into(),
-                    "See: https://tour.gleam.run/functions/functions/".into(),
+                    "See: https://tour.rakun.run/functions/functions/".into(),
                 ],
             ),
             ParseErrorType::UnexpectedEof => ("The module ended unexpectedly", vec![]),
@@ -147,7 +147,7 @@ utf16_codepoint, utf32_codepoint, signed, unsigned, big, little, native, size, u
                 "This spread does nothing",
                 vec![
                     "Hint: Try prepending some elements [1, 2, ..list].".into(),
-                    "See: https://tour.gleam.run/basics/lists/".into(),
+                    "See: https://tour.rakun.run/basics/lists/".into(),
                 ],
             ),
             ParseErrorType::ListSpreadFollowedByElements => (
@@ -176,8 +176,8 @@ utf16_codepoint, utf32_codepoint, signed, unsigned, big, little, native, size, u
             ParseErrorType::LowcaseBooleanPattern => (
                 "Did you want a Bool instead of a variable?",
                 vec![
-                    "Hint: In Gleam boolean literals are `True` and `False`.".into(),
-                    "See: https://tour.gleam.run/basics/bools/".into(),
+                    "Hint: In Rakun boolean literals are `True` and `False`.".into(),
+                    "See: https://tour.rakun.run/basics/bools/".into(),
                 ],
             ),
             ParseErrorType::UnexpectedLabel => (
@@ -220,7 +220,7 @@ utf16_codepoint, utf32_codepoint, signed, unsigned, big, little, native, size, u
                     "how to handle this pattern.".into(),
                     "".into(),
                     "If you want to match one character consider using `pop_grapheme`".into(),
-                    "from the stdlib's `gleam/string` module.".into(),
+                    "from the stdlib's `rakun/string` module.".into(),
                 ],
             ),
             ParseErrorType::UnexpectedFunction => (
@@ -257,7 +257,7 @@ utf16_codepoint, utf32_codepoint, signed, unsigned, big, little, native, size, u
                     "I'm expecting a pattern here".into(),
                     "Hint: A pattern can be a constructor name, a literal value".into(),
                     "or a variable to bind a value to, etc.".into(),
-                    "See: https://tour.gleam.run/flow-control/case-expressions/".into(),
+                    "See: https://tour.rakun.run/flow-control/case-expressions/".into(),
                 ],
             ),
             ParseErrorType::ExpectedRecordConstructor {
@@ -296,7 +296,7 @@ utf16_codepoint, utf32_codepoint, signed, unsigned, big, little, native, size, u
                 vec!["Functions cannot be called in clause guards.".into()],
             ),
             ParseErrorType::IfExpression => (
-                "Gleam doesn't have if expressions",
+                "Rakun doesn't have if expressions",
                 vec![
                     "If you want to write a conditional expression you can use a `case`:".into(),
                     "".into(),
@@ -305,7 +305,7 @@ utf16_codepoint, utf32_codepoint, signed, unsigned, big, little, native, size, u
                     "      False -> todo".into(),
                     "    }".into(),
                     "".into(),
-                    "See: https://tour.gleam.run/flow-control/case-expressions/".into(),
+                    "See: https://tour.rakun.run/flow-control/case-expressions/".into(),
                 ],
             ),
         }
@@ -359,7 +359,7 @@ pub enum ParseErrorType {
     },
     ExpectedBoolean,
     UnexpectedFunction, // a function was used called outside of another function
-    // A variable was assigned or discarded on the left hand side of a <> pattern
+    // A variable was assigned or discarded on the left hand side of a ++ pattern
     ConcatPatternVariableLeftHandSide,
     ListSpreadWithoutTail,               // let x = [1, ..]
     ExpectedFunctionBody,                // let x = fn()
@@ -384,7 +384,7 @@ impl LexicalError {
                 "I don't understand this escape code",
                 vec![
                     "Hint: Add another backslash before it.".into(),
-                    "See: https://tour.gleam.run/basics/strings".into(),
+                    "See: https://tour.rakun.run/basics/strings".into(),
                 ],
             ),
             LexicalErrorType::DigitOutOfRadix => {
@@ -440,8 +440,8 @@ impl LexicalError {
             LexicalErrorType::InvalidTripleEqual => (
                 "Did you mean `==`?",
                 vec![
-                    "Gleam uses `==` to check for equality between two values.".into(),
-                    "See: https://tour.gleam.run/basics/equality".into(),
+                    "Rakun uses `==` to check for equality between two values.".into(),
+                    "See: https://tour.rakun.run/basics/equality".into(),
                 ],
             ),
         }

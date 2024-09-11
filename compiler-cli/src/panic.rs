@@ -34,19 +34,19 @@ fn print_compiler_bug_message(info: &PanicInfo<'_>) {
     buffer.set_color(&ColorSpec::new()).unwrap();
     writeln!(
         buffer,
-        "This is a bug in the Gleam compiler, sorry!
+        "This is a bug in the Rakun compiler, sorry!
 
-Please report this crash to https://github.com/gleam-lang/gleam/issues/new
+Please report this crash to https://github.com/rakun-lang/rakun/issues/new
 and include this error message with your report.
 
 Panic: {location}{message}
-Gleam version: {version}
+Rakun version: {version}
 Operating system: {os}
 
 If you can also share your code and say what file you were editing or any
 steps to reproduce the crash that would be a great help.
 
-You may also want to try again with the `GLEAM_LOG=trace` environment
+You may also want to try again with the `RAKUN_LOG=trace` environment
 variable set.
 ",
         location = location,

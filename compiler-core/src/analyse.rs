@@ -33,7 +33,7 @@ use crate::{
     },
     uid::UniqueIdGenerator,
     warning::TypeWarningEmitter,
-    GLEAM_CORE_PACKAGE_NAME,
+    RAKUN_CORE_PACKAGE_NAME,
 };
 use camino::Utf8PathBuf;
 use ecow::EcoString;
@@ -95,7 +95,7 @@ pub enum TargetSupport {
     /// the current target then an error is emitted and compilation halts.
     ///
     /// This is used when compiling the root package, with the exception of when using
-    /// `gleam run --module $module` to run a module from a dependency package, in which case we do
+    /// `rakun run --module $module` to run a module from a dependency package, in which case we do
     /// not want to error as the root package code isn't going to be run.
     Enforced,
     /// Target support is enfored, meaning if a function is found to not have an implementation for
@@ -187,7 +187,7 @@ struct ModuleAnalyzer<'a, A> {
     hydrators: HashMap<EcoString, Hydrator>,
     module_name: EcoString,
 
-    /// The minimum Gleam version required to compile the analysed module.
+    /// The minimum Rakun version required to compile the analysed module.
     minimum_required_version: Version,
 }
 
@@ -201,7 +201,7 @@ impl<'a, A> ModuleAnalyzer<'a, A> {
         let env = Environment::new(
             self.ids.clone(),
             self.package_config.name.clone(),
-            self.package_config.gleam_version.clone(),
+            self.package_config.rakun_version.clone(),
             self.module_name.clone(),
             self.target,
             self.importable_modules,
@@ -490,7 +490,7 @@ impl<'a, A> ModuleAnalyzer<'a, A> {
 
         if external.is_some() {
             // There was an external implementation, so type annotations are
-            // mandatory as the Gleam implementation may be absent, and because we
+            // mandatory as the Rakun implementation may be absent, and because we
             // think you should always specify types for external functions for
             // clarity + to avoid accidental mistakes.
             self.ensure_annotations_present(&arguments, return_annotation.as_ref(), location);
@@ -584,7 +584,7 @@ impl<'a, A> ModuleAnalyzer<'a, A> {
 
         // Ensure that the current target has an implementation for the function.
         // This is done at the expression level while inferring the function body, but we do it again
-        // here as externally implemented functions may not have a Gleam body.
+        // here as externally implemented functions may not have a Rakun body.
         //
         // We don't emit this error if there is no implementation, as this would
         // have already emitted an error above.
@@ -741,7 +741,7 @@ impl<'a, A> ModuleAnalyzer<'a, A> {
         // Modules should belong to a package that is a direct dependency of the
         // current package to be imported.
         // Upgrade this to an error in future.
-        if module_info.package != GLEAM_CORE_PACKAGE_NAME
+        if module_info.package != RAKUN_CORE_PACKAGE_NAME
             && module_info.package != self.package_config.name
             && !self.direct_dependencies.contains_key(&module_info.package)
         {
@@ -795,6 +795,7 @@ impl<'a, A> ModuleAnalyzer<'a, A> {
             end_position,
             publicity,
             opaque,
+            mode,
             name,
             name_location,
             parameters,
@@ -882,6 +883,7 @@ impl<'a, A> ModuleAnalyzer<'a, A> {
             constructors,
             typed_parameters,
             deprecation,
+            mode,
         }))
     }
 
@@ -1061,8 +1063,6 @@ impl<'a, A> ModuleAnalyzer<'a, A> {
             parameters,
             location,
             deprecation,
-            opaque,
-            constructors,
             documentation,
             ..
         } = t;
@@ -1119,12 +1119,6 @@ impl<'a, A> ModuleAnalyzer<'a, A> {
                 },
             )
             .expect("name uniqueness checked above");
-
-        if *opaque && constructors.is_empty() {
-            self.problems.warning(Warning::OpaqueExternalType {
-                location: *location,
-            });
-        }
 
         if publicity.is_private() {
             environment.init_usage(
@@ -1344,15 +1338,15 @@ impl<'a, A> ModuleAnalyzer<'a, A> {
 
         // Then if the required version is not in the specified version for the
         // range we emit a warning highlighting the usage of the feature.
-        if let Some(gleam_version) = &self.package_config.gleam_version {
-            if let Some(lowest_allowed_version) = gleam_version.lowest_version() {
+        if let Some(rakun_version) = &self.package_config.rakun_version {
+            if let Some(lowest_allowed_version) = rakun_version.lowest_version() {
                 // There is a version in the specified range that is lower than
                 // the one required by this feature! This means that the
                 // specified range is wrong and would allow someone to run a
                 // compiler that is too old to know of this feature.
                 if minimum_required_version > lowest_allowed_version {
                     self.problems
-                        .warning(Warning::FeatureRequiresHigherGleamVersion {
+                        .warning(Warning::FeatureRequiresHigherRakunVersion {
                             location,
                             feature_kind,
                             minimum_required_version: minimum_required_version.clone(),
@@ -1390,7 +1384,7 @@ fn validate_module_name(name: &EcoString) -> Result<(), Error> {
 }
 
 /// Returns the module name and function name of the implementation of a
-/// function. If the function is implemented as a Gleam function then it is the
+/// function. If the function is implemented as a Rakun function then it is the
 /// same as the name of the module and function. If the function has an external
 /// implementation then it is the name of the external module and function.
 fn implementation_names(

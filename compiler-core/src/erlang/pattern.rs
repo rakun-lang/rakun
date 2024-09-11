@@ -107,7 +107,7 @@ fn print<'a>(
 
             match left_side_assignment {
                 Some((left_name, _)) => {
-                    // "wibble" as prefix <> rest
+                    // "wibble" as prefix ++ rest
                     //             ^^^^^^^^^ In case the left prefix of the pattern matching is given an alias
                     //                       we bind it to a local variable so that it can be correctly
                     //                       referenced inside the case branch.

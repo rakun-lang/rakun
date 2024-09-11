@@ -1,0 +1,13 @@
+---
+source: compiler-core/src/type_/tests/errors.rs
+expression: "pub record Box { Box(Int) } pub fn main() { let Box(innerValue) = Box(203) }"
+---
+error: Invalid variable name
+  ┌─ /src/one/two.rakun:1:53
+  │
+1 │ pub record Box { Box(Int) } pub fn main() { let Box(innerValue) = Box(203) }
+  │                                                     ^^^^^^^^^^ This is not a valid variable name
+
+Hint: Variable names start with a lowercase letter and contain a-z, 0-9,
+or _.
+Try: inner_value

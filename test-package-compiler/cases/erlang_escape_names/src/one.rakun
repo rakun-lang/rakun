@@ -1,0 +1,4 @@
+// https://github.com/rakun-lang/rakun/issues/340
+pub fn receive(x) {
+  x
+}

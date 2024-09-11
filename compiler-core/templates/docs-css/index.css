@@ -393,9 +393,9 @@ p a code {
   text-decoration: none;
 }
 
-.module-name > .icon-gleam-chasse,
-.module-member-kind > .icon-gleam-chasse,
-.module-member-kind > .icon-gleam-chasse-2 {
+.module-name > .icon-rakun-chasse,
+.module-member-kind > .icon-rakun-chasse,
+.module-member-kind > .icon-rakun-chasse-2 {
   color: var(--pink);
   display: block;
   font-size: 1rem;
@@ -684,11 +684,11 @@ table tr:nth-child(2n) {
   width: 1em;
 }
 
-.icon-gleam-chasse {
+.icon-rakun-chasse {
   width: 8.182em;
 }
 
-.icon-gleam-chasse-2 {
+.icon-rakun-chasse-2 {
   width: 4.909em;
 }
 

@@ -1,0 +1,11 @@
+---
+source: compiler-core/src/type_/tests/errors.rs
+expression: "record A { A(_) }"
+---
+error: Unexpected type hole
+  ┌─ /src/one/two.rakun:1:14
+  │
+1 │ record A { A(_) }
+  │              ^ I need to know what this is
+
+We need to know the exact type here so type holes cannot be used.

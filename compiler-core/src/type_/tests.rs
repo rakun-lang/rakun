@@ -142,7 +142,7 @@ macro_rules! assert_error {
             .expect_err("should infer an error");
         let error = $crate::error::Error::Type {
             src: $src.into(),
-            path: camino::Utf8PathBuf::from("/src/one/two.gleam"),
+            path: camino::Utf8PathBuf::from("/src/one/two.rakun"),
             errors: error,
         };
         let output = error.pretty_string();
@@ -177,7 +177,7 @@ macro_rules! assert_with_module_error {
 fn get_warnings(
     src: &str,
     deps: Vec<DependencyModule<'_>>,
-    gleam_version: Option<Range<Version>>,
+    rakun_version: Option<Range<Version>>,
 ) -> Vec<crate::warning::Warning> {
     let warnings = VectorWarningEmitterIO::default();
     _ = compile_module_with_opts(
@@ -187,7 +187,7 @@ fn get_warnings(
         deps,
         Target::Erlang,
         TargetSupport::NotEnforced,
-        gleam_version,
+        rakun_version,
     );
     warnings.take().into_iter().collect_vec()
 }
@@ -195,9 +195,9 @@ fn get_warnings(
 fn get_printed_warnings(
     src: &str,
     deps: Vec<DependencyModule<'_>>,
-    gleam_version: Option<Range<Version>>,
+    rakun_version: Option<Range<Version>>,
 ) -> String {
-    print_warnings(get_warnings(src, deps, gleam_version))
+    print_warnings(get_warnings(src, deps, rakun_version))
 }
 
 fn print_warnings(warnings: Vec<crate::warning::Warning>) -> String {
@@ -252,9 +252,9 @@ macro_rules! assert_warning {
 }
 
 #[macro_export]
-macro_rules! assert_warnings_with_gleam_version {
-    ($gleam_version:expr, $src:expr$(,)?) => {
-        let output = $crate::type_::tests::get_printed_warnings($src, vec![], Some($gleam_version));
+macro_rules! assert_warnings_with_rakun_version {
+    ($rakun_version:expr, $src:expr$(,)?) => {
+        let output = $crate::type_::tests::get_printed_warnings($src, vec![], Some($rakun_version));
         assert!(!output.is_empty());
         insta::assert_snapshot!(insta::internals::AutoName, output, $src);
     };
@@ -389,7 +389,7 @@ pub fn compile_module_with_opts(
     dep: Vec<DependencyModule<'_>>,
     target: Target,
     target_support: TargetSupport,
-    gleam_version: Option<Range<Version>>,
+    rakun_version: Option<Range<Version>>,
 ) -> Result<TypedModule, Vec<crate::type_::Error>> {
     let ids = UniqueIdGenerator::new();
     let mut modules = im::HashMap::new();
@@ -439,9 +439,9 @@ pub fn compile_module_with_opts(
     ast.name = module_name.into();
     let mut config = PackageConfig::default();
     config.name = "thepackage".into();
-    config.gleam_version = gleam_version;
+    config.rakun_version = rakun_version;
 
-    let warnings = TypeWarningEmitter::new("/src/warning/wrn.gleam".into(), src.into(), emitter);
+    let warnings = TypeWarningEmitter::new("/src/warning/wrn.rakun".into(), src.into(), emitter);
     let inference_result = crate::analyse::ModuleAnalyzerConstructor::<()> {
         target,
         ids: &ids,
@@ -482,7 +482,7 @@ pub fn module_error_with_target(
     .expect_err("should infer an error");
     let error = Error::Type {
         src: src.into(),
-        path: Utf8PathBuf::from("/src/one/two.gleam"),
+        path: Utf8PathBuf::from("/src/one/two.rakun"),
         errors: Vec1::try_from_vec(error).expect("should have at least one error"),
     };
     error.pretty_string()
@@ -509,7 +509,7 @@ pub fn internal_module_error_with_target(
     .expect_err("should infer an error");
     let error = Error::Type {
         src: src.into(),
-        path: Utf8PathBuf::from("/src/one/two.gleam"),
+        path: Utf8PathBuf::from("/src/one/two.rakun"),
         errors: Vec1::try_from_vec(error).expect("should have at least one error"),
     };
     error.pretty_string()
@@ -521,7 +521,7 @@ pub fn syntax_error(src: &str) -> String {
             .expect_err("should trigger an error when parsing");
     let error = Error::Parse {
         src: src.into(),
-        path: Utf8PathBuf::from("/src/one/two.gleam"),
+        path: Utf8PathBuf::from("/src/one/two.rakun"),
         error,
     };
     error.pretty_string()
@@ -768,7 +768,7 @@ fn simple_exprs() {
     assert_infer!("-8.0", "Float");
     assert_infer!("\"ok\"", "String");
     assert_infer!("\"ok\"", "String");
-    assert_infer!("[]", "List(a)");
+    assert_infer!("[]", "List<a>");
     assert_infer!("4 % 1", "Int");
     assert_infer!("4 > 1", "Bool");
     assert_infer!("4 >= 1", "Bool");
@@ -809,8 +809,8 @@ fn assert() {
     assert_infer!("let assert [a, 2] = [1] a", "Int");
     assert_infer!("let assert [a, .._] = [1] a", "Int");
     assert_infer!("let assert [a, .._,] = [1] a", "Int");
-    assert_infer!("fn(x) { let assert [a] = x a }", "fn(List(a)) -> a");
-    assert_infer!("fn(x) { let assert [a] = x a + 1 }", "fn(List(Int)) -> Int");
+    assert_infer!("fn(x) { let assert [a] = x a }", "fn(List<a>) -> a");
+    assert_infer!("fn(x) { let assert [a] = x a + 1 }", "fn(List<Int>) -> Int");
     assert_infer!("let assert _x = 1 2.0", "Float");
     assert_infer!("let assert _ = 1 2.0", "Float");
     assert_infer!("let assert #(tag, x) = #(1.0, 1) x", "Int");
@@ -820,30 +820,30 @@ fn assert() {
 
 #[test]
 fn lists() {
-    assert_infer!("[]", "List(a)");
-    assert_infer!("[1]", "List(Int)");
-    assert_infer!("[1, 2, 3]", "List(Int)");
-    assert_infer!("[[]]", "List(List(a))");
-    assert_infer!("[[1.0, 2.0]]", "List(List(Float))");
-    assert_infer!("[fn(x) { x }]", "List(fn(a) -> a)");
-    assert_infer!("[fn(x) { x + 1 }]", "List(fn(Int) -> Int)");
-    assert_infer!("[fn(x) { x }, fn(x) { x + 1 }]", "List(fn(Int) -> Int)");
-    assert_infer!("[fn(x) { x + 1 }, fn(x) { x }]", "List(fn(Int) -> Int)");
-    assert_infer!("[[], []]", "List(List(a))");
-    assert_infer!("[[], [1]]", "List(List(Int))");
+    assert_infer!("[]", "List<a>");
+    assert_infer!("[1]", "List<Int>");
+    assert_infer!("[1, 2, 3]", "List<Int>");
+    assert_infer!("[[]]", "List<List<a>>");
+    assert_infer!("[[1.0, 2.0]]", "List<List<Float>>");
+    assert_infer!("[fn(x) { x }]", "List<fn(a) -> a>");
+    assert_infer!("[fn(x) { x + 1 }]", "List<fn(Int) -> Int>");
+    assert_infer!("[fn(x) { x }, fn(x) { x + 1 }]", "List<fn(Int) -> Int>");
+    assert_infer!("[fn(x) { x + 1 }, fn(x) { x }]", "List<fn(Int) -> Int>");
+    assert_infer!("[[], []]", "List<List<a>>");
+    assert_infer!("[[], [1]]", "List<List<Int>>");
 
-    assert_infer!("[1, ..[2, ..[]]]", "List(Int)");
-    assert_infer!("[fn(x) { x }, ..[]]", "List(fn(a) -> a)");
-    assert_infer!("let x = [1, ..[]] [2, ..x]", "List(Int)");
+    assert_infer!("[1, ..[2, ..[]]]", "List<Int>");
+    assert_infer!("[fn(x) { x }, ..[]]", "List<fn(a) -> a>");
+    assert_infer!("let x = [1, ..[]] [2, ..x]", "List<Int>");
 }
 
 #[test]
 fn trailing_comma_lists() {
-    assert_infer!("[1, ..[2, ..[],]]", "List(Int)");
-    assert_infer!("[fn(x) { x },..[]]", "List(fn(a) -> a)");
+    assert_infer!("[1, ..[2, ..[],]]", "List<Int>");
+    assert_infer!("[fn(x) { x },..[]]", "List<fn(a) -> a>");
 
-    assert_infer!("let f = fn(x) { x } [f, f]", "List(fn(a) -> a)");
-    assert_infer!("[#([], [])]", "List(#(List(a), List(b)))");
+    assert_infer!("let f = fn(x) { x } [f, f]", "List<fn(a) -> a>");
+    assert_infer!("[#([], [])]", "List<#(List<a>, List<b>)>");
 }
 
 #[test]
@@ -859,7 +859,7 @@ fn expr_fn() {
     assert_infer!("fn(x) { x }", "fn(a) -> a");
     assert_infer!("fn(x) { x }", "fn(a) -> a");
     assert_infer!("fn(x, y) { x }", "fn(a, b) -> a");
-    assert_infer!("fn(x, y) { [] }", "fn(a, b) -> List(c)");
+    assert_infer!("fn(x, y) { [] }", "fn(a, b) -> List<c>");
     assert_infer!("let x = 1.0 1", "Int");
     assert_infer!("let id = fn(x) { x } id(1)", "Int");
     assert_infer!("let x = fn() { 1.0 } x()", "Float");
@@ -1034,7 +1034,7 @@ fn infer_module_test() {
              i -> [x .. repeat(i - 1, x)]
            }
          }",
-        vec![("repeat", "fn(Int, a) -> List(a)")],
+        vec![("repeat", "fn(Int, a) -> List<a>")],
     );
 }
 
@@ -1047,7 +1047,7 @@ fn infer_module_test1() {
            [x .. xs] -> length(xs) + 1
            }
         }",
-        vec![("length", "fn(List(a)) -> Int")],
+        vec![("length", "fn(List<a>) -> Int")],
     );
 }
 
@@ -1063,7 +1063,7 @@ fn infer_module_test2() {
 #[test]
 fn infer_module_test3() {
     assert_module_infer!(
-        "pub type Is { Yes No }
+        "pub record Is { Yes No }
          pub fn yes() { Yes }
          pub fn no() { No }",
         vec![
@@ -1078,7 +1078,7 @@ fn infer_module_test3() {
 #[test]
 fn infer_module_test4() {
     assert_module_infer!(
-        "pub type Num { I(Int) }
+        "pub record Num { I(Int) }
          pub fn one() { I(1) }",
         vec![("I", "fn(Int) -> Num"), ("one", "fn() -> Num")],
     );
@@ -1087,13 +1087,13 @@ fn infer_module_test4() {
 #[test]
 fn infer_module_test5() {
     assert_module_infer!(
-        "pub type Box(a) { Box(a) }
+        "pub record Box<a> { Box(a) }
         pub fn int() { Box(1) }
         pub fn float() { Box(1.0) }",
         vec![
-            ("Box", "fn(a) -> Box(a)"),
-            ("float", "fn() -> Box(Float)"),
-            ("int", "fn() -> Box(Int)"),
+            ("Box", "fn(a) -> Box<a>"),
+            ("float", "fn() -> Box<Float>"),
+            ("int", "fn() -> Box<Int>"),
         ],
     );
 }
@@ -1101,7 +1101,7 @@ fn infer_module_test5() {
 #[test]
 fn infer_module_test6() {
     assert_module_infer!(
-        "pub type Singleton { Singleton }
+        "pub record Singleton { Singleton }
         pub fn go(x) { let Singleton = x 1 }",
         vec![("Singleton", "Singleton"), ("go", "fn(Singleton) -> Int")],
     );
@@ -1110,16 +1110,16 @@ fn infer_module_test6() {
 #[test]
 fn infer_module_test7() {
     assert_module_infer!(
-        "pub type Box(a) { Box(a) }
+        "pub record Box<a> { Box(a) }
         pub fn unbox(x) { let Box(a) = x a }",
-        vec![("Box", "fn(a) -> Box(a)"), ("unbox", "fn(Box(a)) -> a")],
+        vec![("Box", "fn(a) -> Box<a>"), ("unbox", "fn(Box<a>) -> a")],
     );
 }
 
 #[test]
 fn infer_module_test8() {
     assert_module_infer!(
-        "pub type I { I(Int) }
+        "pub record I { I(Int) }
         pub fn open(x) { case x { I(i) -> i  } }",
         vec![("I", "fn(Int) -> I"), ("open", "fn(I) -> Int")],
     );
@@ -1129,7 +1129,7 @@ fn infer_module_test8() {
 fn infer_module_test9() {
     assert_module_infer!(
         "pub fn status() { 1 } pub fn list_of(x) { [x] }",
-        vec![("list_of", "fn(a) -> List(a)"), ("status", "fn() -> Int")],
+        vec![("list_of", "fn(a) -> List<a>"), ("status", "fn() -> Int")],
     );
 }
 
@@ -1204,9 +1204,9 @@ fn infer_module_test16() {
     assert_module_infer!(
         "
 @external(erlang, \"\", \"\")
-pub fn go(x: List(a)) -> a
+pub fn go(x: List<a>) -> a
 ",
-        vec![("go", "fn(List(a)) -> a")],
+        vec![("go", "fn(List<a>) -> a")],
     );
 }
 
@@ -1242,9 +1242,9 @@ fn infer_module_test19() {
     assert_module_infer!(
         "
 @external(erlang, \"\", \"\")
-pub fn len(a: List(a)) -> Int
+pub fn len(a: List<a>) -> Int
 ",
-        vec![("len", "fn(List(a)) -> Int")],
+        vec![("len", "fn(List<a>) -> Int")],
     );
 }
 
@@ -1262,11 +1262,11 @@ pub fn is_open(x: Connection) -> Bool
 #[test]
 fn infer_module_test21() {
     assert_module_infer!(
-        "pub type Pair(a, b)\n
+        "pub type Pair<a, b>\n
 @external(erlang, \"\", \"\")
-pub fn pair(x: a) -> Pair(a, a)
+pub fn pair(x: a) -> Pair<a, a>
 ",
-        vec![("pair", "fn(a) -> Pair(a, a)")],
+        vec![("pair", "fn(a) -> Pair<a, a>")],
     );
 }
 
@@ -1302,7 +1302,7 @@ fn infer_module_test23() {
 fn infer_module_test24() {
     // Structs
     assert_module_infer!(
-        "pub type Box { Box(boxed: Int) }",
+        "pub record Box { Box(boxed: Int) }",
         vec![("Box", "fn(Int) -> Box")]
     );
 }
@@ -1310,19 +1310,19 @@ fn infer_module_test24() {
 #[test]
 fn infer_module_test25() {
     assert_module_infer!(
-        "pub type Tup(a, b) { Tup(first: a, second: b) }",
-        vec![("Tup", "fn(a, b) -> Tup(a, b)")]
+        "pub record Tup<a, b> { Tup(first: a, second: b) }",
+        vec![("Tup", "fn(a, b) -> Tup<a, b>")]
     );
 }
 
 #[test]
 fn infer_module_test26() {
     assert_module_infer!(
-        "pub type Tup(a, b, c) { Tup(first: a, second: b, third: c) }
+        "pub record Tup<a, b, c> { Tup(first: a, second: b, third: c) }
          pub fn third(t) { let Tup(_ , _, third: a) = t a }",
         vec![
-            ("Tup", "fn(a, b, c) -> Tup(a, b, c)"),
-            ("third", "fn(Tup(a, b, c)) -> c"),
+            ("Tup", "fn(a, b, c) -> Tup<a, b, c>"),
+            ("third", "fn(Tup<a, b, c>) -> c"),
         ],
     );
 }
@@ -1330,11 +1330,11 @@ fn infer_module_test26() {
 #[test]
 fn infer_label_shorthand_pattern() {
     assert_module_infer!(
-        "pub type Tup(a, b, c) { Tup(first: a, second: b, third: c) }
+        "pub record Tup<a, b, c> { Tup(first: a, second: b, third: c) }
          pub fn third(t) { let Tup(_, _, third:) = t third }",
         vec![
-            ("Tup", "fn(a, b, c) -> Tup(a, b, c)"),
-            ("third", "fn(Tup(a, b, c)) -> c"),
+            ("Tup", "fn(a, b, c) -> Tup<a, b, c>"),
+            ("third", "fn(Tup<a, b, c>) -> c"),
         ],
     );
 }
@@ -1383,7 +1383,7 @@ fn infer_module_test31() {
     // Using types before they are defined
 
     assert_module_infer!(
-        "pub type I { I(Num) } pub type Num { Num }",
+        "pub record I { I(Num) } pub record Num { Num }",
         vec![("I", "fn(Num) -> I"), ("Num", "Num")]
     );
 }
@@ -1391,7 +1391,7 @@ fn infer_module_test31() {
 #[test]
 fn infer_module_test32() {
     assert_module_infer!(
-        "pub type I { I(Num) } pub type Num",
+        "pub record I { I(Num) } pub type Num",
         vec![("I", "fn(Num) -> I")]
     );
 }
@@ -1404,9 +1404,9 @@ fn type_alias() {
         vec![("go", "fn() -> Int")],
     );
     assert_module_infer!(
-        "type IntString = Result(Int, String)
+        "type IntString = Result<Int, String>
          pub fn ok_one() -> IntString { Ok(1) }",
-        vec![("ok_one", "fn() -> Result(Int, String)")]
+        vec![("ok_one", "fn() -> Result<Int, String>")]
     );
 }
 
@@ -1425,7 +1425,7 @@ fn accessor() {
     // We can access fields on custom types with only one variant
     assert_module_infer!(
         "
-pub type Person { Person(name: String, age: Int) }
+pub record Person { Person(name: String, age: Int) }
 pub fn get_age(person: Person) { person.age }
 pub fn get_name(person: Person) { person.name }",
         vec![
@@ -1438,8 +1438,8 @@ pub fn get_name(person: Person) { person.name }",
     // We can access fields on custom types with only one variant
     assert_module_infer!(
         "
-pub type One { One(name: String) }
-pub type Two { Two(one: One) }
+pub record One { One(name: String) }
+pub record Two { Two(one: One) }
 pub fn get(x: Two) { x.one.name }",
         vec![
             ("One", "fn(String) -> One"),
@@ -1454,20 +1454,20 @@ fn generic_accessor() {
     // Field access correctly handles type parameters
     assert_module_infer!(
         "
-pub type Box(a) { Box(inner: a) }
-pub fn get_box(x: Box(Box(a))) { x.inner }
-pub fn get_generic(x: Box(a)) { x.inner }
-pub fn get_get_box(x: Box(Box(a))) { x.inner.inner }
-pub fn get_int(x: Box(Int)) { x.inner }
-pub fn get_string(x: Box(String)) { x.inner }
+pub record Box<a> { Box(inner: a) }
+pub fn get_box(x: Box<Box<a>>) { x.inner }
+pub fn get_generic(x: Box<a>) { x.inner }
+pub fn get_get_box(x: Box<Box<a>>) { x.inner.inner }
+pub fn get_int(x: Box<Int>) { x.inner }
+pub fn get_string(x: Box<String>) { x.inner }
 ",
         vec![
-            ("Box", "fn(a) -> Box(a)"),
-            ("get_box", "fn(Box(Box(a))) -> Box(a)"),
-            ("get_generic", "fn(Box(a)) -> a"),
-            ("get_get_box", "fn(Box(Box(a))) -> a"),
-            ("get_int", "fn(Box(Int)) -> Int"),
-            ("get_string", "fn(Box(String)) -> String"),
+            ("Box", "fn(a) -> Box<a>"),
+            ("get_box", "fn(Box<Box<a>>) -> Box<a>"),
+            ("get_generic", "fn(Box<a>) -> a"),
+            ("get_get_box", "fn(Box<Box<a>>) -> a"),
+            ("get_int", "fn(Box<Int>) -> Int"),
+            ("get_string", "fn(Box<String>) -> String"),
         ]
     );
 }
@@ -1481,7 +1481,7 @@ pub fn name(cat: Cat) {
   cat.name
 }
 
-pub opaque type Cat {
+pub opaque record Cat {
   Cat(name: String)
 }",
         vec![("name", "fn(Cat) -> String"),]
@@ -1493,14 +1493,15 @@ fn custom_type_annotation() {
     // We can annotate let with custom types
     assert_module_infer!(
         "
-        pub type Person {
+        pub record Person {
             Person(name: String, age: Int)
         }
 
         pub fn create_person(name: String) {
             let x: Person = Person(name: name, age: 1)
             x
-        }",
+        }
+        ",
         vec![
             ("Person", "fn(String, Int) -> Person"),
             ("create_person", "fn(String) -> Person"),
@@ -1509,23 +1510,23 @@ fn custom_type_annotation() {
 
     assert_module_infer!(
         "
-        pub type Box(inner) {
+        pub record Box<inner> {
             Box(inner)
         }
 
         pub fn create_int_box(value: Int) {
-            let x: Box(Int) = Box(value)
+            let x: Box<Int> = Box(value)
             x
         }
 
         pub fn create_float_box(value: Float) {
-            let x: Box(Float) = Box(value)
+            let x: Box<Float> = Box(value)
             x
         }",
         vec![
-            ("Box", "fn(a) -> Box(a)"),
-            ("create_float_box", "fn(Float) -> Box(Float)"),
-            ("create_int_box", "fn(Int) -> Box(Int)"),
+            ("Box", "fn(a) -> Box<a>"),
+            ("create_float_box", "fn(Float) -> Box<Float>"),
+            ("create_int_box", "fn(Int) -> Box<Int>"),
         ]
     );
 }
@@ -1536,7 +1537,7 @@ fn opaque_accessors() {
     // but are not exported
     assert_module_infer!(
         "
-pub opaque type One { One(name: String) }
+pub opaque record One { One(name: String) }
 pub fn get(x: One) { x.name }",
         vec![("get", "fn(One) -> String"),]
     );
@@ -1548,15 +1549,15 @@ fn fn_annotation_reused() {
     // annotations within their body
     assert_module_infer!(
         "
-        pub type Box(a) {
+        pub record Box<a> {
             Box(value: a)
         }
-        pub fn go(box1: Box(a)) {
-            fn(box2: Box(a)) { box1.value == box2.value }
+        pub fn go(box1: Box<a>) {
+            fn(box2: Box<a>) { box1.value == box2.value }
         }",
         vec![
-            ("Box", "fn(a) -> Box(a)"),
-            ("go", "fn(Box(a)) -> fn(Box(a)) -> Bool")
+            ("Box", "fn(a) -> Box<a>"),
+            ("go", "fn(Box<a>) -> fn(Box<a>) -> Bool")
         ]
     );
 
@@ -1564,16 +1565,16 @@ fn fn_annotation_reused() {
     // annotations within their body
     assert_module_infer!(
         "
-        pub type Box(a) {
+        pub record Box<a> {
             Box(value: a)
         }
-        pub fn go(box1: Box(a)) {
-            let x: Box(a) = box1
-            fn(box2: Box(a)) { x.value == box2.value }
+        pub fn go(box1: Box<a>) {
+            let x: Box<a> = box1
+            fn(box2: Box<a>) { x.value == box2.value }
         }",
         vec![
-            ("Box", "fn(a) -> Box(a)"),
-            ("go", "fn(Box(a)) -> fn(Box(a)) -> Bool")
+            ("Box", "fn(a) -> Box<a>"),
+            ("go", "fn(Box<a>) -> fn(Box<a>) -> Bool")
         ]
     );
 }
@@ -1583,7 +1584,7 @@ fn accessor_multiple_variants() {
     // We can access fields on custom types with multiple variants
     assert_module_infer!(
         "
-pub type Person {
+pub record Person {
     Teacher(name: String, title: String)
     Student(name: String, age: Int)
 }
@@ -1602,16 +1603,16 @@ fn record_accessor_multiple_variants_parameterised_types() {
     // In positions other than the 1st field
     assert_module_infer!(
         "
-pub type Person {
-    Teacher(name: String, age: List(Int), title: String)
-    Student(name: String, age: List(Int))
+pub record Person {
+    Teacher(name: String, age: List<Int>, title: String)
+    Student(name: String, age: List<Int>)
 }
 pub fn get_name(person: Person) { person.name }
 pub fn get_age(person: Person) { person.age }",
         vec![
-            ("Student", "fn(String, List(Int)) -> Person"),
-            ("Teacher", "fn(String, List(Int), String) -> Person"),
-            ("get_age", "fn(Person) -> List(Int)"),
+            ("Student", "fn(String, List<Int>) -> Person"),
+            ("Teacher", "fn(String, List<Int>, String) -> Person"),
+            ("get_age", "fn(Person) -> List<Int>"),
             ("get_name", "fn(Person) -> String"),
         ]
     );
@@ -1623,7 +1624,7 @@ fn accessor_multiple_variants_positions_other_than_first() {
     // In positions other than the 1st field
     assert_module_infer!(
         "
-pub type Person {
+pub record Person {
     Teacher(name: String, age: Int, title: String)
     Student(name: String, age: Int)
 }
@@ -1642,7 +1643,7 @@ pub fn get_age(person: Person) { person.age }",
 fn box_record() {
     assert_module_infer!(
         "
-pub type Box {
+pub record Box {
   Box(a: Nil, b: Int, c: Int, d: Int)
 }
 
@@ -1661,7 +1662,7 @@ fn record_update_no_fields() {
     // No arguments given to a record update
     assert_module_infer!(
         "
-        pub type Person {
+        pub record Person {
             Person(name: String, age: Int)
         }
         pub fn identity(person: Person) {
@@ -1679,7 +1680,7 @@ fn record_update() {
     // Some arguments given to a record update
     assert_module_infer!(
         "
-        pub type Person {
+        pub record Person {
             Person(name: String, age: Int)
         }
         pub fn update_name(person: Person, name: String) {
@@ -1697,7 +1698,7 @@ fn record_update_all_fields() {
     // All arguments given in order to a record update
     assert_module_infer!(
         "
-        pub type Person {
+        pub record Person {
             Person(name: String, age: Int)
         }
         pub fn update_person(person: Person, name: String, age: Int) {
@@ -1715,7 +1716,7 @@ fn record_update_out_of_order() {
     // All arguments given out of order to a record update
     assert_module_infer!(
         "
-        pub type Person {
+        pub record Person {
             Person(name: String, age: Int)
         }
         pub fn update_person(person: Person, name: String, age: Int) {
@@ -1733,18 +1734,18 @@ fn record_update_generic() {
     // A record update with polymorphic types
     assert_module_infer!(
         "
-        pub type Box(a, b) {
+        pub record Box<a, b> {
             Box(left: a, right: b)
         }
 
-        pub fn combine_boxes(a: Box(Int, Bool), b: Box(Bool, Int)) {
+        pub fn combine_boxes(a: Box<Int, Bool>, b: Box<Bool, Int>) {
             Box(..a, left: a.left + b.right, right: b.left)
         }",
         vec![
-            ("Box", "fn(a, b) -> Box(a, b)"),
+            ("Box", "fn(a, b) -> Box<a, b>"),
             (
                 "combine_boxes",
-                "fn(Box(Int, Bool), Box(Bool, Int)) -> Box(Int, Bool)"
+                "fn(Box<Int, Bool>, Box<Bool, Int>) -> Box<Int, Bool>"
             )
         ]
     );
@@ -1755,16 +1756,16 @@ fn record_update_generic_unannotated() {
     // A record update with unannotated polymorphic types
     assert_module_infer!(
         "
-        pub type Box(a, b) {
+        pub record Box<a, b> {
             Box(left: a, right: b)
         }
 
-        pub fn combine_boxes(a: Box(t1, t2), b: Box(t2, t1)) {
+        pub fn combine_boxes(a: Box<t1, t2>, b: Box<t2, t1>) {
             Box(..a, left: b.right, right: b.left)
         }",
         vec![
-            ("Box", "fn(a, b) -> Box(a, b)"),
-            ("combine_boxes", "fn(Box(a, b), Box(b, a)) -> Box(a, b)")
+            ("Box", "fn(a, b) -> Box<a, b>"),
+            ("combine_boxes", "fn(Box<a, b>, Box<b, a>) -> Box<a, b>")
         ]
     );
 }
@@ -1791,7 +1792,7 @@ fn module_constants() {
             ("test_int3", "Int"),
             ("test_int4", "Int"),
             ("test_int5", "Int"),
-            ("test_list", "List(Int)"),
+            ("test_list", "List<Int>"),
             ("test_string", "String"),
             ("test_tuple", "#(String, Int)"),
             ("test_var1", "Int"),
@@ -1803,7 +1804,7 @@ fn module_constants() {
 #[test]
 fn custom_type_module_constants() {
     assert_module_infer!(
-        "pub type Test { A }
+        "pub record Test { A }
         pub const some_test = A",
         vec![("A", "Test"), ("some_test", "Test")],
     );
@@ -1858,7 +1859,7 @@ fn functions_used_before_definition2() {
 fn functions_used_before_definition3() {
     assert_module_infer!(
         "pub fn a() { Thing }
-         pub type Thing { Thing }",
+         pub record Thing { Thing }",
         vec![("Thing", "Thing"), ("a", "fn() -> Thing"),],
     );
 }
@@ -1866,7 +1867,7 @@ fn functions_used_before_definition3() {
 #[test]
 fn types_used_before_definition() {
     assert_module_infer!(
-        "pub type Y { Y(X) }
+        "pub record Y { Y(X) }
          pub type X",
         vec![("Y", "fn(X) -> Y")],
     );
@@ -1875,7 +1876,7 @@ fn types_used_before_definition() {
 #[test]
 fn types_used_before_definition1() {
     assert_module_infer!(
-        "pub type Y { Y(x: X) }
+        "pub record Y { Y(x: X) }
          pub type X",
         vec![("Y", "fn(X) -> Y")],
     );
@@ -1908,11 +1909,11 @@ fn mutual_recursion() {
 #[test]
 fn type_annotations() {
     assert_module_infer!(
-        "pub type Box(x) { Box(label: String, contents: x) }
-         pub fn id(x: Box(y)) { x }",
+        "pub record Box<x> { Box(label: String, contents: x) }
+         pub fn id(x: Box<y>) { x }",
         vec![
-            ("Box", "fn(String, a) -> Box(a)"),
-            ("id", "fn(Box(a)) -> Box(a)"),
+            ("Box", "fn(String, a) -> Box<a>"),
+            ("id", "fn(Box<a>) -> Box<a>"),
         ],
     );
 
@@ -1921,16 +1922,16 @@ fn type_annotations() {
     assert_module_infer!("pub fn go(x) -> b { x }", vec![("go", "fn(a) -> a")],);
     assert_module_infer!("pub fn go(x: b) { x }", vec![("go", "fn(a) -> a")],);
     assert_module_infer!(
-        "pub fn go(x: List(b)) -> List(b) { x }",
-        vec![("go", "fn(List(a)) -> List(a)")],
+        "pub fn go(x: List<b>) -> List<b> { x }",
+        vec![("go", "fn(List<a>) -> List<a>")],
     );
     assert_module_infer!(
-        "pub fn go(x: List(b)) { x }",
-        vec![("go", "fn(List(a)) -> List(a)")],
+        "pub fn go(x: List<b>) { x }",
+        vec![("go", "fn(List<a>) -> List<a>")],
     );
     assert_module_infer!(
-        "pub fn go(x: List(String)) { x }",
-        vec![("go", "fn(List(String)) -> List(String)")],
+        "pub fn go(x: List<String>) { x }",
+        vec![("go", "fn(List<String>) -> List<String>")],
     );
     assert_module_infer!("pub fn go(x: b, y: c) { x }", vec![("go", "fn(a, b) -> a")],);
     assert_module_infer!("pub fn go(x) -> Int { x }", vec![("go", "fn(Int) -> Int")],);
@@ -1971,7 +1972,7 @@ fn early_function_generalisation2() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/970
+// https://github.com/rakun-lang/rakun/issues/970
 #[test]
 fn bit_array_pattern_unification() {
     assert_module_infer!(
@@ -1980,7 +1981,7 @@ fn bit_array_pattern_unification() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/970
+// https://github.com/rakun-lang/rakun/issues/970
 #[test]
 fn bit_array_pattern_unification2() {
     assert_module_infer!(
@@ -1989,19 +1990,19 @@ fn bit_array_pattern_unification2() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/983
+// https://github.com/rakun-lang/rakun/issues/983
 #[test]
 fn qualified_prelude() {
     assert_module_infer!(
-        "import gleam
+        "import rakun
 pub fn a() {
-  gleam.Ok(1)
+  rakun.Ok(1)
 }",
-        vec![("a", "fn() -> Result(Int, a)")],
+        vec![("a", "fn() -> Result<Int, a>")],
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1029
+// https://github.com/rakun-lang/rakun/issues/1029
 #[test]
 fn empty_list_const() {
     assert_module_infer!(
@@ -2009,7 +2010,7 @@ fn empty_list_const() {
 pub fn a() {
     empty
 }",
-        vec![("a", "fn() -> List(a)"), ("empty", "List(a)")],
+        vec![("a", "fn() -> List<a>"), ("empty", "List<a>")],
     );
 }
 
@@ -2030,37 +2031,37 @@ fn let_as_expression2() {
 
 #[test]
 fn string_concat_ok() {
-    assert_infer!(r#" "1" <> "2" "#, "String");
+    assert_infer!(r#" "1" ++ "2" "#, "String");
 }
 
 #[test]
 fn string_concat_ko_1() {
-    assert_error!(r#" "1" <> 2 "#);
+    assert_error!(r#" "1" ++ 2 "#);
 }
 
 #[test]
 fn string_concat_ko_2() {
-    assert_error!(r#" 1 <> "2" "#);
+    assert_error!(r#" 1 ++ "2" "#);
 }
 
-// https://github.com/gleam-lang/gleam/issues/1087
+// https://github.com/rakun-lang/rakun/issues/1087
 #[test]
 fn generic_inner_access() {
     assert_module_infer!(
-        "pub type B(b) { B(value: b) }
-pub fn b_get_first(b: B(#(a))) {
+        "pub record B<b> { B(value: b) }
+pub fn b_get_first(b: B<#(a)>) {
   b.value.0
 }",
-        vec![("B", "fn(a) -> B(a)"), ("b_get_first", "fn(B(#(a))) -> a")],
+        vec![("B", "fn(a) -> B<a>"), ("b_get_first", "fn(B<#(a)>) -> a")],
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1093
+// https://github.com/rakun-lang/rakun/issues/1093
 #[test]
 fn fn_contextual_info() {
     assert_module_infer!(
         "
-type Box {
+record Box {
   Box(inner: Int)
 }
 
@@ -2076,14 +2077,14 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1519
+// https://github.com/rakun-lang/rakun/issues/1519
 #[test]
 fn permit_holes_in_fn_args_and_returns() {
     assert_module_infer!(
-        "pub fn run(args: List(_)) -> List(_) {
+        "pub fn run(args: List<_>) -> List<_> {
   todo
 }",
-        vec![("run", "fn(List(a)) -> List(b)")],
+        vec![("run", "fn(List<a>) -> List<b>")],
     );
 }
 
@@ -2122,7 +2123,7 @@ fn infer_label_shorthand_in_call_arg() {
 fn infer_label_shorthand_in_constructor_arg() {
     assert_module_infer!(
         "
-    pub type Wibble { Wibble(arg1: Int, arg2: Bool, arg3: Float) }
+    pub record Wibble { Wibble(arg1: Int, arg2: Bool, arg3: Float) }
     pub fn main() {
         let arg1 = 1
         let arg2 = True
@@ -2141,7 +2142,7 @@ fn infer_label_shorthand_in_constructor_arg() {
 fn infer_label_shorthand_in_constant_constructor_arg() {
     assert_module_infer!(
         "
-    pub type Wibble { Wibble(arg1: Int, arg2: Bool, arg3: Float) }
+    pub record Wibble { Wibble(arg1: Int, arg2: Bool, arg3: Float) }
     pub const arg1 = 1
     pub const arg2 = True
     pub const arg3 = 1.0
@@ -2162,7 +2163,7 @@ fn infer_label_shorthand_in_constant_constructor_arg() {
 fn infer_label_shorthand_in_pattern_arg() {
     assert_module_infer!(
         "
-    pub type Wibble { Wibble(arg1: Int, arg2: Bool, arg3: Int) }
+    pub record Wibble { Wibble(arg1: Int, arg2: Bool, arg3: Int) }
     pub fn main() {
         case Wibble(1, True, 2) {
            Wibble(arg2:, arg3:, arg1:) if arg2 -> arg1 * arg3
@@ -2181,7 +2182,7 @@ fn infer_label_shorthand_in_pattern_arg() {
 fn infer_label_shorthand_in_record_update_arg() {
     assert_module_infer!(
         "
-    pub type Wibble { Wibble(arg1: Int, arg2: Bool, arg3: Float) }
+    pub record Wibble { Wibble(arg1: Int, arg2: Bool, arg3: Float) }
     pub fn main() {
         let wibble = Wibble(1, True, 2.0)
         let arg3 = 3.0
@@ -2237,7 +2238,7 @@ fn assert_suitable_main_function_not_module_function() {
                 value: "1".into(),
             },
             implementations: Implementations {
-                gleam: true,
+                rakun: true,
                 uses_erlang_externals: false,
                 uses_javascript_externals: false,
                 can_run_on_erlang: true,
@@ -2262,7 +2263,7 @@ fn assert_suitable_main_function_wrong_arity() {
             location: Default::default(),
             module: "module".into(),
             implementations: Implementations {
-                gleam: true,
+                rakun: true,
                 uses_erlang_externals: false,
                 uses_javascript_externals: false,
                 can_run_on_erlang: true,
@@ -2287,7 +2288,7 @@ fn assert_suitable_main_function_ok() {
             location: Default::default(),
             module: "module".into(),
             implementations: Implementations {
-                gleam: true,
+                rakun: true,
                 uses_erlang_externals: false,
                 uses_javascript_externals: false,
                 can_run_on_erlang: true,
@@ -2312,7 +2313,7 @@ fn assert_suitable_main_function_erlang_not_supported() {
             location: Default::default(),
             module: "module".into(),
             implementations: Implementations {
-                gleam: false,
+                rakun: false,
                 uses_erlang_externals: true,
                 uses_javascript_externals: true,
                 can_run_on_erlang: false,
@@ -2337,7 +2338,7 @@ fn assert_suitable_main_function_javascript_not_supported() {
             location: Default::default(),
             module: "module".into(),
             implementations: Implementations {
-                gleam: false,
+                rakun: false,
                 uses_erlang_externals: true,
                 uses_javascript_externals: true,
                 can_run_on_erlang: true,
@@ -2411,7 +2412,7 @@ fn pipe_with_annonymous_mixed_functions() {
         r#"
 pub fn main() {
   let a = "abc"
-     |> fn (x) { #(x, x <> "d") }
+     |> fn (x) { #(x, x ++ "d") }
      |> fn (x) { x.0 }
      |> fn (x: String) { x }
 }
@@ -2422,13 +2423,13 @@ pub fn main() {
 
 #[test]
 fn pipe_with_annonymous_functions_using_structs() {
-    // https://github.com/gleam-lang/gleam/issues/2504
+    // https://github.com/rakun-lang/rakun/issues/2504
     assert_module_infer!(
         r#"
-type Date {
+record Date {
   Date(day: Day)
 }
-type Day {
+record Day {
   Day(year: Int)
 }
 fn now() -> Date {

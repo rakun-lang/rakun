@@ -1,6 +1,6 @@
 $ErrorActionPreference = "Stop"
 
-$PackageName = "$PACKAGE_NAME_FROM_GLEAM"
+$PackageName = "$PACKAGE_NAME_FROM_RAKUN"
 $BaseDirectory = $PSScriptRoot
 $ScriptCommand = $args[0]
 

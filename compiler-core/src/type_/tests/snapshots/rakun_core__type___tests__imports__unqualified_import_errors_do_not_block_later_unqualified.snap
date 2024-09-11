@@ -1,0 +1,28 @@
+---
+source: compiler-core/src/type_/tests/imports.rs
+expression: "import rakun.{Unknown, type Int as Integer}\n\npub fn main() -> Integer {\n  Nil\n}"
+---
+error: Unknown module value
+  ┌─ /src/one/two.rakun:1:15
+  │
+1 │ import rakun.{Unknown, type Int as Integer}
+  │               ^^^^^^^
+
+The module `rakun` does not have a `Unknown` value.
+
+error: Type mismatch
+  ┌─ /src/one/two.rakun:4:3
+  │
+4 │   Nil
+  │   ^^^
+
+The type of this returned value doesn't match the return type
+annotation of this function.
+
+Expected type:
+
+    Int
+
+Found type:
+
+    Nil

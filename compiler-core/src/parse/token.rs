@@ -29,6 +29,7 @@ pub enum Token {
     GreaterEqual,
     Percent,
     // Float Operators
+    PlusPlus,        // '++'
     PlusDot,         // '+.'
     MinusDot,        // '-.'
     StarDot,         // '*.'
@@ -37,6 +38,7 @@ pub enum Token {
     GreaterDot,      // '>.'
     LessEqualDot,    // '<=.'
     GreaterEqualDot, // '>=.'
+    EqualDot,        // '=.'
     // String Operators
     LtGt, // '<>'
     // Other Punctuation
@@ -85,6 +87,7 @@ pub enum Token {
     Test,
     Todo,
     Type,
+    Record,
     Use,
 }
 
@@ -128,6 +131,7 @@ impl Token {
             | Token::Pub
             | Token::Todo
             | Token::Type
+            | Token::Record
             | Token::Use
             | Token::Auto
             | Token::Delegate
@@ -161,6 +165,7 @@ impl Token {
             | Token::LessEqual
             | Token::GreaterEqual
             | Token::Percent
+            | Token::PlusPlus
             | Token::PlusDot
             | Token::MinusDot
             | Token::StarDot
@@ -177,6 +182,7 @@ impl Token {
             | Token::Equal
             | Token::EqualEqual
             | Token::NotEqual
+            | Token::EqualDot
             | Token::Vbar
             | Token::VbarVbar
             | Token::AmperAmper
@@ -246,6 +252,7 @@ impl fmt::Display for Token {
             Token::LessDot => "<.",
             Token::LessEqual => "<=",
             Token::LessEqualDot => "<=.",
+            Token::EqualDot => "=.",
             Token::Let => "let",
             Token::LtGt => "<>",
             Token::LtLt => "<<",
@@ -258,6 +265,7 @@ impl fmt::Display for Token {
             Token::Percent => "%",
             Token::Pipe => "|>",
             Token::Plus => "+",
+            Token::PlusPlus => "++",
             Token::PlusDot => "+.",
             Token::Pub => "pub",
             Token::RArrow => "->",
@@ -271,6 +279,7 @@ impl fmt::Display for Token {
             Token::Test => "test",
             Token::Todo => "todo",
             Token::Type => "type",
+            Token::Record => "record",
             Token::Use => "use",
             Token::Vbar => "|",
             Token::VbarVbar => "||",

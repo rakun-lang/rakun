@@ -1,0 +1,11 @@
+---
+source: compiler-core/src/type_/tests/warnings.rs
+expression: import rakun/wibble as wobble
+---
+warning: Unused imported module
+  ┌─ /src/warning/wrn.rakun:1:1
+  │
+1 │ import rakun/wibble as wobble
+  │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ This imported module is never used
+
+Hint: You can safely remove it.

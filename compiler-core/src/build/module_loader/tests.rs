@@ -16,11 +16,11 @@ fn no_cache_present() {
     let incomplete_modules = HashSet::new();
     let loader = make_loader(&warnings, &name, &fs, src, artefact, &incomplete_modules);
 
-    fs.write(&Utf8Path::new("/src/main.gleam"), "const x = 1")
+    fs.write(&Utf8Path::new("/src/main.rakun"), "const x = 1")
         .unwrap();
 
     let result = loader
-        .load(Utf8Path::new("/src/main.gleam").to_path_buf())
+        .load(Utf8Path::new("/src/main.rakun").to_path_buf())
         .unwrap();
 
     assert!(result.is_new());
@@ -37,11 +37,11 @@ fn cache_present_and_fresh() {
     let loader = make_loader(&warnings, &name, &fs, src, artefact, &incomplete_modules);
 
     // The mtime of the source is older than that of the cache
-    write_src(&fs, TEST_SOURCE_1, "/src/main.gleam", 0);
+    write_src(&fs, TEST_SOURCE_1, "/src/main.rakun", 0);
     write_cache(&fs, TEST_SOURCE_1, "/artefact/main.cache_meta", 1, false);
 
     let result = loader
-        .load(Utf8Path::new("/src/main.gleam").to_path_buf())
+        .load(Utf8Path::new("/src/main.rakun").to_path_buf())
         .unwrap();
 
     assert!(result.is_cached());
@@ -58,11 +58,11 @@ fn cache_present_and_stale() {
     let loader = make_loader(&warnings, &name, &fs, src, artefact, &incomplete_modules);
 
     // The mtime of the source is newer than that of the cache
-    write_src(&fs, TEST_SOURCE_2, "/src/main.gleam", 2);
+    write_src(&fs, TEST_SOURCE_2, "/src/main.rakun", 2);
     write_cache(&fs, TEST_SOURCE_1, "/artefact/main.cache_meta", 1, false);
 
     let result = loader
-        .load(Utf8Path::new("/src/main.gleam").to_path_buf())
+        .load(Utf8Path::new("/src/main.rakun").to_path_buf())
         .unwrap();
 
     assert!(result.is_new());
@@ -79,11 +79,11 @@ fn cache_present_and_stale_but_source_is_the_same() {
     let loader = make_loader(&warnings, &name, &fs, src, artefact, &incomplete_modules);
 
     // The mtime of the source is newer than that of the cache
-    write_src(&fs, TEST_SOURCE_1, "/src/main.gleam", 2);
+    write_src(&fs, TEST_SOURCE_1, "/src/main.rakun", 2);
     write_cache(&fs, TEST_SOURCE_1, "/artefact/main.cache_meta", 1, false);
 
     let result = loader
-        .load(Utf8Path::new("/src/main.gleam").to_path_buf())
+        .load(Utf8Path::new("/src/main.rakun").to_path_buf())
         .unwrap();
 
     assert!(result.is_cached());
@@ -101,11 +101,11 @@ fn cache_present_and_stale_source_is_the_same_lsp_mode() {
     loader.mode = Mode::Lsp;
 
     // The mtime of the source is newer than that of the cache
-    write_src(&fs, TEST_SOURCE_1, "/src/main.gleam", 2);
+    write_src(&fs, TEST_SOURCE_1, "/src/main.rakun", 2);
     write_cache(&fs, TEST_SOURCE_1, "/artefact/main.cache_meta", 1, false);
 
     let result = loader
-        .load(Utf8Path::new("/src/main.gleam").to_path_buf())
+        .load(Utf8Path::new("/src/main.rakun").to_path_buf())
         .unwrap();
 
     assert!(result.is_cached());
@@ -124,11 +124,11 @@ fn cache_present_and_stale_source_is_the_same_lsp_mode_and_invalidated() {
     loader.mode = Mode::Lsp;
 
     // The mtime of the source is newer than that of the cache
-    write_src(&fs, TEST_SOURCE_1, "/src/main.gleam", 2);
+    write_src(&fs, TEST_SOURCE_1, "/src/main.rakun", 2);
     write_cache(&fs, TEST_SOURCE_1, "/artefact/main.cache_meta", 1, false);
 
     let result = loader
-        .load(Utf8Path::new("/src/main.gleam").to_path_buf())
+        .load(Utf8Path::new("/src/main.rakun").to_path_buf())
         .unwrap();
 
     assert!(result.is_new());
@@ -146,11 +146,11 @@ fn cache_present_without_codegen_when_required() {
     loader.codegen = CodegenRequired::Yes;
 
     // The mtime of the cache is newer than that of the source
-    write_src(&fs, TEST_SOURCE_1, "/src/main.gleam", 0);
+    write_src(&fs, TEST_SOURCE_1, "/src/main.rakun", 0);
     write_cache(&fs, TEST_SOURCE_1, "/artefact/main.cache_meta", 1, false);
 
     let result = loader
-        .load(Utf8Path::new("/src/main.gleam").to_path_buf())
+        .load(Utf8Path::new("/src/main.rakun").to_path_buf())
         .unwrap();
 
     assert!(result.is_new());
@@ -168,11 +168,11 @@ fn cache_present_with_codegen_when_required() {
     loader.codegen = CodegenRequired::Yes;
 
     // The mtime of the cache is newer than that of the source
-    write_src(&fs, TEST_SOURCE_1, "/src/main.gleam", 0);
+    write_src(&fs, TEST_SOURCE_1, "/src/main.rakun", 0);
     write_cache(&fs, TEST_SOURCE_1, "/artefact/main.cache_meta", 1, true);
 
     let result = loader
-        .load(Utf8Path::new("/src/main.gleam").to_path_buf())
+        .load(Utf8Path::new("/src/main.rakun").to_path_buf())
         .unwrap();
 
     assert!(result.is_cached());
@@ -190,11 +190,11 @@ fn cache_present_without_codegen_when_not_required() {
     loader.codegen = CodegenRequired::No;
 
     // The mtime of the cache is newer than that of the source
-    write_src(&fs, TEST_SOURCE_1, "/src/main.gleam", 0);
+    write_src(&fs, TEST_SOURCE_1, "/src/main.rakun", 0);
     write_cache(&fs, TEST_SOURCE_1, "/artefact/main.cache_meta", 1, false);
 
     let result = loader
-        .load(Utf8Path::new("/src/main.gleam").to_path_buf())
+        .load(Utf8Path::new("/src/main.rakun").to_path_buf())
         .unwrap();
 
     assert!(result.is_cached());

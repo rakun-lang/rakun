@@ -166,7 +166,7 @@ fn hole_parameter_erlang() {
     assert_module_error!(
         r#"
 @external(erlang, "one", "one")
-pub fn one(x: List(_)) -> Int {
+pub fn one(x: List<_>) -> Int {
   todo
 }
 "#
@@ -178,7 +178,7 @@ fn hole_return_erlang() {
     assert_module_error!(
         r#"
 @external(erlang, "one", "one")
-pub fn one(x: List(Int)) -> List(_) {
+pub fn one(x: List<Int>) -> List<_> {
   todo
 }
 "#
@@ -190,7 +190,7 @@ fn hole_parameter_javascript() {
     assert_module_error!(
         r#"
 @external(javascript, "one", "one")
-pub fn one(x: List(_)) -> Int {
+pub fn one(x: List<_>) -> Int {
   todo
 }
 "#
@@ -202,7 +202,7 @@ fn hole_return_javascript() {
     assert_module_error!(
         r#"
 @external(javascript, "one", "one")
-pub fn one(x: List(Int)) -> List(_) {
+pub fn one(x: List<Int>) -> List<_> {
   todo
 }
 "#
@@ -318,7 +318,7 @@ pub fn should_not_be_generated() {
 }
 
 #[test]
-fn no_gleam_impl_no_annotations_function_fault_tolerance() {
+fn no_rakun_impl_no_annotations_function_fault_tolerance() {
     // A function not having annotations when required does not stop analysis.
     assert_module_error!(
         r#"

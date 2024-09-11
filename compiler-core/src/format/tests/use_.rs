@@ -248,7 +248,7 @@ fn patterns() {
 fn patterns_with_annotation() {
     assert_format!(
         r#"pub fn main() {
-  use Box(x): Box(Int) <- apply(Box(1))
+  use Box(x): Box<Int> <- apply(Box(1))
   x
 }
 "#
@@ -301,7 +301,7 @@ fn multiple_long_patterns_with_annotations() {
       xxxxxxxxxxxxxxxxxxxxxxx,
       yyyyyyyyyyyyyyyyyyyyyyyyyyy,
       zzzzzzzzzzzzzzzzzzzzzzzzzzzz,
-    ): Box(Int, Bool, String),
+    ): Box<Int, Bool, String>,
     Box(_)
   <- apply(Box(1))
   x
@@ -315,10 +315,10 @@ fn multiple_long_annotations() {
     assert_format!(
         r#"pub fn main() {
   use
-    Box(_, _): Box(
+    Box(_, _): Box<
       Xxzxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,
       Yyyyyyyyyyyyyyyyyyyyyyyy,
-    ),
+    >,
     Box(_)
   <- apply(Box(1))
   x
@@ -327,7 +327,7 @@ fn multiple_long_annotations() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2114
+// https://github.com/rakun-lang/rakun/issues/2114
 #[test]
 fn comment() {
     assert_format!(
@@ -340,7 +340,7 @@ fn comment() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3605
+// https://github.com/rakun-lang/rakun/issues/3605
 #[test]
 fn use_with_empty_callback_body_is_rewritten_to_have_a_todo() {
     assert_format_rewrite!(

@@ -3258,7 +3258,7 @@ pub mod implementations {
       self.reader.total_size()
     }
     #[inline]
-    pub fn get_gleam(self) -> bool {
+    pub fn get_rakun(self) -> bool {
       self.reader.get_bool_field(0)
     }
     #[inline]
@@ -3328,11 +3328,11 @@ pub mod implementations {
       self.builder.into_reader().total_size()
     }
     #[inline]
-    pub fn get_gleam(self) -> bool {
+    pub fn get_rakun(self) -> bool {
       self.builder.get_bool_field(0)
     }
     #[inline]
-    pub fn set_gleam(&mut self, value: bool)  {
+    pub fn set_rakun(&mut self, value: bool)  {
       self.builder.set_bool_field(0, value);
     }
     #[inline]

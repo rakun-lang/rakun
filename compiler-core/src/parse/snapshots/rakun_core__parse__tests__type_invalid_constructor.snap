@@ -1,0 +1,13 @@
+---
+source: compiler-core/src/parse/tests.rs
+expression: "\nrecord A {\n    A(String)\n    type\n}\n"
+---
+error: Syntax error
+  ┌─ /src/parse/error.rakun:4:5
+  │
+4 │     type
+  │     ^^^^ I was not expecting this
+
+Found the keyword `type`, expected one of: 
+- `}`
+- a record constructor

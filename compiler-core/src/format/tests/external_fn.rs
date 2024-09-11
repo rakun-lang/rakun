@@ -62,7 +62,7 @@ fn one(x: Int) -> Int {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2259
+// https://github.com/rakun-lang/rakun/issues/2259
 #[test]
 fn break_external_fn_arguments() {
     assert_format!(
@@ -71,7 +71,7 @@ fn improper_list_append(
   a: item_a,
   b: item_b,
   c: improper_tail,
-) -> List(anything)
+) -> List<anything>
 "#
     );
 }
@@ -82,9 +82,9 @@ fn long_long_external() {
     assert_format!(
         r#"@external(javascript, "./client-component.ffi.mjs", "register")
 pub fn register(
-  _app: App(WebComponent, Nil, model, msg),
+  _app: App<WebComponent, Nil, model, msg>,
   _name: String,
-) -> Result(Nil, Error) {
+) -> Result<Nil, Error> {
   Error(NotABrowser)
 }
 "#

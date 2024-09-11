@@ -268,7 +268,7 @@ fn register_imports(
             opaque,
             ..
         }) => {
-            // Erlang doesn't allow phantom type variables in type definitions but gleam does
+            // Erlang doesn't allow phantom type variables in type definitions but rakun does
             // so we check the type declaratinon against its constroctors and generate a phantom
             // value that uses the unused type variables.
             let type_var_usages = collect_type_var_usages(HashMap::new(), typed_parameters);
@@ -290,7 +290,7 @@ fn register_imports(
             let phantom_vars_constructor = if !phantom_vars.is_empty() {
                 let type_printer = TypePrinter::new(module_name);
                 Some(tuple(
-                    std::iter::once("gleam_phantom".to_doc())
+                    std::iter::once("rakun_phantom".to_doc())
                         .chain(phantom_vars.iter().map(|pv| type_printer.print(pv))),
                 ))
             } else {
@@ -881,7 +881,7 @@ fn float_div<'a>(left: &'a TypedExpr, right: &'a TypedExpr, env: &mut Env<'a>) -
 
     let left = expr(left, env);
     let right = expr(right, env);
-    let denominator = env.next_local_var_name("gleam@denominator");
+    let denominator = env.next_local_var_name("rakun@denominator");
     let clauses = docvec![
         line(),
         "+0.0 -> +0.0;",
@@ -907,7 +907,7 @@ fn int_div<'a>(
 
     let left = expr(left, env);
     let right = expr(right, env);
-    let denominator = env.next_local_var_name("gleam@denominator");
+    let denominator = env.next_local_var_name("rakun@denominator");
     let clauses = docvec![
         line(),
         "0 -> 0;",
@@ -1554,7 +1554,7 @@ fn docs_args_call<'a>(
             let name = escape_erlang_existing_name(name);
             // We use the constructor Fn variant's `module` and function `name`.
             // It would also be valid to use the module and label as in the
-            // Gleam code, but using the variant can result in an optimisation
+            // Rakun code, but using the variant can result in an optimisation
             // in which the target function is used for `external fn`s, removing
             // one layer of wrapping.
             // This also enables an optimisation in the Erlang compiler in which
@@ -1694,7 +1694,7 @@ fn erlang_error<'a>(
     env: &Env<'a>,
 ) -> Document<'a> {
     let mut fields_doc = docvec![
-        "gleam_error => ",
+        "rakun_error => ",
         name,
         ",",
         line(),
@@ -2040,7 +2040,7 @@ pub fn escape_erlang_existing_name(name: &str) -> &str {
 //
 //   Examples:
 //     fn(a) -> String       // `a` is `any()`
-//     fn() -> Result(a, b)  // `a` and `b` are `any()`
+//     fn() -> Result<a, b>  // `a` and `b` are `any()`
 //     fn(a) -> a            // `a` is a type var
 fn collect_type_var_usages<'a>(
     mut ids: HashMap<u64, u64>,

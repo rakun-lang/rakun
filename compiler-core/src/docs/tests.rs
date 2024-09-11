@@ -94,7 +94,7 @@ fn compile_with_markdown_pages(
             file.path.as_str(),
             file.content
                 .text()?
-                .replace(COMPILER_VERSION, "GLEAM_VERSION_HERE")
+                .replace(COMPILER_VERSION, "RAKUN_VERSION_HERE")
         ))
     })
     .collect::<String>()
@@ -110,7 +110,7 @@ pub fn compile(config: PackageConfig, modules: Vec<(&str, &str)>) -> EcoString {
 fn hello_docs() {
     let config = PackageConfig::default();
     let modules = vec![(
-        "app.gleam",
+        "app.rakun",
         r#"
 /// Here is some documentation
 pub fn one() {
@@ -121,12 +121,12 @@ pub fn one() {
     insta::assert_snapshot!(compile(config, modules));
 }
 
-// https://github.com/gleam-lang/gleam/issues/2347
+// https://github.com/rakun-lang/rakun/issues/2347
 #[test]
 fn tables() {
     let config = PackageConfig::default();
     let modules = vec![(
-        "app.gleam",
+        "app.rakun",
         r#"
 /// | heading 1    | heading 2    |
 /// |--------------|--------------|
@@ -141,14 +141,14 @@ pub fn one() {
     insta::assert_snapshot!(compile(config, modules));
 }
 
-// https://github.com/gleam-lang/gleam/issues/2202
+// https://github.com/rakun-lang/rakun/issues/2202
 #[test]
 fn long_function_wrapping() {
     let config = PackageConfig::default();
     let modules = vec![(
-        "app.gleam",
+        "app.rakun",
         r#"
-pub type Option(t) {
+pub record Option<t> {
   Some(t)
   None
 }
@@ -156,7 +156,7 @@ pub type Option(t) {
 /// Returns the first value if it is `Some`, otherwise evaluates the given
 /// function for a fallback value.
 ///
-pub fn lazy_or(first: Option(a), second: fn() -> Option(a)) -> Option(a) {
+pub fn lazy_or(first: Option<a>, second: fn() -> Option<a>) -> Option<a> {
   case first {
     Some(_) -> first
     None -> second()
@@ -172,7 +172,7 @@ pub fn lazy_or(first: Option(a), second: fn() -> Option(a)) -> Option(a) {
 fn internal_definitions_are_not_included() {
     let config = PackageConfig::default();
     let modules = vec![(
-        "app.gleam",
+        "app.rakun",
         r#"
 @internal
 pub const wibble = 1
@@ -181,7 +181,7 @@ pub const wibble = 1
 pub type Wibble = Int
 
 @internal
-pub type Wobble { Wobble }
+pub record Wobble { Wobble }
 
 @internal
 pub fn one() { 1 }
@@ -190,22 +190,22 @@ pub fn one() { 1 }
     insta::assert_snapshot!(compile(config, modules));
 }
 
-// https://github.com/gleam-lang/gleam/issues/2561
+// https://github.com/rakun-lang/rakun/issues/2561
 #[test]
 fn discarded_arguments_are_not_shown() {
     let config = PackageConfig::default();
-    let modules = vec![("app.gleam", "pub fn discard(_discarded: a) -> Int { 1 }")];
+    let modules = vec![("app.rakun", "pub fn discard(_discarded: a) -> Int { 1 }")];
     insta::assert_snapshot!(compile(config, modules));
 }
 
-// https://github.com/gleam-lang/gleam/issues/2631
+// https://github.com/rakun-lang/rakun/issues/2631
 #[test]
 fn docs_of_a_type_constructor_are_not_used_by_the_following_function() {
     let config = PackageConfig::default();
     let modules = vec![(
-        "app.gleam",
+        "app.rakun",
         r#"
-pub type Wibble {
+pub record Wibble {
   Wobble(
     /// Documentation!!
     wabble: Int,
@@ -225,7 +225,7 @@ fn markdown_code_from_standalone_pages_is_not_trimmed() {
         "one",
         "
 This is an example code snippet that should be indented
-```gleam
+```rakun
 pub fn indentation_test() {
   todo as \"This line should be indented by two spaces\"
 }
@@ -238,7 +238,7 @@ pub fn indentation_test() {
 fn markdown_code_from_function_comment_is_trimmed() {
     let config = PackageConfig::default();
     let modules = vec![(
-        "app.gleam",
+        "app.rakun",
         "
 /// Here's an example code snippet:
 /// ```
@@ -258,7 +258,7 @@ pub fn indentation_test() {
 fn markdown_code_from_module_comment_is_trimmed() {
     let config = PackageConfig::default();
     let modules = vec![(
-        "app.gleam",
+        "app.rakun",
         "
 //// Here's an example code snippet:
 //// ```
@@ -275,7 +275,7 @@ fn markdown_code_from_module_comment_is_trimmed() {
 fn doc_for_commented_definitions_is_not_included_in_next_constant() {
     let config = PackageConfig::default();
     let modules = vec![(
-        "app.gleam",
+        "app.rakun",
         "
 /// Not included!
 // pub fn wibble() {}
@@ -291,13 +291,13 @@ pub const wobble = 1
 fn doc_for_commented_definitions_is_not_included_in_next_type() {
     let config = PackageConfig::default();
     let modules = vec![(
-        "app.gleam",
+        "app.rakun",
         "
 /// Not included!
 // pub fn wibble() {}
 
 /// Included!
-pub type Wibble {
+pub record Wibble {
   /// Wobble!
   Wobble
 }
@@ -310,7 +310,7 @@ pub type Wibble {
 fn doc_for_commented_definitions_is_not_included_in_next_function() {
     let config = PackageConfig::default();
     let modules = vec![(
-        "app.gleam",
+        "app.rakun",
         "
 /// Not included!
 // pub fn wibble() {}
@@ -326,7 +326,7 @@ pub fn wobble(arg) {}
 fn doc_for_commented_definitions_is_not_included_in_next_type_alias() {
     let config = PackageConfig::default();
     let modules = vec![(
-        "app.gleam",
+        "app.rakun",
         "
 /// Not included!
 // pub fn wibble() {}

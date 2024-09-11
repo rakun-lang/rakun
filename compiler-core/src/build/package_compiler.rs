@@ -108,8 +108,8 @@ where
         let span = tracing::info_span!("compile", package = %self.config.name.as_str());
         let _enter = span.enter();
 
-        // Ensure that the package is compatible with this version of Gleam
-        if let Err(e) = self.config.check_gleam_compatibility() {
+        // Ensure that the package is compatible with this version of Rakun
+        if let Err(e) = self.config.check_rakun_compatibility() {
             return e.into();
         }
 
@@ -211,9 +211,9 @@ where
         let escript_path = self
             .out
             .join(paths::ARTEFACT_DIRECTORY_NAME)
-            .join("gleam@@compile.erl");
+            .join("rakun@@compile.erl");
         if !self.io.is_file(&escript_path) {
-            let escript_source = std::include_str!("../../templates/gleam@@compile.erl");
+            let escript_source = std::include_str!("../../templates/rakun@@compile.erl");
             self.io.write(&escript_path, escript_source)?;
         }
 
@@ -571,9 +571,9 @@ fn analyse(
 }
 
 pub(crate) fn module_name(package_path: &Utf8Path, full_module_path: &Utf8Path) -> EcoString {
-    // /path/to/project/_build/default/lib/the_package/src/my/module.gleam
+    // /path/to/project/_build/default/lib/the_package/src/my/module.rakun
 
-    // my/module.gleam
+    // my/module.rakun
     let mut module_path = full_module_path
         .strip_prefix(package_path)
         .expect("Stripping package prefix from module path")
@@ -691,7 +691,7 @@ pub(crate) struct UncompiledModule {
 }
 
 #[derive(Template)]
-#[template(path = "gleam@@main.erl", escape = "none")]
+#[template(path = "rakun@@main.erl", escape = "none")]
 struct ErlangEntrypointModule<'a> {
     application: &'a str,
 }

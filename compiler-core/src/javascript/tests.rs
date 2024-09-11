@@ -188,7 +188,7 @@ pub fn expect_js_error(src: &str, deps: Vec<(&str, &str, &str)>) -> String {
             error: inner_error, ..
         } => crate::Error::JavaScript {
             src: src.into(),
-            path: Utf8PathBuf::from("/src/javascript/error.gleam"),
+            path: Utf8PathBuf::from("/src/javascript/error.rakun"),
             error: inner_error,
         },
         _ => panic!("expected js error, got {:#?}", error),

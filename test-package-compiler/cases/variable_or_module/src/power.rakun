@@ -1,0 +1,8 @@
+// https://github.com/rakun-lang/rakun/issues/807
+pub record Power {
+  Power(value: Int)
+}
+
+pub fn to_int(p: Power) {
+  p.value * 9000
+}

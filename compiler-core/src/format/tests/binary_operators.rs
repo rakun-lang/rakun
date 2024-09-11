@@ -1,17 +1,17 @@
 use crate::assert_format;
 
-// https://github.com/gleam-lang/gleam/issues/835
+// https://github.com/rakun-lang/rakun/issues/835
 #[test]
 pub fn long_binary_operation_sequence() {
     assert_format!(
         r#"pub fn main() {
   int.to_string(color.red)
-  <> ", "
-  <> int.to_string(color.green)
-  <> ", "
-  <> int.to_string(color.blue)
-  <> ", "
-  <> float.to_string(color.alpha)
+  ++ ", "
+  ++ int.to_string(color.green)
+  ++ ", "
+  ++ int.to_string(color.blue)
+  ++ ", "
+  ++ float.to_string(color.alpha)
 }
 "#
     );
@@ -30,7 +30,7 @@ pub fn long_comparison_chain() {
   || trying_other_comparisons <. with_floats(wobble)
   && trying_other_comparisons <=. with_floats
   || trying_other_comparisons(wibble, wobble) >=. with_floats
-  && wibble <> wobble
+  && wibble ++ wobble
 }
 "#
     );
@@ -84,7 +84,7 @@ fn binary_operation_in_assignment_that_is_almost_80_chars() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2480
+// https://github.com/rakun-lang/rakun/issues/2480
 #[test]
 fn labelled_field_with_binary_operators_are_not_broken_if_they_can_fit() {
     assert_format!(
@@ -93,7 +93,7 @@ fn labelled_field_with_binary_operators_are_not_broken_if_they_can_fit() {
     name: names.name,
     text: text,
     code: code,
-    path: chapter_path <> "/",
+    path: chapter_path ++ "/",
     previous: None,
     next: None,
   ))
@@ -108,9 +108,9 @@ fn labelled_field_with_binary_operators_are_not_broken_if_they_can_fit() {
     text:,
     code:,
     path: chapter_path
-      <> "/"
-      <> this_one_doesnt_fit
-      <> "and ends up on multiple lines",
+      ++ "/"
+      ++ this_one_doesnt_fit
+      ++ "and ends up on multiple lines",
     previous: None,
     next: None,
   ))
@@ -124,7 +124,7 @@ fn labelled_field_with_binary_operators_are_not_broken_if_they_can_fit() {
     name: names.name,
     text:,
     code:,
-    path: chapter_path <> "/",
+    path: chapter_path ++ "/",
     previous: None,
     next: None,
   ))
@@ -139,9 +139,9 @@ fn labelled_field_with_binary_operators_are_not_broken_if_they_can_fit() {
     text:,
     code:,
     path: chapter_path
-      <> "/"
-      <> this_one_doesnt_fit
-      <> "and ends up on multiple lines",
+      ++ "/"
+      ++ this_one_doesnt_fit
+      ++ "and ends up on multiple lines",
     previous: None,
     next: None,
   ))
@@ -177,8 +177,8 @@ fn binop_used_as_function_arguments_gets_nested() {
         r#"pub fn main() {
   wibble(
     a_variable_with_a_long_name
-      <> another_variable_with_a_long_name
-      <> yet_another_variable_with_a_long_name,
+      ++ another_variable_with_a_long_name
+      ++ yet_another_variable_with_a_long_name,
     wobble,
   )
 }
@@ -192,8 +192,8 @@ fn binop_is_not_nested_if_the_only_argument() {
         r#"pub fn main() {
   wibble(
     a_variable_with_a_long_name
-    <> another_variable_with_a_long_name
-    <> yet_another_variable_with_a_long_name,
+    ++ another_variable_with_a_long_name
+    ++ yet_another_variable_with_a_long_name,
   )
 }
 "#
@@ -207,8 +207,8 @@ fn binop_inside_list_gets_nested() {
   [
     wibble,
     a_variable_with_a_long_name
-      <> another_variable_with_a_long_name
-      <> yet_another_variable_with_a_long_name,
+      ++ another_variable_with_a_long_name
+      ++ yet_another_variable_with_a_long_name,
   ]
 }
 "#
@@ -221,8 +221,8 @@ fn binop_inside_list_is_not_nested_if_only_item() {
         r#"pub fn main() {
   [
     a_variable_with_a_long_name
-    <> another_variable_with_a_long_name
-    <> yet_another_variable_with_a_long_name,
+    ++ another_variable_with_a_long_name
+    ++ yet_another_variable_with_a_long_name,
   ]
 }
 "#
@@ -236,8 +236,8 @@ fn binop_inside_tuple_gets_nested() {
   #(
     wibble,
     a_variable_with_a_long_name
-      <> another_variable_with_a_long_name
-      <> yet_another_variable_with_a_long_name,
+      ++ another_variable_with_a_long_name
+      ++ yet_another_variable_with_a_long_name,
   )
 }
 "#
@@ -250,15 +250,15 @@ fn binop_inside_tuple_is_not_nested_if_only_item() {
         r#"pub fn main() {
   #(
     a_variable_with_a_long_name
-    <> another_variable_with_a_long_name
-    <> yet_another_variable_with_a_long_name,
+    ++ another_variable_with_a_long_name
+    ++ yet_another_variable_with_a_long_name,
   )
 }
 "#
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2624
+// https://github.com/rakun-lang/rakun/issues/2624
 #[test]
 fn binop_as_argument_in_variant_with_spread_gets_nested() {
     assert_format!(
@@ -266,8 +266,8 @@ fn binop_as_argument_in_variant_with_spread_gets_nested() {
   Wibble(
     ..wibble,
     label: string
-      <> "a long string that is making things go on multiple lines"
-      <> "another string",
+      ++ "a long string that is making things go on multiple lines"
+      ++ "another string",
   )
 }
 "#

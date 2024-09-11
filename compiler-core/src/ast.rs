@@ -59,7 +59,7 @@ impl TypedModule {
 /// The `@target(erlang)` and `@target(javascript)` attributes can be used to
 /// mark a definition as only being for a specific target.
 ///
-/// ```gleam
+/// ```rakun
 /// const x: Int = 1
 ///
 /// @target(erlang)
@@ -619,7 +619,7 @@ impl Publicity {
 ///
 /// # Example(s)
 ///
-/// ```gleam
+/// ```rakun
 /// // Public function
 /// pub fn wobble() -> String { ... }
 /// // Private function
@@ -655,12 +655,12 @@ impl<T, E> Function<T, E> {
 pub type UntypedImport = Import<()>;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-/// Import another Gleam module so the current module can use the types and
+/// Import another Rakun module so the current module can use the types and
 /// values it defines.
 ///
 /// # Example(s)
 ///
-/// ```gleam
+/// ```rakun
 /// import unix/cat
 /// // Import with alias
 /// import animal/cat as kitty
@@ -696,7 +696,7 @@ pub type UntypedModuleConstant = ModuleConstant<(), ()>;
 ///
 /// # Example(s)
 ///
-/// ```gleam
+/// ```rakun
 /// pub const start_year = 2101
 /// pub const end_year = 2111
 /// ```
@@ -728,8 +728,8 @@ pub type UntypedCustomType = CustomType<()>;
 ///
 /// # Example(s)
 ///
-/// ```gleam
-/// pub type Cat {
+/// ```rakun
+/// pub record Cat {
 ///   Cat(name: String, cuteness: Int)
 /// }
 /// ```
@@ -742,6 +742,7 @@ pub struct CustomType<T> {
     pub constructors: Vec<RecordConstructor<T>>,
     pub documentation: Option<(u32, EcoString)>,
     pub deprecation: Deprecation,
+    pub mode: CustomTypeMode,
     pub opaque: bool,
     /// The names of the type parameters.
     pub parameters: Vec<SpannedString>,
@@ -758,7 +759,11 @@ impl<T> CustomType<T> {
         SrcSpan::new(self.location.start, self.end_position)
     }
 }
-
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CustomTypeMode {
+    Record,
+    Type,
+}
 pub type UntypedTypeAlias = TypeAlias<()>;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -766,9 +771,9 @@ pub type UntypedTypeAlias = TypeAlias<()>;
 ///
 /// # Example(s)
 ///
-/// ```gleam
+/// ```rakun
 /// pub type Headers =
-///   List(#(String, String))
+///   List<#(String, String)>
 /// ```
 pub struct TypeAlias<T> {
     pub location: SrcSpan,
@@ -1158,7 +1163,7 @@ impl BinOp {
             Self::DivInt => "/",
             Self::DivFloat => "/.",
             Self::RemainderInt => "%",
-            Self::Concatenate => "<>",
+            Self::Concatenate => "++",
         }
     }
 
@@ -1748,7 +1753,7 @@ pub enum Pattern<Type> {
         segments: Vec<BitArraySegment<Self, Type>>,
     },
 
-    // "prefix" <> variable
+    // "prefix" ++ variable
     StringPrefix {
         location: SrcSpan,
         left_location: SrcSpan,

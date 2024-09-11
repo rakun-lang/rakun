@@ -64,15 +64,15 @@ impl Printer {
                 if args.is_empty() {
                     doc
                 } else {
-                    doc.append("(")
-                        .append(self.args_to_gleam_doc(args))
-                        .append(")")
+                    doc.append("<")
+                        .append(self.args_to_rakun_doc(args))
+                        .append(">")
                 }
             }
 
             Type::Fn { args, retrn } => "fn("
                 .to_doc()
-                .append(self.args_to_gleam_doc(args))
+                .append(self.args_to_rakun_doc(args))
                 .append(") ->")
                 .append(
                     break_("", " ")
@@ -83,7 +83,7 @@ impl Printer {
 
             Type::Var { type_, .. } => self.type_var_doc(&type_.borrow()),
 
-            Type::Tuple { elems, .. } => self.args_to_gleam_doc(elems).surround("#(", ")"),
+            Type::Tuple { elems, .. } => self.args_to_rakun_doc(elems).surround("#(", ")"),
         }
     }
 
@@ -139,7 +139,7 @@ impl Printer {
         chars.into_iter().rev().collect()
     }
 
-    fn args_to_gleam_doc(&mut self, args: &[Arc<Type>]) -> Document<'static> {
+    fn args_to_rakun_doc(&mut self, args: &[Arc<Type>]) -> Document<'static> {
         if args.is_empty() {
             return nil();
         }
@@ -286,7 +286,7 @@ fn pretty_print_test() {
                 }),
             ],
         },
-        "Pair(Int, Bool)",
+        "Pair<Int, Bool>",
     );
     assert_string!(
         Type::Fn {

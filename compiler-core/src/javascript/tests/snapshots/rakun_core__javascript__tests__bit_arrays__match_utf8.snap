@@ -1,0 +1,31 @@
+---
+source: compiler-core/src/javascript/tests/bit_arrays.rs
+expression: "\nfn go(x) {\n  let assert <<\"Rakun 👍\":utf8>> = x\n}\n"
+---
+import { makeError } from "../rakun.mjs";
+
+function go(x) {
+  if (
+    x.byteAt(0) !== 0x52 ||
+    x.byteAt(1) !== 0x61 ||
+    x.byteAt(2) !== 0x6B ||
+    x.byteAt(3) !== 0x75 ||
+    x.byteAt(4) !== 0x6E ||
+    x.byteAt(5) !== 0x20 ||
+    x.byteAt(6) !== 0xF0 ||
+    x.byteAt(7) !== 0x9F ||
+    x.byteAt(8) !== 0x91 ||
+    x.byteAt(9) !== 0x8D ||
+    !(x.length == 10)
+  ) {
+    throw makeError(
+      "let_assert",
+      "my/mod",
+      3,
+      "go",
+      "Pattern match failed, no pattern matched the value.",
+      { value: x }
+    )
+  }
+  return x;
+}

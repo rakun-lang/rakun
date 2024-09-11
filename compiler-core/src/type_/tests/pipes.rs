@@ -1,6 +1,6 @@
 use crate::{assert_module_error, assert_module_infer};
 
-// https://github.com/gleam-lang/gleam/issues/2392
+// https://github.com/rakun-lang/rakun/issues/2392
 #[test]
 fn empty_list() {
     assert_module_infer!(
@@ -28,7 +28,7 @@ pub fn c() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/pull/3406#discussion_r1683068647
+// https://github.com/rakun-lang/rakun/pull/3406#discussion_r1683068647
 #[test]
 fn pipe_rewrite_with_missing_argument() {
     assert_module_infer!(
@@ -44,7 +44,7 @@ pub fn main() {
 
 #[test]
 fn pipe_regression_gh3515() {
-    // https://github.com/gleam-lang/gleam/issues/3515
+    // https://github.com/rakun-lang/rakun/issues/3515
     assert_module_infer!(
         r#"
 fn relu(t) {
@@ -60,8 +60,8 @@ pub fn k_relu(k: Int) {
       case k {
         0 -> t
         _ -> {
-          // following code is OK on gleam 1.3.2,
-          // but raised error on gleam 1.4.1
+          // following code is OK on rakun 1.3.2,
+          // but raised error on rakun 1.4.1
           // The key here is that it is not a direct function call,
           // but a "var" call, which points to the same function.
           let next_layer = theta |> relu(t) |> k_relu(k - 1)

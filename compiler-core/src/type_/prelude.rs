@@ -26,7 +26,7 @@ const STRING: &str = "String";
 const UTF_CODEPOINT: &str = "UtfCodepoint";
 
 pub const PRELUDE_PACKAGE_NAME: &str = "";
-pub const PRELUDE_MODULE_NAME: &str = "gleam";
+pub const PRELUDE_MODULE_NAME: &str = "rakun";
 
 pub fn is_prelude_module(module: &str) -> bool {
     module == PRELUDE_MODULE_NAME

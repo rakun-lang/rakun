@@ -617,7 +617,7 @@ pub fn main(x) {
 fn discard_all_fields() {
     assert_no_warnings!(
         r#"
-pub type Thing {
+pub record Thing {
   Thing(a: Bool, b: Bool)
 }
 
@@ -634,7 +634,7 @@ pub fn main(x) {
 fn discard_1() {
     assert_no_warnings!(
         r#"
-pub type Thing {
+pub record Thing {
   Thing(a: Bool, b: Bool)
 }
 
@@ -652,7 +652,7 @@ pub fn main(x) {
 fn discard_2() {
     assert_module_error!(
         r#"
-pub type Thing {
+pub record Thing {
   Thing(a: Bool, b: Bool)
 }
 
@@ -669,7 +669,7 @@ pub fn main(x) {
 fn discard_3() {
     assert_module_error!(
         r#"
-pub type Thing {
+pub record Thing {
   Thing(a: Bool, b: Bool)
 }
 
@@ -686,7 +686,7 @@ pub fn main(x) {
 fn discard_4() {
     assert_module_error!(
         r#"
-pub type Thing {
+pub record Thing {
   Thing(a: Bool, b: Bool)
 }
 
@@ -703,7 +703,7 @@ pub fn main(x) {
 fn discard_5() {
     assert_module_error!(
         r#"
-pub type Thing {
+pub record Thing {
   Thing(a: Bool, b: Bool)
 }
 
@@ -720,7 +720,7 @@ pub fn main(x) {
 fn discard_6() {
     assert_module_error!(
         r#"
-pub type Thing {
+pub record Thing {
   Thing(a: Bool, b: Bool)
 }
 
@@ -737,7 +737,7 @@ pub fn main(x) {
 fn label_1() {
     assert_module_error!(
         r#"
-pub type Thing {
+pub record Thing {
   Thing(a: Bool, b: Bool)
 }
 
@@ -782,7 +782,7 @@ pub fn main(x, y) {
 fn custom_1() {
     assert_module_error!(
         r#"
-pub type Type {
+pub record Type {
   One
   Two
 }
@@ -800,7 +800,7 @@ pub fn main(x) {
 fn custom_2() {
     assert_module_error!(
         r#"
-pub type Type {
+pub record Type {
   One
   Two
   Three(Type)
@@ -846,7 +846,7 @@ pub fn main(x) {
     );
 }
 
-//https://github.com/gleam-lang/gleam/issues/2651
+//https://github.com/rakun-lang/rakun/issues/2651
 #[test]
 fn redundant_3() {
     assert_warning!(
@@ -922,16 +922,16 @@ pub fn main(x, y) {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2577
+// https://github.com/rakun-lang/rakun/issues/2577
 #[test]
 fn nested_type_parameter_usage() {
     assert_module_error!(
         r#"
-pub type Returned(a) {
-  Returned(List(a))
+pub record Returned<a> {
+  Returned(List<a>)
 }
 
-fn wibble(user: Returned(#())) -> Int {
+fn wibble(user: Returned<#()>) -> Int {
   let Returned([#()]) = user
   1
 }
@@ -975,7 +975,7 @@ fn reference_absent_type() {
     // to crash, and we want to make sure that it doesn't break again
     assert_module_error!(
         "
-type Wibble {
+record Wibble {
     One(Int)
     Two(Absent)
 }
@@ -992,10 +992,10 @@ pub fn main(wibble) {
 #[test]
 fn case_error_prints_module_names() {
     assert_with_module_error!(
-        ("wibble", "pub type Wibble { Wibble Wobble }"),
+        ("wibble", "pub record Wibble { Wibble Wobble }"),
         "
 import wibble
-pub type Things { Thing1 Thing2(Int) }
+pub record Things { Thing1 Thing2(Int) }
 pub fn main() {
     let wobble_thing = #(wibble.Wobble, Thing2(23))
     case wobble_thing {
@@ -1009,7 +1009,7 @@ pub fn main() {
 #[test]
 fn case_error_prints_module_alias() {
     assert_with_module_error!(
-        ("wibble", "pub type Wibble { Wibble Wobble }"),
+        ("wibble", "pub record Wibble { Wibble Wobble }"),
         "
 import wibble as wobble
 pub fn main() {
@@ -1024,7 +1024,7 @@ pub fn main() {
 #[test]
 fn case_error_prints_unqualified_value() {
     assert_with_module_error!(
-        ("wibble", "pub type Wibble { Wibble Wobble }"),
+        ("wibble", "pub record Wibble { Wibble Wobble }"),
         "
 import wibble.{Wibble, Wobble}
 pub fn main() {
@@ -1039,7 +1039,7 @@ pub fn main() {
 #[test]
 fn case_error_prints_aliased_unqualified_value() {
     assert_with_module_error!(
-        ("wibble", "pub type Wibble { Wibble Wobble }"),
+        ("wibble", "pub record Wibble { Wibble Wobble }"),
         "
 import wibble.{Wibble, Wobble as Wubble}
 pub fn main() {
@@ -1069,12 +1069,12 @@ pub fn main() {
 fn case_error_prints_prelude_module_when_shadowed() {
     assert_module_error!(
         "
-import gleam
-type MyResult { Ok Error }
+import rakun
+record MyResult { Ok Error }
 pub fn main() {
-  let res = gleam.Ok(10)
+  let res = rakun.Ok(10)
   case res {
-    gleam.Ok(n) -> Nil
+    rakun.Ok(n) -> Nil
   }
 }
 "
@@ -1084,10 +1084,10 @@ pub fn main() {
 #[test]
 fn case_error_prints_module_when_shadowed() {
     assert_with_module_error!(
-        ("mod", "pub type Wibble { Wibble Wobble }"),
+        ("mod", "pub record Wibble { Wibble Wobble }"),
         "
 import mod.{Wibble}
-type Wibble { Wibble Wobble }
+record Wibble { Wibble Wobble }
 pub fn main() {
   let wibble = mod.Wibble
   case wibble {
@@ -1101,10 +1101,10 @@ pub fn main() {
 #[test]
 fn case_error_prints_module_when_aliased_and_shadowed() {
     assert_with_module_error!(
-        ("mod", "pub type Wibble { Wibble Wobble }"),
+        ("mod", "pub record Wibble { Wibble Wobble }"),
         "
 import mod.{Wibble as Wobble}
-type Wibble { Wobble Wubble }
+record Wibble { Wobble Wubble }
 pub fn main() {
   let wibble = mod.Wibble
   case wibble {
@@ -1118,10 +1118,10 @@ pub fn main() {
 #[test]
 fn case_error_prints_unqualifed_when_aliased() {
     assert_with_module_error!(
-        ("mod", "pub type Wibble { Wibble Wobble }"),
+        ("mod", "pub record Wibble { Wibble Wobble }"),
         "
 import mod.{Wibble as Wobble}
-type Wibble { Wibble Wubble }
+record Wibble { Wibble Wubble }
 pub fn main() {
   let wibble = mod.Wibble
   case wibble {
@@ -1148,7 +1148,7 @@ case b {}
 fn empty_case_of_custom_type() {
     assert_module_error!(
         "
-type Wibble { Wibble Wobble Wubble }
+record Wibble { Wibble Wobble Wubble }
 pub fn main() {
   let wibble = Wobble
   case wibble {}

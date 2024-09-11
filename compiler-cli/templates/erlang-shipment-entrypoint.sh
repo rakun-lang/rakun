@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-PACKAGE=$PACKAGE_NAME_FROM_GLEAM
+PACKAGE=$PACKAGE_NAME_FROM_RAKUN
 BASE=$(dirname "$0")
 COMMAND="${1-default}"
 

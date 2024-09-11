@@ -2,7 +2,7 @@ use crate::assert_erl;
 
 #[test]
 fn shadow_let() {
-    // https://github.com/gleam-lang/gleam/issues/333
+    // https://github.com/rakun-lang/rakun/issues/333
     assert_erl!(
         r#"
 pub fn go(a) {
@@ -19,7 +19,7 @@ pub fn go(a) {
 
 #[test]
 fn shadow_param() {
-    // https://github.com/gleam-lang/gleam/issues/772
+    // https://github.com/rakun-lang/rakun/issues/772
     assert_erl!(
         "pub fn main(board) {
 fn(board) { board }
@@ -30,7 +30,7 @@ fn(board) { board }
 
 #[test]
 fn shadow_and_call() {
-    // https://github.com/gleam-lang/gleam/issues/762
+    // https://github.com/rakun-lang/rakun/issues/762
     assert_erl!(
         r#"
 pub fn main(x) {
@@ -54,7 +54,7 @@ pub fn main(x) {
 
 #[test]
 fn discarded() {
-    // https://github.com/gleam-lang/gleam/issues/788
+    // https://github.com/rakun-lang/rakun/issues/788
     assert_erl!(
         r#"pub fn go() {
   let _r = 1
@@ -66,7 +66,7 @@ fn discarded() {
 
 #[test]
 fn anon_external_fun_name_escaping() {
-    // https://github.com/gleam-lang/gleam/issues/1418
+    // https://github.com/rakun-lang/rakun/issues/1418
     assert_erl!(
         r#"
 @external(erlang, "one.two", "three.four")

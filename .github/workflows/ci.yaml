@@ -105,7 +105,7 @@ jobs:
         with:
           key: v1-${{ matrix.target }}
 
-      - name: Install Gleam
+      - name: Install Rakun
         uses: clechasseur/rs-cargo@v2
         with:
           command: install
@@ -122,46 +122,46 @@ jobs:
 
       - name: test/project_erlang (non-windows)
         run: |
-          gleam run && cd src && gleam run && cd ..
-          gleam check
-          gleam test && cd src && gleam test && cd ..
-          gleam docs build
+          rakun run && cd src && rakun run && cd ..
+          rakun check
+          rakun test && cd src && rakun test && cd ..
+          rakun docs build
         working-directory: ./test/project_erlang
         if: ${{ runner.os != 'Windows' && matrix.run-integration-tests }}
 
       - name: test/project_erlang (windows)
         run: |
-          gleam run && cd src && gleam run && cd ..
-          gleam check
-          gleam test && cd src && gleam test && cd ..
-          gleam docs build
+          rakun run && cd src && rakun run && cd ..
+          rakun check
+          rakun test && cd src && rakun test && cd ..
+          rakun docs build
         working-directory: ./test/project_erlang_windows
         if: ${{ runner.os == 'Windows' && matrix.run-integration-tests }}
 
       - name: test/project_erlang export erlang-shipment (non-windows)
         run: |
-          gleam export erlang-shipment
+          rakun export erlang-shipment
           ./build/erlang-shipment/entrypoint.sh run
         working-directory: ./test/project_erlang
         if: ${{ runner.os != 'Windows' && matrix.run-integration-tests }}
 
       - name: test/project_erlang export erlang-shipment (windows)
         run: |
-          gleam export erlang-shipment
+          rakun export erlang-shipment
           .\build\erlang-shipment\entrypoint.ps1 run
         working-directory: ./test/project_erlang_windows
         if: ${{ runner.os == 'Windows' && matrix.run-integration-tests }}
 
       - name: test/project_erlang export package-interface (non-windows)
         run: |
-          gleam export package-interface --out="interface.json"
+          rakun export package-interface --out="interface.json"
           cat interface.json
         working-directory: ./test/project_erlang
         if: ${{ runner.os != 'Windows' && matrix.run-integration-tests }}
 
       - name: test/project_erlang export package-interface (windows)
         run: |
-          gleam export package-interface --out="interface.json"
+          rakun export package-interface --out="interface.json"
           cat interface.json
         working-directory: ./test/project_erlang_windows
         if: ${{ runner.os == 'Windows' && matrix.run-integration-tests }}
@@ -171,55 +171,55 @@ jobs:
         working-directory: ./test/external_only_javascript
         if: ${{ matrix.run-integration-tests }}
         env:
-          GLEAM_COMMAND: gleam
+          RAKUN_COMMAND: rakun
 
       - name: test/external_only_erlang
         run: ./test.sh
         working-directory: ./test/external_only_erlang
         if: ${{ matrix.run-integration-tests }}
         env:
-          GLEAM_COMMAND: gleam
+          RAKUN_COMMAND: rakun
 
       - name: test/root_package_not_compiled_when_running_dep
         run: ./test.sh
         working-directory: ./test/root_package_not_compiled_when_running_dep
         if: ${{ matrix.run-integration-tests }}
         env:
-          GLEAM_COMMAND: gleam
+          RAKUN_COMMAND: rakun
 
       - name: test/project_javascript
         run: |
-          gleam run
-          gleam check
-          gleam test
-          gleam docs build
+          rakun run
+          rakun check
+          rakun test
+          rakun docs build
         working-directory: ./test/project_javascript
         if: ${{ matrix.run-integration-tests }}
 
       - name: test/project_path_deps
         run: |
-          gleam update
-          gleam check
+          rakun update
+          rakun check
         working-directory: ./test/project_path_deps/project_a
         if: ${{ matrix.run-integration-tests }}
 
       - name: Test project generation
         run: |
-          gleam new lib_project
+          rakun new lib_project
           cd lib_project
-          gleam run
-          gleam test
+          rakun run
+          rakun test
 
           # Test adding of deps
-          gleam add exception    # No specifier
-          gleam add gleam_http@3 # Version specifier
-          gleam test
+          rakun add exception    # No specifier
+          rakun add rakun_http@3 # Version specifier
+          rakun test
 
           # Test documentation generation
-          gleam docs build
+          rakun docs build
 
           # Assert that module metadata has been written
-          ls build/dev/erlang/lib_project/_gleam_artefacts/lib_project.cache
+          ls build/dev/erlang/lib_project/_rakun_artefacts/lib_project.cache
 
           # Assert that HTML docs and their assets have been written
           ls build/dev/docs/lib_project/index.html
@@ -228,7 +228,7 @@ jobs:
           ls build/dev/docs/lib_project/css/atom-one-dark.min.css
           ls build/dev/docs/lib_project/css/index.css
           ls build/dev/docs/lib_project/js/highlight.min.js
-          ls build/dev/docs/lib_project/js/highlightjs-gleam.js
+          ls build/dev/docs/lib_project/js/highlightjs-rakun.js
           ls build/dev/docs/lib_project/js/highlightjs-erlang.min.js
           ls build/dev/docs/lib_project/js/highlightjs-elixir.min.js
           ls build/dev/docs/lib_project/js/highlightjs-javascript.min.js
@@ -343,8 +343,8 @@ jobs:
       - name: Upload artifact (Ubuntu)
         uses: actions/upload-artifact@v4
         with:
-          name: gleam
-          path: target/debug/gleam
+          name: rakun
+          path: target/debug/rakun
 
   test-projects:
     name: test-projects
@@ -370,18 +370,18 @@ jobs:
           elixir-version: "1.16.1"
           rebar3-version: "3"
 
-      - name: Download Gleam binary from previous job
+      - name: Download Rakun binary from previous job
         uses: actions/download-artifact@v4
         with:
-          name: gleam
+          name: rakun
           path: ./test
 
-      - name: Configure test projects to use Gleam binary
+      - name: Configure test projects to use Rakun binary
         run: |
           echo $PWD/ >> $GITHUB_PATH
-          chmod +x ./gleam
-          sed -i 's/cargo run --quiet --/gleam/' */Makefile
-          sed -i 's/cargo run --/gleam/' */Makefile
+          chmod +x ./rakun
+          sed -i 's/cargo run --quiet --/rakun/' */Makefile
+          sed -i 's/cargo run --/rakun/' */Makefile
         working-directory: ./test
 
       - name: test/language Erlang

@@ -1,0 +1,16 @@
+---
+source: compiler-core/src/type_/tests/warnings.rs
+expression: "\n@internal\npub fn wibble() { Nil }\n"
+---
+warning: Incompatible rakun version range
+  ┌─ /src/warning/wrn.rakun:2:1
+  │
+2 │ @internal
+  │ ^^^^^^^^^ This requires a Rakun version >= 1.1.0
+
+The `@internal` annotation was introduced in version v1.1.0. But the Rakun
+version range specified in your `rakun.toml` would allow this code to run
+on an earlier version like v1.0.0, resulting in compilation errors!
+Hint: Remove the version constraint from your `rakun.toml` or update it to be:
+
+    rakun = ">= 1.1.0"

@@ -7,16 +7,16 @@ fn alias_dep() {
     assert_module_infer!(
         r#"
 type E = #(F, C)
-type F = fn(CustomA) -> CustomB(B)
+type F = fn(CustomA) -> CustomB<B>
 type A = Int
 type B = C
 type C = CustomA
-type D = CustomB(C)
+type D = CustomB<C>
 
-type CustomA {
+record CustomA {
   CustomA()
 }
-type CustomB(a) {
+record CustomB<a> {
   CustomB(a)
 }
 "#,
@@ -28,11 +28,11 @@ type CustomB(a) {
 fn custom_type_dep() {
     assert_module_infer!(
         r#"
-type A {
+record A {
     A(Blah)
 }
 
-type Blah {
+record Blah {
     B(Int)
 }
 "#,
@@ -79,8 +79,8 @@ fn alias_different_module() {
 fn duplicate_parameter() {
     assert_module_error!(
         r#"
-type A(a, a) =
-  List(a)
+type A<a, a> =
+  List<a>
 "#
     );
 }
@@ -89,7 +89,7 @@ type A(a, a) =
 fn unused_parameter() {
     assert_module_error!(
         r#"
-type A(a) =
+type A<a> =
   Int
 "#
     );
@@ -100,7 +100,7 @@ fn type_alias_error_does_not_stop_analysis() {
     // Both these aliases have errors! We do not stop on the first one.
     assert_module_error!(
         r#"
-type UnusedParameter(a) =
+type UnusedParameter<a> =
   Int
 
 type UnknownType =
@@ -114,7 +114,7 @@ fn duplicate_variable_error_does_not_stop_analysis() {
     // Both these aliases have errors! We do not stop on the first one.
     assert_module_error!(
         r#"
-type Two(a, a) =
+type Two<a, a> =
   #(a, a)
 
 type UnknownType =
@@ -123,7 +123,7 @@ type UnknownType =
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3191
+// https://github.com/rakun-lang/rakun/issues/3191
 #[test]
 fn both_errors_are_shown() {
     // The alias has an error, and it causes the function to have an error as it
@@ -131,7 +131,7 @@ fn both_errors_are_shown() {
     assert_module_error!(
         r#"
 type X =
-  List(Intt)
+  List<Intt>
 
 fn example(a: X) {
   todo

@@ -1,0 +1,13 @@
+---
+source: compiler-core/src/type_/tests/errors.rs
+expression: "record Wrapper<innerType> {}"
+---
+error: Invalid type variable name
+  ┌─ /src/one/two.rakun:1:16
+  │
+1 │ record Wrapper<innerType> {}
+  │                ^^^^^^^^^ This is not a valid type variable name
+
+Hint: Type Variable names start with a lowercase letter and contain a-z, 0-
+9, or _.
+Try: inner_type

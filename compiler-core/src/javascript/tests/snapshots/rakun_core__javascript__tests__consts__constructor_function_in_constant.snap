@@ -1,0 +1,7 @@
+---
+source: compiler-core/src/javascript/tests/consts.rs
+expression: pub const a = Ok
+---
+import { Ok } from "../rakun.mjs";
+
+export const a = (var0) => { return new Ok(var0); };

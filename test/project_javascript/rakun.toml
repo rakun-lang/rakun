@@ -1,0 +1,13 @@
+name = "project"
+version = "0.1.0"
+target = "javascript"
+
+[javascript]
+typescript_declarations = true
+runtime = "node"
+
+[dependencies]
+rakun_stdlib = "~> 0.18"
+rakun_erlang = "~> 0.23"
+
+[dev-dependencies]

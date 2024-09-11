@@ -41,7 +41,7 @@ pub fn retstring() {
   "wibble"
 }
 pub fn main() {
-  todo as { retstring() <> "wobble" }
+  todo as { retstring() ++ "wobble" }
 }
 "#
     );

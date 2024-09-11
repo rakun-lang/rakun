@@ -8,7 +8,7 @@
   printing messages as the project is built.
   ([Ankit Goel](https://github.com/crazymerlyn))
 
-- The compiler is now able to run a dependency's module using `gleam run -m`
+- The compiler is now able to run a dependency's module using `rakun run -m`
   even when there's compilation errors in your own project's code.
   ([Giacomo Cavalieri](https://github.com/giacomocavalieri))
 
@@ -30,13 +30,13 @@
 - It is now possible to omit the `:utf8` option for literal strings used in a
   `BitArray` segment.
 
-  ```gleam
+  ```rakun
   <<"Hello", " ", "world">>
   ```
 
   Is the same as:
 
-  ```gleam
+  ```rakun
   <<"Hello":utf8, " ":utf8, "world":utf8>>
   ```
 
@@ -46,8 +46,8 @@
   using the correct syntax for the module the error is emitted in, rather than
   the module it was defined in. For example, if you had this code:
 
-  ```gleam
-  import gleam/option
+  ```rakun
+  import rakun/option
 
   pub fn main() {
     let an_option = option.Some("wibble!")
@@ -62,7 +62,7 @@
 
   ```txt
   error: Inexhaustive patterns
-    ┌─ /Users/giacomocavalieri/Desktop/prova/src/prova.gleam:5:3
+    ┌─ /Users/giacomocavalieri/Desktop/prova/src/prova.rakun:5:3
     │
   5 │ ╭   case an_option {
   6 │ │     option.None -> "missing"
@@ -83,7 +83,7 @@
   argument are now inferred correctly without the need to add type annotations.
   For example you can now write:
 
-  ```gleam
+  ```rakun
   fn(x) { x.0 }(#(1, 2))
   // ^ you no longer need to annotate this!
   ```
@@ -94,8 +94,8 @@
   are now inferred correctly without the need to add type annotations. For
   example you can now write:
 
-  ```gleam
-  pub type User {
+  ```rakun
+  pub record User {
     User(name: String)
   }
 
@@ -116,8 +116,8 @@
 - Adds a better error message when module names are used as values. For example
   the following code:
 
-  ```gleam
-  import gleam/list
+  ```rakun
+  import rakun/list
 
   pub fn main() {
     list
@@ -128,7 +128,7 @@
 
   ```txt
   error: Module `list` used as a value
-    ┌─ /Users/giacomocavalieri/Desktop/prova/src/prova.gleam:4:3
+    ┌─ /Users/giacomocavalieri/Desktop/prova/src/prova.rakun:4:3
     │
   4 │   list
     │   ^^^^
@@ -143,12 +143,12 @@
   a function within a custom type definition, likely trying to declare an OOP
   class. For example:
 
-  ```gleam
-  pub type User {
+  ```rakun
+  pub record User {
     User(name: String)
 
     fn greet(user: User) -> String {
-      "hello " <> user.name
+      "hello " ++ user.name
     }
   }
   ```
@@ -157,7 +157,7 @@
 
   ```txt
   error: Syntax error
-    ┌─ /Users/giacomocavalieri/Desktop/prova/src/prova.gleam:8:3
+    ┌─ /Users/giacomocavalieri/Desktop/prova/src/prova.rakun:8:3
     │
   8 │   fn greet(user: User) -> String {
     │   ^^ I was not expecting this
@@ -165,7 +165,7 @@
   Found the keyword `fn`, expected one of:
   - `}`
   - a record constructor
-  Hint: Gleam is not an object oriented programming language so
+  Hint: Rakun is not an object oriented programming language so
   functions are declared separately from types.
   ```
 
@@ -175,7 +175,7 @@
   aren't imported. It only suggests a module if it exports a type/value with
   the same name as what the user was trying to access:
 
-  ```gleam
+  ```rakun
   pub fn main() {
     io.println("Hello, world!")
   }
@@ -185,18 +185,18 @@
 
   ```
   error: Unknown module
-    ┌─ /src/file.gleam:2:3
+    ┌─ /src/file.rakun:2:3
     │
   2 │   io.println("Hello, world!")
     │   ^^
 
   No module has been found with the name `io`.
-  Hint: Did you mean to import `gleam/io`?
+  Hint: Did you mean to import `rakun/io`?
   ```
 
   This code, however, produces no hint:
 
-  ```gleam
+  ```rakun
   pub fn main() {
     io.non_existent()
   }
@@ -207,19 +207,20 @@
 - The compiler now provides improved suggestions in the error for an
   inexhaustive case expression. The following code:
 
-  ```gleam
-  let a = True
-  case a {}
-  ```
+    ```rakun
+    let a = True
+    case a {}
+    ```
 
   Now produces this error:
 
-  ```
-  error: Inexhaustive patterns
-    ┌─ /src/file.gleam:3:3
-    │
-  3 │   case a {}
-    │   ^^^^^^^^^
+    ```
+    error: Inexhaustive patterns
+      ┌─ /src/file.rakun:3:3
+      │
+    3 │   case a {}
+      │   ^^^^^^^^^
+
 
   This case expression does not have a pattern for all possible values. If it
   is run on one of the values without a pattern then it will crash.
@@ -242,7 +243,7 @@
 - The compiler now shows an helpful error message if you try writing an `if`
   expression instead of a case. For example, this code:
 
-  ```gleam
+  ```rakun
   pub fn main() {
     let a = if wibble {
       1
@@ -254,10 +255,10 @@
 
   ```txt
   error: Syntax error
-    ┌─ /src/parse/error.gleam:3:11
+    ┌─ /src/parse/error.rakun:3:11
     │
   3 │   let a = if wibble {
-    │           ^^ Gleam doesn't have if expressions
+    │           ^^ Rakun doesn't have if expressions
 
   If you want to write a conditional expression you can use a `case`:
 
@@ -266,7 +267,7 @@
         False -> todo
       }
 
-  See: https://tour.gleam.run/flow-control/case-expressions/
+  See: https://tour.rakun.run/flow-control/case-expressions/
   ```
 
   ([Giacomo Cavalieri](https://github.com/giacomocavalieri))
@@ -276,7 +277,7 @@
 - The formatter now adds a `todo` after a `use` expression if it is the last
   expression in a block. For example, the following code:
 
-  ```gleam
+  ```rakun
   pub fn main() {
     use user <- result.try(fetch_user())
   }
@@ -284,7 +285,7 @@
 
   Is rewritten as:
 
-  ```gleam
+  ```rakun
   pub fn main() {
     use user <- result.try(fetch_user())
     todo
@@ -302,7 +303,7 @@
 - The language server can now suggest a code action to import modules for
   existing code which references unimported modules:
 
-  ```gleam
+  ```rakun
   pub fn main() {
     io.println("Hello, world!")
   }
@@ -310,8 +311,8 @@
 
   Becomes:
 
-  ```gleam
-  import gleam/io
+  ```rakun
+  import rakun/io
 
   pub fn main() {
     io.println("Hello, world!")
@@ -323,14 +324,14 @@
 - The Language Server can now suggest a code action to fill in the missing
   patterns of a case expression:
 
-  ```gleam
+  ```rakun
   let a = True
   case a {}
   ```
 
   Becomes:
 
-  ```gleam
+  ```rakun
   let a = True
   case a {
     False -> todo
@@ -398,7 +399,7 @@
   unused.
   ([Giacomo Cavalieri](https://github.com/giacomocavalieri))
 
-- The Language Server now correctly shows completions for values in the Gleam
+- The Language Server now correctly shows completions for values in the Rakun
   prelude.
   ([Surya Rose](https://github.com/GearsDatapacks))
 

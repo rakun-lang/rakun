@@ -34,7 +34,7 @@ pub fn make_relative(source_path: &Utf8Path, target_path: &Utf8Path) -> Utf8Path
 }
 
 pub trait Reader: io::Read {
-    /// A wrapper around `std::io::Read` that has Gleam's error handling.
+    /// A wrapper around `std::io::Read` that has Rakun's error handling.
     fn read_bytes(&mut self, buffer: &mut [u8]) -> Result<usize> {
         self.read(buffer).map_err(|e| self.convert_err(e))
     }
@@ -43,7 +43,7 @@ pub trait Reader: io::Read {
 }
 
 pub trait Utf8Writer: std::fmt::Write {
-    /// A wrapper around `fmt::Write` that has Gleam's error handling.
+    /// A wrapper around `fmt::Write` that has Rakun's error handling.
     fn str_write(&mut self, str: &str) -> Result<()> {
         self.write_str(str).map_err(|e| self.convert_err(e))
     }
@@ -63,7 +63,7 @@ impl Utf8Writer for String {
 }
 
 pub trait Writer: io::Write + Utf8Writer {
-    /// A wrapper around `io::Write` that has Gleam's error handling.
+    /// A wrapper around `io::Write` that has Rakun's error handling.
     fn write(&mut self, bytes: &[u8]) -> Result<(), Error> {
         io::Write::write(self, bytes)
             .map(|_| ())
@@ -184,8 +184,8 @@ impl DirEntry {
 /// Typically we use an implementation that reads from the file system,
 /// but in tests and in other places other implementations may be used.
 pub trait FileSystemReader {
-    fn gleam_source_files(&self, dir: &Utf8Path) -> Vec<Utf8PathBuf>;
-    fn gleam_cache_files(&self, dir: &Utf8Path) -> Vec<Utf8PathBuf>;
+    fn rakun_source_files(&self, dir: &Utf8Path) -> Vec<Utf8PathBuf>;
+    fn rakun_cache_files(&self, dir: &Utf8Path) -> Vec<Utf8PathBuf>;
     fn read_dir(&self, path: &Utf8Path) -> Result<ReadDir>;
     fn read(&self, path: &Utf8Path) -> Result<String, Error>;
     fn read_bytes(&self, path: &Utf8Path) -> Result<Vec<u8>, Error>;
@@ -240,7 +240,7 @@ pub trait FileSystemWriter {
 }
 
 #[derive(Debug)]
-/// A wrapper around a Read implementing object that has Gleam's error handling.
+/// A wrapper around a Read implementing object that has Rakun's error handling.
 pub struct WrappedReader {
     path: Utf8PathBuf,
     inner: DebugIgnore<Box<dyn io::Read>>,

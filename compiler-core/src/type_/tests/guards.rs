@@ -4,15 +4,15 @@ use crate::{assert_module_error, assert_module_infer};
 fn nested_record_access() {
     assert_module_infer!(
         r#"
-pub type A {
+pub record A {
   A(b: B)
 }
 
-pub type B {
+pub record B {
   B(c: C)
 }
 
-pub type C {
+pub record C {
   C(d: Bool)
 }
 

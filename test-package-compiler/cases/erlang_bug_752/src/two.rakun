@@ -1,0 +1,5 @@
+import one.{type One}
+
+pub record Two<b> {
+  Two(thing: One<Int>)
+}

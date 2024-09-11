@@ -1,6 +1,6 @@
 use camino::Utf8PathBuf;
 
-use gleam_core::{
+use rakun_core::{
     config::PackageConfig,
     error::{Error, FileIoAction, FileKind},
     manifest::{Manifest, ManifestPackage, ManifestPackageSource},
@@ -29,21 +29,21 @@ pub fn find_package_config_for_module(
     project_paths: &ProjectPaths,
 ) -> Result<(PackageConfig, PackageKind), Error> {
     for package in &manifest.packages {
-        // Not a Gleam package
-        if !package.build_tools.contains(&"gleam".into()) {
+        // Not a Rakun package
+        if !package.build_tools.contains(&"rakun".into()) {
             continue;
         }
 
         let root = package_root(package, project_paths);
         let mut module_path = root.join("src").join(mod_path);
-        _ = module_path.set_extension("gleam");
+        _ = module_path.set_extension("rakun");
 
         // This package doesn't have the module we're looking for
         if !module_path.is_file() {
             continue;
         }
 
-        let configuration = read(root.join("gleam.toml"))?;
+        let configuration = read(root.join("rakun.toml"))?;
         return Ok((configuration, PackageKind::Dependency));
     }
 
@@ -68,7 +68,7 @@ pub fn read(config_path: Utf8PathBuf) -> Result<PackageConfig, Error> {
         path: config_path,
         err: Some(e.to_string()),
     })?;
-    config.check_gleam_compatibility()?;
+    config.check_rakun_compatibility()?;
     Ok(config)
 }
 
@@ -88,7 +88,7 @@ pub fn ensure_config_exists(paths: &ProjectPaths) -> Result<(), Error> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use gleam_core::manifest::Base16Checksum;
+    use rakun_core::manifest::Base16Checksum;
 
     #[test]
     fn package_root_hex() {
@@ -96,7 +96,7 @@ mod tests {
         let package = ManifestPackage {
             name: "the_package".into(),
             version: hexpm::version::Version::new(1, 0, 0),
-            build_tools: vec!["gleam".into()],
+            build_tools: vec!["rakun".into()],
             otp_app: None,
             requirements: vec![],
             source: ManifestPackageSource::Hex {
@@ -115,7 +115,7 @@ mod tests {
         let package = ManifestPackage {
             name: "the_package".into(),
             version: hexpm::version::Version::new(1, 0, 0),
-            build_tools: vec!["gleam".into()],
+            build_tools: vec!["rakun".into()],
             otp_app: None,
             requirements: vec![],
             source: ManifestPackageSource::Git {
@@ -135,7 +135,7 @@ mod tests {
         let package = ManifestPackage {
             name: "the_package".into(),
             version: hexpm::version::Version::new(1, 0, 0),
-            build_tools: vec!["gleam".into()],
+            build_tools: vec!["rakun".into()],
             otp_app: None,
             requirements: vec![],
             source: ManifestPackageSource::Local {

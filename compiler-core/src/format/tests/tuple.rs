@@ -1,6 +1,6 @@
 use crate::assert_format;
 
-// https://github.com/gleam-lang/gleam/issues/2083
+// https://github.com/rakun-lang/rakun/issues/2083
 #[test]
 fn nested_index_block() {
     assert_format!(
@@ -11,7 +11,7 @@ fn nested_index_block() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2083
+// https://github.com/rakun-lang/rakun/issues/2083
 #[test]
 fn index_block() {
     assert_format!(
@@ -28,7 +28,7 @@ fn index_block() {
 #[test]
 fn tuple_with_last_splittable_arg() {
     assert_format!(
-        r#"fn on_attribute_change() -> Dict(String, Decoder(Msg)) {
+        r#"fn on_attribute_change() -> Dict<String, Decoder<Msg>> {
   dict.from_list([
     #("value", fn(attr) {
       attr
@@ -52,7 +52,7 @@ fn tuple_with_last_splittable_arg() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3070
+// https://github.com/rakun-lang/rakun/issues/3070
 #[test]
 fn constant_long_list_of_tuples() {
     assert_format!(

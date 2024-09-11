@@ -16,9 +16,9 @@ use std::collections::HashMap;
 pub struct Environment<'a> {
     pub current_package: EcoString,
 
-    /// The gleam version range required by the current package as stated in its
-    /// gleam.toml
-    pub gleam_version: Option<Range<Version>>,
+    /// The rakun version range required by the current package as stated in its
+    /// rakun.toml
+    pub rakun_version: Option<Range<Version>>,
 
     pub current_module: EcoString,
     pub target: Target,
@@ -71,7 +71,7 @@ impl<'a> Environment<'a> {
     pub fn new(
         ids: UniqueIdGenerator,
         current_package: EcoString,
-        gleam_version: Option<Range<Version>>,
+        rakun_version: Option<Range<Version>>,
         current_module: EcoString,
         target: Target,
         importable_modules: &'a im::HashMap<EcoString, ModuleInterface>,
@@ -92,7 +92,7 @@ impl<'a> Environment<'a> {
 
         Self {
             current_package: current_package.clone(),
-            gleam_version,
+            rakun_version,
             previous_id: ids.next(),
             ids,
             target,

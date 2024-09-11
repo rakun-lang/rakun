@@ -81,16 +81,16 @@ import b
 
 import a
 
-import gleam/string
-import gleam/list",
+import rakun/string
+import rakun/list",
         "@target(javascript)
 import b
 import c
 
 import a
 
-import gleam/list
-import gleam/string
+import rakun/list
+import rakun/string
 "
     );
 }
@@ -104,8 +104,8 @@ import b
 
 import a
 // third group
-import gleam/string
-import gleam/list
+import rakun/string
+import rakun/list
 
 import wobble
 import wibble
@@ -117,8 +117,8 @@ import c
 import a
 
 // third group
-import gleam/list
-import gleam/string
+import rakun/list
+import rakun/string
 
 import wibble
 import wobble
@@ -132,7 +132,7 @@ fn type_definition_in_between_imports() {
         r#"import a
 import b
 
-pub type Wibble(a) {
+pub record Wibble<a> {
   Wobble
 }
 
@@ -192,7 +192,7 @@ import f
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2915
+// https://github.com/rakun-lang/rakun/issues/2915
 #[test]
 fn white_lines_between_comments_in_import_groups_are_preserved() {
     assert_format!(
@@ -205,16 +205,16 @@ import b
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2915
+// https://github.com/rakun-lang/rakun/issues/2915
 #[test]
 fn import_sorting_doesnt_add_spurious_white_line() {
     assert_format!(
         r#"// comment
 
 import filepath
-import gleam/dynamic.{type Dynamic}
-import gleam/io
-import gleam/list
+import rakun/dynamic.{type Dynamic}
+import rakun/io
+import rakun/list
 "#
     );
 }

@@ -258,7 +258,7 @@ pub struct Use {
     /// keyword and ending with the function call on the right hand side of
     /// `<-`.
     ///
-    /// ```gleam
+    /// ```rakun
     /// use a <- reult.try(result)
     /// ^^^^^^^^^^^^^^^^^^^^^^^^^^
     /// ```
@@ -268,7 +268,7 @@ pub struct Use {
     /// This is the SrcSpan of the patterns you find on the left hand side of
     /// `<-` in a use expression.
     ///
-    /// ```gleam
+    /// ```rakun
     /// use pattern1, pattern2 <- todo
     ///     ^^^^^^^^^^^^^^^^^^
     /// ```

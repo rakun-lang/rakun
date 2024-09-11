@@ -72,7 +72,7 @@ pub fn main() {
   x
 }
 
-type Box(a) {
+record Box<a> {
   Box(a)
 }
 

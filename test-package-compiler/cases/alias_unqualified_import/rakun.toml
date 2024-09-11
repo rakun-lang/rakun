@@ -1,0 +1,4 @@
+# https://github.com/rakun-lang/rakun/issues/303
+name = "importy"
+version = "0.1.0"
+target = "erlang"

@@ -45,33 +45,33 @@ fn let_7() {
 
 #[test]
 fn let_8() {
-    assert_infer!("let assert [1, 2, ..x]: List(Int) = [1,2,3] x", "List(Int)",);
+    assert_infer!("let assert [1, 2, ..x]: List<Int> = [1,2,3] x", "List<Int>",);
 }
 
 #[test]
 fn let_9() {
     assert_infer!(
-        "let assert #(5, [..x]): #(Int, List(Int)) = #(5, [1,2,3]) x",
-        "List(Int)",
+        "let assert #(5, [..x]): #(Int, List<Int>) = #(5, [1,2,3]) x",
+        "List<Int>",
     );
 }
 
 #[test]
 fn let_10() {
     assert_infer!(
-        "let assert #(5.0, [..x]): #(Float, List(Int)) = #(5.0, [1,2,3]) x",
-        "List(Int)",
+        "let assert #(5.0, [..x]): #(Float, List<Int>) = #(5.0, [1,2,3]) x",
+        "List<Int>",
     );
 }
 
 #[test]
 fn let_11() {
-    assert_infer!("let x: List(_) = [] x", "List(a)");
+    assert_infer!("let x: List<_> = [] x", "List<a>");
 }
 
 #[test]
 fn let_12() {
-    assert_infer!("let x: List(_) = [1] x", "List(Int)");
+    assert_infer!("let x: List<_> = [1] x", "List<Int>");
 }
 
 #[test]
@@ -96,12 +96,12 @@ fn let_16() {
 
 #[test]
 fn let_17() {
-    assert_infer!("fn(x) { let assert [a] = x a }", "fn(List(a)) -> a");
+    assert_infer!("fn(x) { let assert [a] = x a }", "fn(List<a>) -> a");
 }
 
 #[test]
 fn let_18() {
-    assert_infer!("fn(x) { let assert [a] = x a + 1 }", "fn(List(Int)) -> Int");
+    assert_infer!("fn(x) { let assert [a] = x a + 1 }", "fn(List<Int>) -> Int");
 }
 
 #[test]
@@ -131,15 +131,15 @@ fn let_23() {
 
 #[test]
 fn let_24() {
-    assert_infer!("let assert Ok(..) = Ok(10)", "Result(Int, a)");
+    assert_infer!("let assert Ok(..) = Ok(10)", "Result<Int, a>");
 }
 
 #[test]
 fn let_25() {
-    assert_infer!("let assert \"hello\" as a <> _ = \"\" a", "String");
+    assert_infer!("let assert \"hello\" as a ++ _ = \"\" a", "String");
 }
 
-// // https://github.com/gleam-lang/gleam/issues/1991
+// // https://github.com/rakun-lang/rakun/issues/1991
 // #[test]
 // fn block() {
 //     assert_infer!("let x = 1 { let x = 1.0 } x", "Int");

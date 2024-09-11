@@ -1,0 +1,20 @@
+---
+source: compiler-core/src/language_server/tests/hover.rs
+expression: "\npub record Wibble { Wibble(arg1: Int, arg2: Bool) }\n\npub fn main() {\n  case todo {\n    Wibble(arg2:, ..) -> todo\n  }\n}\n"
+---
+pub record Wibble { Wibble(arg1: Int, arg2: Bool) }
+
+pub fn main() {
+  case todo {
+    Wibble(arg2:, ..) -> todo
+           ▔▔▔▔↑             
+  }
+}
+
+
+----- Hover content -----
+Scalar(
+    String(
+        "```rakun\nBool\n```\n",
+    ),
+)

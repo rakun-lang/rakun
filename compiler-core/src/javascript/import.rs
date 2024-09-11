@@ -8,7 +8,7 @@ use crate::{
     pretty::{break_, concat, join, line, Document, Documentable},
 };
 
-/// A collection of JavaScript import statements from Gleam imports and from
+/// A collection of JavaScript import statements from Rakun imports and from
 /// external functions, to be rendered into a JavaScript module.
 ///
 #[derive(Debug, Default)]
@@ -152,7 +152,7 @@ impl<'a> Member<'a> {
 #[test]
 fn into_doc() {
     let mut imports = Imports::new();
-    imports.register_module("./gleam/empty".into(), [], []);
+    imports.register_module("./rakun/empty".into(), [], []);
     imports.register_module(
         "./multiple/times".into(),
         ["wibble".into(), "wobble".into()],

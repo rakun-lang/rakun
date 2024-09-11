@@ -106,7 +106,7 @@ fn case_pattern_split_on_multiple_lines_is_not_needlessly_nested() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3140
+// https://github.com/rakun-lang/rakun/issues/3140
 #[test]
 fn long_comment_before_case_with_multiple_subjects_doesnt_force_a_break() {
     assert_format!(
