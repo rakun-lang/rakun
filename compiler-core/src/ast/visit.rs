@@ -529,6 +529,12 @@ where
             fun,
             args,
         } => v.visit_typed_expr_call(location, type_, fun, args),
+        TypedExpr::Html {
+            location,
+            type_,
+            fun,
+            args,
+        } => v.visit_typed_expr_call(location, type_, fun, args),
         TypedExpr::BinOp {
             location,
             type_,

@@ -360,6 +360,13 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
                 ..
             } => Ok(self.infer_call(*fun, args, location, CallKind::Function)),
 
+            UntypedExpr::Html {
+                location,
+                fun,
+                arguments: args,
+                ..
+            } => Ok(self.infer_call(*fun, args, location, CallKind::Function)),
+
             UntypedExpr::BinOp {
                 location,
                 name,

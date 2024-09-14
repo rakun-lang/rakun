@@ -54,6 +54,12 @@ pub enum UntypedExpr {
         arguments: Vec<CallArg<Self>>,
     },
 
+    Html {
+        location: SrcSpan,
+        fun: Box<Self>,
+        arguments: Vec<CallArg<Self>>,
+    },
+
     BinOp {
         location: SrcSpan,
         name: BinOp,
@@ -154,6 +160,7 @@ impl UntypedExpr {
             | Self::Float { location, .. }
             | Self::Block { location, .. }
             | Self::BinOp { location, .. }
+            | Self::Html { location, .. }
             | Self::Tuple { location, .. }
             | Self::Panic { location, .. }
             | Self::String { location, .. }

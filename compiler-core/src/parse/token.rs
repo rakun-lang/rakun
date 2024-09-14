@@ -29,7 +29,6 @@ pub enum Token {
     GreaterEqual,
     Percent,
     // Float Operators
-    PlusPlus,        // '++'
     PlusDot,         // '+.'
     MinusDot,        // '-.'
     StarDot,         // '*.'
@@ -39,8 +38,11 @@ pub enum Token {
     LessEqualDot,    // '<=.'
     GreaterEqualDot, // '>=.'
     EqualDot,        // '=.'
+    LtSlash,         // '</'
+    LtSlashGt,       // '</>'
+    LtGt,            // '<>'
     // String Operators
-    LtGt, // '<>'
+    PlusPlus, // '++'
     // Other Punctuation
     Colon,
     Comma,
@@ -175,6 +177,8 @@ impl Token {
             | Token::LessEqualDot
             | Token::GreaterEqualDot
             | Token::LtGt
+            | Token::LtSlash
+            | Token::LtSlashGt
             | Token::Colon
             | Token::Comma
             | Token::Hash
@@ -255,6 +259,8 @@ impl fmt::Display for Token {
             Token::EqualDot => "=.",
             Token::Let => "let",
             Token::LtGt => "<>",
+            Token::LtSlash => "</",
+            Token::LtSlashGt => "</>",
             Token::LtLt => "<<",
             Token::Macro => "macro",
             Token::Minus => "-",

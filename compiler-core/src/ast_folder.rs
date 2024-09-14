@@ -275,6 +275,11 @@ pub trait UntypedExprFolder: TypeAstFolder + UntypedConstantFolder + PatternFold
                 fun,
                 arguments,
             } => self.fold_call(location, fun, arguments),
+            UntypedExpr::Html {
+                location,
+                fun,
+                arguments,
+            } => self.fold_html(location, fun, arguments),
 
             UntypedExpr::BinOp {
                 location,
@@ -403,6 +408,25 @@ pub trait UntypedExprFolder: TypeAstFolder + UntypedConstantFolder + PatternFold
                 }
             }
 
+            UntypedExpr::Html {
+                location,
+                fun,
+                arguments,
+            } => {
+                let fun = Box::new(self.fold_expr(*fun));
+                let arguments = arguments
+                    .into_iter()
+                    .map(|mut a| {
+                        a.value = self.fold_expr(a.value);
+                        a
+                    })
+                    .collect();
+                UntypedExpr::Html {
+                    location,
+                    fun,
+                    arguments,
+                }
+            }
             UntypedExpr::Call {
                 location,
                 fun,
@@ -700,6 +724,19 @@ pub trait UntypedExprFolder: TypeAstFolder + UntypedConstantFolder + PatternFold
         arguments: Vec<CallArg<UntypedExpr>>,
     ) -> UntypedExpr {
         UntypedExpr::Call {
+            location,
+            fun,
+            arguments,
+        }
+    }
+
+    fn fold_html(
+        &mut self,
+        location: SrcSpan,
+        fun: Box<UntypedExpr>,
+        arguments: Vec<CallArg<UntypedExpr>>,
+    ) -> UntypedExpr {
+        UntypedExpr::Html {
             location,
             fun,
             arguments,

@@ -68,6 +68,13 @@ pub enum TypedExpr {
         args: Vec<CallArg<Self>>,
     },
 
+    Html {
+        location: SrcSpan,
+        type_: Arc<Type>,
+        fun: Box<Self>,
+        args: Vec<CallArg<Self>>,
+    },
+
     BinOp {
         location: SrcSpan,
         type_: Arc<Type>,
@@ -254,6 +261,11 @@ impl TypedExpr {
                 .find_map(|arg| arg.find_node(byte_index))
                 .or_else(|| fun.find_node(byte_index))
                 .or_else(|| self.self_if_contains_location(byte_index)),
+            Self::Html { fun, args, .. } => args
+                .iter()
+                .find_map(|arg| arg.find_node(byte_index))
+                .or_else(|| fun.find_node(byte_index))
+                .or_else(|| self.self_if_contains_location(byte_index)),
 
             Self::BinOp { left, right, .. } => left
                 .find_node(byte_index)
@@ -318,6 +330,7 @@ impl TypedExpr {
             | Self::Todo { location, .. }
             | Self::Case { location, .. }
             | Self::Call { location, .. }
+            | Self::Html { location, .. }
             | Self::List { location, .. }
             | Self::Float { location, .. }
             | Self::BinOp { location, .. }
@@ -345,6 +358,7 @@ impl TypedExpr {
             | Self::Todo { location, .. }
             | Self::Case { location, .. }
             | Self::Call { location, .. }
+            | Self::Html { location, .. }
             | Self::List { location, .. }
             | Self::Float { location, .. }
             | Self::BinOp { location, .. }
@@ -370,6 +384,7 @@ impl TypedExpr {
             | TypedExpr::Int { .. }
             | TypedExpr::List { .. }
             | TypedExpr::Call { .. }
+            | TypedExpr::Html { .. }
             | TypedExpr::Case { .. }
             | TypedExpr::Todo { .. }
             | TypedExpr::Panic { .. }
@@ -416,6 +431,7 @@ impl TypedExpr {
             | Self::Case { type_, .. }
             | Self::List { type_, .. }
             | Self::Call { type_, .. }
+            | Self::Html { type_, .. }
             | Self::Float { type_, .. }
             | Self::Panic { type_, .. }
             | Self::BinOp { type_, .. }
@@ -468,6 +484,7 @@ impl TypedExpr {
             | TypedExpr::Fn { .. }
             | TypedExpr::List { .. }
             | TypedExpr::Call { .. }
+            | TypedExpr::Html { .. }
             | TypedExpr::BinOp { .. }
             | TypedExpr::Case { .. }
             | TypedExpr::Tuple { .. }
@@ -547,7 +564,7 @@ impl TypedExpr {
             // in the future we might want to do something a bit smarter and inspect
             // their content to see if they end up returning something that is a
             // pure value constructor and raise a warning for those as well.
-            TypedExpr::Block { .. } | TypedExpr::Case { .. } => false,
+            TypedExpr::Html { .. } | TypedExpr::Block { .. } | TypedExpr::Case { .. } => false,
 
             // `panic`, `todo`, and placeholders are never considered pure value constructors,
             // we don't want to raise a warning for an unused value if it's one

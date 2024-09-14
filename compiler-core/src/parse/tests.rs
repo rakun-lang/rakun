@@ -1506,3 +1506,28 @@ pub fn main() {
 "#
     );
 }
+#[test]
+fn html() {
+    assert_module_error!(
+        r#"
+pub fn main() {
+  
+  return <>
+  </>
+}
+"#
+    );
+}
+
+#[test]
+fn html_div() {
+    assert_module_error!(
+        r#"
+pub fn main() {
+  
+  return <div>
+  </div>
+}
+"#
+    );
+}

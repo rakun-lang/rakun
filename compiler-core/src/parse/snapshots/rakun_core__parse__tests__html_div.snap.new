@@ -1,0 +1,12 @@
+---
+source: compiler-core/src/parse/tests.rs
+assertion_line: 1524
+expression: "\npub fn main() {\n  \n  return <div>\n  </div>\n}\n"
+---
+error: Syntax error
+  ┌─ /src/parse/error.rakun:4:14
+  │
+4 │   return <div>
+  │              ^ This operator has no value on its right side
+
+Hint: Remove it or put a value after it.
