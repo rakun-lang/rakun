@@ -190,11 +190,8 @@ impl<'a> CallGraphBuilder<'a> {
                     self.expression(&argument.value);
                 }
             }
-            UntypedExpr::Html { fun, arguments, .. } => {
-                self.expression(fun);
-                for argument in arguments {
-                    self.expression(&argument.value);
-                }
+            UntypedExpr::Html { .. } => {
+                // UntypedExpr::Html
             }
 
             UntypedExpr::PipeLine { expressions } => {

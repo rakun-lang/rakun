@@ -1,6 +1,6 @@
 ---
 source: compiler-core/src/parse/tests.rs
-assertion_line: 1524
+assertion_line: 1523
 expression: "\npub fn main() {\n  \n  return <div>\n  </div>\n}\n"
 ---
 error: Syntax error

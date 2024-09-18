@@ -1,12 +1,16 @@
+use itertools::Itertools;
+
 use crate::ast::SrcSpan;
 use crate::parse::error::{LexicalError, LexicalErrorType};
 use crate::parse::token::Token;
 use std::char;
 
 use super::error::InvalidUnicodeEscapeError;
+use super::token::{TokenIterator, TokenIteratorMode};
 
 #[derive(Debug)]
 pub struct Lexer<T: Iterator<Item = (u32, char)>> {
+    mode: TokenIteratorMode,
     chars: T,
     pending: Vec<Spanned>,
     chr0: Option<char>,
@@ -48,7 +52,7 @@ pub fn str_to_keyword(word: &str) -> Option<Token> {
     }
 }
 
-pub fn make_tokenizer(source: &str) -> impl Iterator<Item = LexResult> + '_ {
+pub fn make_tokenizer(source: &str) -> impl TokenIterator<Item = LexResult> + '_ {
     let chars = source.char_indices().map(|(i, c)| (i as u32, c));
     let nlh = NewlineHandler::new(chars);
     Lexer::new(nlh)
@@ -116,6 +120,7 @@ where
 {
     pub fn new(input: T) -> Self {
         let mut lxr = Lexer {
+            mode: TokenIteratorMode::Code,
             chars: input,
             pending: Vec::new(),
             location: 0,
@@ -135,7 +140,10 @@ where
     fn inner_next(&mut self) -> LexResult {
         // top loop, keep on processing, until we have something pending.
         while self.pending.is_empty() {
-            self.consume_normal()?;
+            match self.mode {
+                TokenIteratorMode::Code => self.consume_normal()?,
+                TokenIteratorMode::XML => self.consume_normal_html()?,
+            }
         }
 
         Ok(self.pending.remove(0))
@@ -364,11 +372,11 @@ where
                             Some('>') => {
                                 let _ = self.next_char();
                                 let tok_end = self.get_pos();
-                                self.emit((tok_start, Token::LtSlashGt, tok_end));
+                                self.emit((tok_start, Token::LtStGt, tok_end));
                             }
                             _ => {
                                 let tok_end = self.get_pos();
-                                self.emit((tok_start, Token::LtSlash, tok_end));
+                                self.emit((tok_start, Token::LtSt, tok_end));
                             }
                         }
                     }
@@ -894,6 +902,100 @@ where
 
         Ok((start_pos, tok, end_pos))
     }
+    fn lex_html_string(&mut self) -> LexResult {
+        let start_pos = self.get_pos();
+        // advance past the first quote
+        let mut string_content = String::new();
+
+        loop {
+            match self.chr0 {
+                Some('>' | '<') => break,
+                Some(c) => {
+                    string_content.push(c);
+                    let _ = self.next_char();
+                }
+                None => {
+                    return Err(LexicalError {
+                        error: LexicalErrorType::UnexpectedStringEnd,
+                        location: SrcSpan {
+                            start: start_pos,
+                            end: start_pos,
+                        },
+                    });
+                }
+            }
+        }
+        let end_pos = self.get_pos();
+
+        let tok = Token::HtmlText {
+            value: string_content.into(),
+        };
+
+        Ok((start_pos, tok, end_pos))
+    }
+
+    fn consume_normal_html(&mut self) -> Result<(), LexicalError> {
+        let tok_start = self.get_pos();
+        match self.chr0 {
+            Some(c) => match c {
+                '\n' | ' ' | '\t' | '\x0C' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    let tok_end = self.get_pos();
+                    if c == '\n' {
+                        self.emit((tok_start, Token::NewLine, tok_end));
+                    }
+                }
+                '<' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    match self.chr0 {
+                        Some('>') => {
+                            let _ = self.next_char();
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::LtGt, tok_end));
+                        }
+                        Some('/') => {
+                            let _ = self.next_char();
+                            match self.chr0 {
+                                Some('>') => {
+                                    let _ = self.next_char();
+                                    let tok_end = self.get_pos();
+                                    self.emit((tok_start, Token::LtStGt, tok_end));
+                                }
+                                _ => {
+                                    let tok_end = self.get_pos();
+                                    self.emit((tok_start, Token::LtSt, tok_end));
+                                }
+                            }
+                        }
+                        _ => {
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::Less, tok_end));
+                        }
+                    }
+                    let tok_end = self.get_pos();
+                    self.emit((tok_start, Token::Less, tok_end));
+                }
+                '>' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    let tok_end = self.get_pos();
+                    self.emit((tok_start, Token::Greater, tok_end));
+                }
+                c => {
+                    let string = self.lex_html_string()?;
+                    self.emit(string);
+                }
+            },
+            None => {
+                // We reached end of file.
+                let tok_pos = self.get_pos();
+                self.emit((tok_pos, Token::EndOfFile, tok_pos));
+            }
+        }
+        Ok(())
+    }
 
     fn is_name_start(&self, c: char) -> bool {
         matches!(c, '_' | 'a'..='z')
@@ -955,6 +1057,25 @@ where
     }
 }
 
+impl<T> TokenIterator for Lexer<T>
+where
+    T: Iterator<Item = (u32, char)>,
+{
+    type Item = LexResult;
+    fn change_mode(&mut self, mode: TokenIteratorMode) {
+        self.mode = mode;
+    }
+
+    fn collect_vec(self) -> Vec<Self::Item> {
+        Itertools::collect_vec(self)
+    }
+
+    fn next(&mut self) -> Option<Self::Item> {
+        Iterator::next(self)
+    }
+}
+
+// Certifique-se de que o Lexer T implementa Iterator
 impl<T> Iterator for Lexer<T>
 where
     T: Iterator<Item = (u32, char)>,

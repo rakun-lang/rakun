@@ -362,10 +362,11 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
 
             UntypedExpr::Html {
                 location,
-                fun,
+                tag,
+                body,
                 arguments: args,
                 ..
-            } => Ok(self.infer_call(*fun, args, location, CallKind::Function)),
+            } => Ok(self.infer_html(tag, body, args, location, CallKind::Function)),
 
             UntypedExpr::BinOp {
                 location,
@@ -3512,6 +3513,17 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
         if minimum_required_version > self.minimum_required_version {
             self.minimum_required_version = minimum_required_version;
         }
+    }
+
+    fn infer_html(
+        &self,
+        tag: Option<Box<UntypedExpr>>,
+        body: Option<Box<UntypedExpr>>,
+        args: Vec<crate::ast::HtmlArg<UntypedExpr>>,
+        location: SrcSpan,
+        function: CallKind,
+    ) -> TypedExpr {
+        todo!()
     }
 }
 

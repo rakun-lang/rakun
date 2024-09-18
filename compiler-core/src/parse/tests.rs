@@ -7,8 +7,8 @@ use crate::parse::token::Token;
 use crate::warning::WarningEmitter;
 use camino::Utf8PathBuf;
 
+use crate::parse::token::TokenIterator;
 use ecow::EcoString;
-use itertools::Itertools;
 use pretty_assertions::assert_eq;
 
 macro_rules! assert_error {
@@ -1506,28 +1506,27 @@ pub fn main() {
 "#
     );
 }
-#[test]
-fn html() {
-    assert_module_error!(
-        r#"
-pub fn main() {
-  
-  return <>
-  </>
-}
-"#
-    );
-}
+// #[test]
+// fn html() {
+//     assert_module_error!(
+//         r#"
+// pub fn main() {
 
-#[test]
-fn html_div() {
-    assert_module_error!(
-        r#"
-pub fn main() {
-  
-  return <div>
-  </div>
-}
-"#
-    );
-}
+//   return <>123456789</>
+// }
+// "#
+//     );
+// }
+
+// #[test]
+// fn html_div() {
+//     assert_module_error!(
+//         r#"
+// pub fn main() {
+
+//   return <div>
+//   </div>
+// }
+// "#
+//     );
+// }

@@ -1193,6 +1193,99 @@ impl BinOp {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
+pub struct HtmlArg<A> {
+    pub label: Option<EcoString>,
+    pub location: SrcSpan,
+    pub value: A,
+    pub implicit: Option<ImplicitHtmlArgOrigin>,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub enum ImplicitHtmlArgOrigin {
+    /// The implicit callback argument passed as the last argument to the
+    /// function on the right hand side of `use`.
+    ///
+    Use,
+    /// An argument added by the compiler when rewriting a pipe `left |> right`.
+    ///
+    Pipe,
+    /// An argument added by the compiler to fill in all the missing fields of a
+    /// record that are being ignored with the `..` syntax.
+    ///
+    PatternFieldSpread,
+    /// An argument used to fill in the missing args when a function on the
+    /// right hand side of `use` is being called with the wrong arity.
+    ///
+    IncorrectArityUse,
+}
+
+impl<A> HtmlArg<A> {
+    #[must_use]
+    pub fn is_implicit(&self) -> bool {
+        self.implicit.is_some()
+    }
+}
+
+impl HtmlArg<TypedExpr> {
+    pub fn find_node(&self, byte_index: u32) -> Option<Located<'_>> {
+        match (self.implicit, &self.value) {
+            // If a call argument is the implicit use callback then we don't
+            // want to look at its arguments and body but we don't want to
+            // return the whole anonymous function if anything else doesn't
+            // match.
+            //
+            // In addition, if the callback is invalid because it couldn't be
+            // typed, we don't want to return it as it would make it hard for
+            // the LSP to give any suggestions on the use function being typed.
+            //
+            (Some(ImplicitHtmlArgOrigin::Use), TypedExpr::Invalid { .. }) => None,
+            // So the code below is exactly the same as
+            // `TypedExpr::Fn{}.find_node()` except we do not return self as a
+            // fallback.
+            //
+            (Some(ImplicitHtmlArgOrigin::Use), TypedExpr::Fn { args, body, .. }) => args
+                .iter()
+                .find_map(|arg| arg.find_node(byte_index))
+                .or_else(|| body.iter().find_map(|s| s.find_node(byte_index))),
+            // In all other cases we're happy with the default behaviour.
+            //
+            _ => self.value.find_node(byte_index),
+        }
+    }
+}
+
+impl HtmlArg<TypedPattern> {
+    pub fn find_node(&self, byte_index: u32) -> Option<Located<'_>> {
+        self.value.find_node(byte_index)
+    }
+}
+
+impl HtmlArg<UntypedExpr> {
+    pub fn is_capture_hole(&self) -> bool {
+        match &self.value {
+            UntypedExpr::Var { ref name, .. } => name == CAPTURE_VARIABLE,
+            _ => false,
+        }
+    }
+}
+
+impl<T> HtmlArg<T>
+where
+    T: HasLocation,
+{
+    #[must_use]
+    pub fn uses_label_shorthand(&self) -> bool {
+        self.label.is_some() && self.location == self.value.location()
+    }
+}
+
+impl<T> HasLocation for HtmlArg<T> {
+    fn location(&self) -> SrcSpan {
+        self.location
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct CallArg<A> {
     pub label: Option<EcoString>,
     pub location: SrcSpan,

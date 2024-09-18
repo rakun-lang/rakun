@@ -985,11 +985,12 @@ impl<'comments> Formatter<'comments> {
             } => self.call(fun, args, location),
 
             UntypedExpr::Html {
-                fun,
+                tag,
+                body,
                 arguments: args,
                 location,
                 ..
-            } => self.html(fun, args, location),
+            } => self.html(tag, body, args, location),
 
             UntypedExpr::BinOp {
                 name, left, right, ..
@@ -1176,48 +1177,6 @@ impl<'comments> Formatter<'comments> {
         }
     }
 
-    fn html<'a>(
-        &mut self,
-        fun: &'a UntypedExpr,
-        args: &'a [CallArg<UntypedExpr>],
-        location: &SrcSpan,
-    ) -> Document<'a> {
-        let expr = match fun {
-            UntypedExpr::Placeholder { .. } => panic!("Placeholders should not be formatted"),
-
-            UntypedExpr::PipeLine { .. } => break_block(self.expr(fun)),
-
-            UntypedExpr::BinOp { .. }
-            | UntypedExpr::Int { .. }
-            | UntypedExpr::Float { .. }
-            | UntypedExpr::String { .. }
-            | UntypedExpr::Block { .. }
-            | UntypedExpr::Var { .. }
-            | UntypedExpr::Fn { .. }
-            | UntypedExpr::List { .. }
-            | UntypedExpr::Call { .. }
-            | UntypedExpr::Case { .. }
-            | UntypedExpr::FieldAccess { .. }
-            | UntypedExpr::Tuple { .. }
-            | UntypedExpr::TupleIndex { .. }
-            | UntypedExpr::Html { .. }
-            | UntypedExpr::Todo { .. }
-            | UntypedExpr::Panic { .. }
-            | UntypedExpr::BitArray { .. }
-            | UntypedExpr::RecordUpdate { .. }
-            | UntypedExpr::NegateBool { .. }
-            | UntypedExpr::NegateInt { .. } => self.expr(fun),
-        };
-
-        let arity = args.len();
-        self.append_inlinable_wrapped_args(
-            expr,
-            args,
-            location,
-            |arg| &arg.value,
-            |self_, arg| self_.call_arg(arg, arity),
-        )
-    }
     fn call<'a>(
         &mut self,
         fun: &'a UntypedExpr,
@@ -2726,6 +2685,16 @@ impl<'comments> Formatter<'comments> {
         }
         let doc = concat(doc);
         Some(doc.force_break())
+    }
+
+    fn html<'a>(
+        &mut self,
+        tag: &Option<Box<UntypedExpr>>,
+        body: &Option<Box<UntypedExpr>>,
+        args: &[HtmlArg<UntypedExpr>],
+        location: &SrcSpan,
+    ) -> Document<'a> {
+        todo!()
     }
 }
 

@@ -56,8 +56,9 @@ pub enum UntypedExpr {
 
     Html {
         location: SrcSpan,
-        fun: Box<Self>,
-        arguments: Vec<CallArg<Self>>,
+        tag: Option<Box<Self>>,
+        body: Option<Box<Self>>,
+        arguments: Vec<HtmlArg<Self>>,
     },
 
     BinOp {

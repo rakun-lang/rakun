@@ -4,13 +4,14 @@ use vec1::Vec1;
 use crate::{
     analyse::Inferred,
     ast::{
-        AssignName, Assignment, BinOp, CallArg, Constant, Definition, Pattern, RecordUpdateSpread,
-        SrcSpan, Statement, TargetedDefinition, TodoKind, TypeAst, TypeAstConstructor, TypeAstFn,
-        TypeAstHole, TypeAstTuple, TypeAstVar, UntypedArg, UntypedAssignment, UntypedClause,
-        UntypedConstant, UntypedConstantBitArraySegment, UntypedCustomType, UntypedDefinition,
-        UntypedExpr, UntypedExprBitArraySegment, UntypedFunction, UntypedImport, UntypedModule,
-        UntypedModuleConstant, UntypedPattern, UntypedPatternBitArraySegment,
-        UntypedRecordUpdateArg, UntypedStatement, UntypedTypeAlias, Use, UseAssignment,
+        AssignName, Assignment, BinOp, CallArg, Constant, Definition, HtmlArg, Pattern,
+        RecordUpdateSpread, SrcSpan, Statement, TargetedDefinition, TodoKind, TypeAst,
+        TypeAstConstructor, TypeAstFn, TypeAstHole, TypeAstTuple, TypeAstVar, UntypedArg,
+        UntypedAssignment, UntypedClause, UntypedConstant, UntypedConstantBitArraySegment,
+        UntypedCustomType, UntypedDefinition, UntypedExpr, UntypedExprBitArraySegment,
+        UntypedFunction, UntypedImport, UntypedModule, UntypedModuleConstant, UntypedPattern,
+        UntypedPatternBitArraySegment, UntypedRecordUpdateArg, UntypedStatement, UntypedTypeAlias,
+        Use, UseAssignment,
     },
     build::Target,
 };
@@ -277,9 +278,10 @@ pub trait UntypedExprFolder: TypeAstFolder + UntypedConstantFolder + PatternFold
             } => self.fold_call(location, fun, arguments),
             UntypedExpr::Html {
                 location,
-                fun,
+                tag,
+                body,
                 arguments,
-            } => self.fold_html(location, fun, arguments),
+            } => self.fold_html(location, tag, body, arguments),
 
             UntypedExpr::BinOp {
                 location,
@@ -410,20 +412,15 @@ pub trait UntypedExprFolder: TypeAstFolder + UntypedConstantFolder + PatternFold
 
             UntypedExpr::Html {
                 location,
-                fun,
+                tag,
+                body,
                 arguments,
             } => {
-                let fun = Box::new(self.fold_expr(*fun));
-                let arguments = arguments
-                    .into_iter()
-                    .map(|mut a| {
-                        a.value = self.fold_expr(a.value);
-                        a
-                    })
-                    .collect();
+                // UntypedExpr::Html
                 UntypedExpr::Html {
                     location,
-                    fun,
+                    tag,
+                    body,
                     arguments,
                 }
             }
@@ -733,12 +730,14 @@ pub trait UntypedExprFolder: TypeAstFolder + UntypedConstantFolder + PatternFold
     fn fold_html(
         &mut self,
         location: SrcSpan,
-        fun: Box<UntypedExpr>,
-        arguments: Vec<CallArg<UntypedExpr>>,
+        tag: Option<Box<UntypedExpr>>,
+        body: Option<Box<UntypedExpr>>,
+        arguments: Vec<HtmlArg<UntypedExpr>>,
     ) -> UntypedExpr {
         UntypedExpr::Html {
             location,
-            fun,
+            tag,
+            body,
             arguments,
         }
     }
