@@ -5,12 +5,14 @@ use ecow::EcoString;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Token {
     Name { name: EcoString },
+    HtmlTagAttrName { name: EcoString },
     UpName { name: EcoString },
     DiscardName { name: EcoString },
     Int { value: EcoString },
     Float { value: EcoString },
     String { value: EcoString },
     HtmlText { value: EcoString },
+    HtmlStartTag,
     CommentDoc { content: String },
     // Groupings
     LeftParen,   // (
@@ -41,6 +43,7 @@ pub enum Token {
     EqualDot,        // '=.'
     LtSt,            // '</'
     LtStGt,          // '</>'
+    StGt,            // '/>'
     LtGt,            // '<>'
     // String Operators
     PlusPlus, // '++'
@@ -94,9 +97,10 @@ pub enum Token {
     Use,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Copy)]
 pub enum TokenIteratorMode {
-    XML,
+    HtmlContent,
+    HtmlTagAttr,
     Code,
 }
 
@@ -159,6 +163,7 @@ impl Token {
             | Token::Test => true,
 
             Token::Name { .. }
+            | Token::HtmlTagAttrName { .. }
             | Token::UpName { .. }
             | Token::DiscardName { .. }
             | Token::Int { .. }
@@ -177,6 +182,7 @@ impl Token {
             | Token::Star
             | Token::Slash
             | Token::Less
+            | Token::HtmlStartTag
             | Token::Greater
             | Token::LessEqual
             | Token::GreaterEqual
@@ -192,6 +198,7 @@ impl Token {
             | Token::GreaterEqualDot
             | Token::LtGt
             | Token::LtSt
+            | Token::StGt
             | Token::LtStGt
             | Token::Colon
             | Token::Comma
@@ -223,9 +230,10 @@ impl Token {
 impl fmt::Display for Token {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let s = match self {
-            Token::Name { name } | Token::UpName { name } | Token::DiscardName { name } => {
-                name.as_str()
-            }
+            Token::Name { name }
+            | Token::HtmlTagAttrName { name }
+            | Token::UpName { name }
+            | Token::DiscardName { name } => name.as_str(),
             Token::HtmlText { value }
             | Token::Int { value }
             | Token::Float { value }
@@ -276,11 +284,13 @@ impl fmt::Display for Token {
             Token::LtGt => "<>",
             Token::LtSt => "</",
             Token::LtStGt => "</>",
+            Token::StGt => "/>",
             Token::LtLt => "<<",
             Token::Macro => "macro",
             Token::Minus => "-",
             Token::MinusDot => "-.",
             Token::NotEqual => "!=",
+            Token::HtmlStartTag => "<",
             Token::Opaque => "opaque",
             Token::Panic => "panic",
             Token::Percent => "%",

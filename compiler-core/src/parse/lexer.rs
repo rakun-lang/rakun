@@ -142,7 +142,8 @@ where
         while self.pending.is_empty() {
             match self.mode {
                 TokenIteratorMode::Code => self.consume_normal()?,
-                TokenIteratorMode::XML => self.consume_normal_html()?,
+                TokenIteratorMode::HtmlContent => self.consume_normal_html()?,
+                TokenIteratorMode::HtmlTagAttr => self.consume_normal_html_tag_attr()?,
             }
         }
 
@@ -360,6 +361,7 @@ where
             '<' => {
                 let tok_start = self.get_pos();
                 let _ = self.next_char();
+
                 match self.chr0 {
                     Some('>') => {
                         let _ = self.next_char();
@@ -409,7 +411,23 @@ where
                             }
                         }
                     }
-                    _ => {
+                    Some(c) => {
+                        if self.is_upname_start(c) {
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::HtmlStartTag, tok_end));
+                            let name = self.lex_upname()?;
+                            self.emit(name)
+                        } else if self.is_name_start(c) {
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::HtmlStartTag, tok_end));
+                            let name = self.lex_name()?;
+                            self.emit(name);
+                        } else {
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::Less, tok_end));
+                        }
+                    }
+                    None => {
                         let tok_end = self.get_pos();
                         self.emit((tok_start, Token::Less, tok_end));
                     }
@@ -490,6 +508,34 @@ where
         Ok(())
     }
 
+    fn is_name_start(&self, c: char) -> bool {
+        matches!(c, '_' | 'a'..='z')
+    }
+
+    fn lex_attr_name(&mut self) -> LexResult {
+        let mut name = String::new();
+        let start_pos = self.get_pos();
+        while self.is_attr_name_continuation() {
+            name.push(self.next_char().expect("lex_attr_name continuation"));
+        }
+
+        let end_pos = self.get_pos();
+
+        if let Some(tok) = str_to_keyword(&name) {
+            Ok((start_pos, tok, end_pos))
+        } else {
+            Ok((
+                start_pos,
+                Token::HtmlTagAttrName { name: name.into() },
+                end_pos,
+            ))
+        }
+    }
+    fn is_attr_name_continuation(&self) -> bool {
+        self.chr0
+            .map(|c| matches!(c, '_' | '-' | '0'..='9' | 'a'..='z' | 'A'..='Z'))
+            .unwrap_or(false)
+    }
     // Lexer helper functions:
     // this can be either a reserved word, or a name
     fn lex_name(&mut self) -> LexResult {
@@ -902,14 +948,14 @@ where
 
         Ok((start_pos, tok, end_pos))
     }
-    fn lex_html_string(&mut self) -> LexResult {
+    fn lex_html_string(&mut self, c: char) -> LexResult {
         let start_pos = self.get_pos();
         // advance past the first quote
         let mut string_content = String::new();
-
+        string_content.push(c);
         loop {
             match self.chr0 {
-                Some('>' | '<') => break,
+                Some('>' | '<' | '{') => break,
                 Some(c) => {
                     string_content.push(c);
                     let _ = self.next_char();
@@ -935,17 +981,8 @@ where
     }
 
     fn consume_normal_html(&mut self) -> Result<(), LexicalError> {
-        let tok_start = self.get_pos();
         match self.chr0 {
             Some(c) => match c {
-                '\n' | ' ' | '\t' | '\x0C' => {
-                    let tok_start = self.get_pos();
-                    let _ = self.next_char();
-                    let tok_end = self.get_pos();
-                    if c == '\n' {
-                        self.emit((tok_start, Token::NewLine, tok_end));
-                    }
-                }
                 '<' => {
                     let tok_start = self.get_pos();
                     let _ = self.next_char();
@@ -974,8 +1011,6 @@ where
                             self.emit((tok_start, Token::Less, tok_end));
                         }
                     }
-                    let tok_end = self.get_pos();
-                    self.emit((tok_start, Token::Less, tok_end));
                 }
                 '>' => {
                     let tok_start = self.get_pos();
@@ -983,8 +1018,14 @@ where
                     let tok_end = self.get_pos();
                     self.emit((tok_start, Token::Greater, tok_end));
                 }
+                '{' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    let tok_end = self.get_pos();
+                    self.emit((tok_start, Token::LeftBrace, tok_end));
+                }
                 c => {
-                    let string = self.lex_html_string()?;
+                    let string = self.lex_html_string(c)?;
                     self.emit(string);
                 }
             },
@@ -997,9 +1038,93 @@ where
         Ok(())
     }
 
-    fn is_name_start(&self, c: char) -> bool {
-        matches!(c, '_' | 'a'..='z')
+    fn consume_normal_html_tag_attr(&mut self) -> Result<(), LexicalError> {
+        match self.chr0 {
+            Some(c) => match c {
+                '<' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    match self.chr0 {
+                        Some('>') => {
+                            let _ = self.next_char();
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::LtGt, tok_end));
+                        }
+                        Some('/') => {
+                            let _ = self.next_char();
+                            match self.chr0 {
+                                Some('>') => {
+                                    let _ = self.next_char();
+                                    let tok_end = self.get_pos();
+                                    self.emit((tok_start, Token::LtStGt, tok_end));
+                                }
+                                _ => {
+                                    let tok_end = self.get_pos();
+                                    self.emit((tok_start, Token::LtSt, tok_end));
+                                }
+                            }
+                        }
+                        _ => {
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::Less, tok_end));
+                        }
+                    }
+                }
+                '>' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    let tok_end = self.get_pos();
+                    self.emit((tok_start, Token::Greater, tok_end));
+                }
+                '{' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    let tok_end = self.get_pos();
+                    self.emit((tok_start, Token::LeftBrace, tok_end));
+                }
+                '=' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    let tok_end = self.get_pos();
+                    self.emit((tok_start, Token::Equal, tok_end));
+                }
+                '\n' | ' ' | '\t' | '\x0C' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    let tok_end = self.get_pos();
+                    if c == '\n' {
+                        self.emit((tok_start, Token::NewLine, tok_end));
+                    }
+                }
+                c => {
+                    if self.is_attr_name_start(c) {
+                        let name = self.lex_attr_name()?;
+                        self.emit(name);
+                    } else {
+                        let location = self.get_pos();
+                        return Err(LexicalError {
+                            error: LexicalErrorType::UnrecognizedToken { tok: c },
+                            location: SrcSpan {
+                                start: location,
+                                end: location,
+                            },
+                        });
+                    }
+                }
+            },
+            None => {
+                // We reached end of file.
+                let tok_pos = self.get_pos();
+                self.emit((tok_pos, Token::EndOfFile, tok_pos));
+            }
+        }
+        Ok(())
     }
+
+    fn is_attr_name_start(&self, c: char) -> bool {
+        matches!(c, '_' | 'a'..='z' | 'A'..='Z')
+    }
+
     fn is_upname_start(&self, c: char) -> bool {
         c.is_ascii_uppercase()
     }

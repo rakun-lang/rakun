@@ -4,7 +4,7 @@ use vec1::Vec1;
 use crate::{
     analyse::Inferred,
     ast::{
-        AssignName, Assignment, BinOp, CallArg, Constant, Definition, HtmlArg, Pattern,
+        AssignName, Assignment, BinOp, CallArg, Constant, Definition, HtmlTagAttr, Pattern,
         RecordUpdateSpread, SrcSpan, Statement, TargetedDefinition, TodoKind, TypeAst,
         TypeAstConstructor, TypeAstFn, TypeAstHole, TypeAstTuple, TypeAstVar, UntypedArg,
         UntypedAssignment, UntypedClause, UntypedConstant, UntypedConstantBitArraySegment,
@@ -282,6 +282,7 @@ pub trait UntypedExprFolder: TypeAstFolder + UntypedConstantFolder + PatternFold
                 body,
                 arguments,
             } => self.fold_html(location, tag, body, arguments),
+            UntypedExpr::HtmlText { location, value } => self.fold_html_text(location, value),
 
             UntypedExpr::BinOp {
                 location,
@@ -423,6 +424,11 @@ pub trait UntypedExprFolder: TypeAstFolder + UntypedConstantFolder + PatternFold
                     body,
                     arguments,
                 }
+            }
+
+            UntypedExpr::HtmlText { location, value } => {
+                // UntypedExpr::Html
+                UntypedExpr::HtmlText { location, value }
             }
             UntypedExpr::Call {
                 location,
@@ -731,8 +737,8 @@ pub trait UntypedExprFolder: TypeAstFolder + UntypedConstantFolder + PatternFold
         &mut self,
         location: SrcSpan,
         tag: Option<Box<UntypedExpr>>,
-        body: Option<Box<UntypedExpr>>,
-        arguments: Vec<HtmlArg<UntypedExpr>>,
+        body: Vec<UntypedExpr>,
+        arguments: Vec<HtmlTagAttr<UntypedExpr>>,
     ) -> UntypedExpr {
         UntypedExpr::Html {
             location,
@@ -740,6 +746,9 @@ pub trait UntypedExprFolder: TypeAstFolder + UntypedConstantFolder + PatternFold
             body,
             arguments,
         }
+    }
+    fn fold_html_text(&mut self, location: SrcSpan, value: EcoString) -> UntypedExpr {
+        UntypedExpr::HtmlText { location, value }
     }
 
     fn fold_bin_op(

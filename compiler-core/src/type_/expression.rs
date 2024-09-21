@@ -367,6 +367,9 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
                 arguments: args,
                 ..
             } => Ok(self.infer_html(tag, body, args, location, CallKind::Function)),
+            UntypedExpr::HtmlText {
+                location, value, ..
+            } => Ok(self.infer_html_text(value, CallKind::Function)),
 
             UntypedExpr::BinOp {
                 location,
@@ -3518,11 +3521,15 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
     fn infer_html(
         &self,
         tag: Option<Box<UntypedExpr>>,
-        body: Option<Box<UntypedExpr>>,
-        args: Vec<crate::ast::HtmlArg<UntypedExpr>>,
+        body: Vec<UntypedExpr>,
+        args: Vec<crate::ast::HtmlTagAttr<UntypedExpr>>,
         location: SrcSpan,
         function: CallKind,
     ) -> TypedExpr {
+        todo!()
+    }
+
+    fn infer_html_text(&self, value: EcoString, function: CallKind) -> TypedExpr {
         todo!()
     }
 }

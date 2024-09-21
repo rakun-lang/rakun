@@ -1506,27 +1506,85 @@ pub fn main() {
 "#
     );
 }
-// #[test]
-// fn html() {
-//     assert_module_error!(
-//         r#"
-// pub fn main() {
+#[test]
+fn html() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let a = "5454"
 
-//   return <>123456789</>
-// }
-// "#
-//     );
-// }
+    <>d1123 {a} <>e1123 {a ++ "t8741"} </> </> 
+   
+}
+"#
+    );
+}
 
-// #[test]
-// fn html_div() {
-//     assert_module_error!(
-//         r#"
-// pub fn main() {
+#[test]
+fn html_div() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let a = "5454"
 
-//   return <div>
-//   </div>
-// }
-// "#
-//     );
-// }
+   <div>
+      123456789 {a}
+   </div>
+}
+"#
+    );
+}
+
+#[test]
+fn html_div_html_fragment() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let a = "5454"
+
+   <div>
+   65656
+    <>
+        123456789 {a}
+    </>
+   </div>
+}
+"#
+    );
+}
+
+#[test]
+fn html_module_div_html_fragment() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let a = "5454"
+
+   <c.div>
+   65656
+    <>
+        123456789 {a}
+    </>
+   </c.div>
+}
+"#
+    );
+}
+
+#[test]
+fn html_module_div_tag() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let a = "5454"
+
+   <c.div class="5646546" style={a} data-rule="656" der=12 valid>
+    65656
+    <>
+        123456789 
+    </>
+   </c.div>
+}
+"#
+    );
+}

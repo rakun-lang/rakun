@@ -1,0 +1,144 @@
+---
+source: compiler-core/src/parse/tests.rs
+assertion_line: 1540
+expression: "\npub fn main() {\n   let a = \"5454\"\n\n   <div>\n   65656\n    <>\n        123456789 {a}\n    </>\n   </div>\n}\n"
+---
+Parsed {
+    module: Module {
+        name: "",
+        documentation: [],
+        type_info: (),
+        definitions: [
+            TargetedDefinition {
+                definition: Function(
+                    Function {
+                        location: SrcSpan {
+                            start: 1,
+                            end: 14,
+                        },
+                        end_position: 102,
+                        name: Some(
+                            (
+                                SrcSpan {
+                                    start: 8,
+                                    end: 12,
+                                },
+                                "main",
+                            ),
+                        ),
+                        arguments: [],
+                        body: [
+                            Assignment(
+                                Assignment {
+                                    location: SrcSpan {
+                                        start: 20,
+                                        end: 34,
+                                    },
+                                    value: String {
+                                        location: SrcSpan {
+                                            start: 28,
+                                            end: 34,
+                                        },
+                                        value: "5454",
+                                    },
+                                    pattern: Variable {
+                                        location: SrcSpan {
+                                            start: 24,
+                                            end: 25,
+                                        },
+                                        name: "a",
+                                        type_: (),
+                                    },
+                                    kind: Let,
+                                    annotation: None,
+                                },
+                            ),
+                            Expression(
+                                Html {
+                                    location: SrcSpan {
+                                        start: 39,
+                                        end: 100,
+                                    },
+                                    tag: None,
+                                    body: [
+                                        HtmlText {
+                                            location: SrcSpan {
+                                                start: 44,
+                                                end: 58,
+                                            },
+                                            value: "\n\n   65656\n    ",
+                                        },
+                                        Html {
+                                            location: SrcSpan {
+                                                start: 58,
+                                                end: 90,
+                                            },
+                                            tag: None,
+                                            body: [
+                                                HtmlText {
+                                                    location: SrcSpan {
+                                                        start: 60,
+                                                        end: 79,
+                                                    },
+                                                    value: "\n\n        123456789 ",
+                                                },
+                                                Var {
+                                                    location: SrcSpan {
+                                                        start: 80,
+                                                        end: 81,
+                                                    },
+                                                    name: "a",
+                                                },
+                                                HtmlText {
+                                                    location: SrcSpan {
+                                                        start: 82,
+                                                        end: 87,
+                                                    },
+                                                    value: "\n\n    ",
+                                                },
+                                            ],
+                                            arguments: [],
+                                        },
+                                    ],
+                                    arguments: [],
+                                },
+                            ),
+                        ],
+                        publicity: Public,
+                        deprecation: NotDeprecated,
+                        return_annotation: None,
+                        return_type: (),
+                        documentation: None,
+                        external_erlang: None,
+                        external_javascript: None,
+                        implementations: Implementations {
+                            rakun: true,
+                            can_run_on_erlang: true,
+                            can_run_on_javascript: true,
+                            uses_erlang_externals: false,
+                            uses_javascript_externals: false,
+                        },
+                    },
+                ),
+                target: None,
+            },
+        ],
+    },
+    extra: ModuleExtra {
+        module_comments: [],
+        doc_comments: [],
+        comments: [],
+        empty_lines: [
+            35,
+        ],
+        new_lines: [
+            0,
+            16,
+            34,
+            35,
+            90,
+            100,
+            102,
+        ],
+    },
+}

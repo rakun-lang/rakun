@@ -38,6 +38,10 @@ pub struct ParseError {
 impl ParseError {
     pub fn details(&self) -> (&'static str, Vec<String>) {
         match &self.error {
+            ParseErrorType::ExpectedTagAttrValue => {
+                ("I was expecting a tag attr value here", vec![])
+            }
+            ParseErrorType::ExpectedTagName => ("I was expecting a tag name here", vec![]),
             ParseErrorType::ExpectedEqual => ("I was expecting a '=' after this", vec![]),
             ParseErrorType::ExpectedExpr => ("I was expecting an expression after this", vec![]),
             ParseErrorType::ExpectedName => ("I was expecting a name here", vec![]),
@@ -351,6 +355,8 @@ pub enum ParseErrorType {
     LowcaseBooleanPattern, // most likely user meant True or False in patterns
     UnexpectedLabel, // argument labels were provided, but are not supported in this context
     UnexpectedEof,
+    ExpectedTagName,
+    ExpectedTagAttrValue,
     UnexpectedReservedWord, // reserved word used when a name was expected
     UnexpectedToken {
         token: Token,

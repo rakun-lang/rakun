@@ -357,7 +357,7 @@ pub fn generate_html<IO: FileSystemReader>(
         path: Utf8PathBuf::from("search-data.js"),
         content: Content::Text(format!(
             "window.Rakun.initSearch({});",
-            serde_to_string(&escape_html_contents(search_indexes))
+            serde_to_string(&escape_HtmlContents(search_indexes))
                 .expect("search index serialization")
         )),
     });
@@ -485,7 +485,7 @@ fn page_unnest_test() {
     assert_eq!(page_unnest("rakun/string/inspect"), "../..");
 }
 
-fn escape_html_content(it: String) -> String {
+fn escape_HtmlContent(it: String) -> String {
     it.replace('&', "&amp;")
         .replace('<', "&lt;")
         .replace('>', "&gt;")
@@ -493,13 +493,13 @@ fn escape_html_content(it: String) -> String {
         .replace('\'', "&#39;")
 }
 
-fn escape_html_contents(indexes: Vec<SearchIndex>) -> Vec<SearchIndex> {
+fn escape_HtmlContents(indexes: Vec<SearchIndex>) -> Vec<SearchIndex> {
     indexes
         .into_iter()
         .map(|idx| SearchIndex {
             doc: idx.doc,
             title: idx.title,
-            content: escape_html_content(idx.content),
+            content: escape_HtmlContent(idx.content),
             url: idx.url,
         })
         .collect::<Vec<SearchIndex>>()

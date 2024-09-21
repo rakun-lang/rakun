@@ -54,11 +54,15 @@ pub enum UntypedExpr {
         arguments: Vec<CallArg<Self>>,
     },
 
+    HtmlText {
+        location: SrcSpan,
+        value: EcoString,
+    },
     Html {
         location: SrcSpan,
         tag: Option<Box<Self>>,
-        body: Option<Box<Self>>,
-        arguments: Vec<HtmlArg<Self>>,
+        body: Vec<Self>,
+        arguments: Vec<HtmlTagAttr<Self>>,
     },
 
     BinOp {
@@ -152,6 +156,7 @@ impl UntypedExpr {
             Self::PipeLine { expressions, .. } => expressions.last().location(),
 
             Self::Fn { location, .. }
+            | Self::HtmlText { location, .. }
             | Self::Var { location, .. }
             | Self::Int { location, .. }
             | Self::Todo { location, .. }

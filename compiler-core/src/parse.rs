@@ -58,12 +58,12 @@ use crate::analyse::Inferred;
 use crate::ast::{
     Arg, ArgNames, AssignName, Assignment, AssignmentKind, BinOp, BitArrayOption, BitArraySegment,
     CallArg, Clause, ClauseGuard, Constant, CustomType, CustomTypeMode, Definition, Function,
-    HasLocation, Import, Module, ModuleConstant, Pattern, Publicity, RecordConstructor,
-    RecordConstructorArg, RecordUpdateSpread, SrcSpan, Statement, TargetedDefinition, TodoKind,
-    TypeAlias, TypeAst, TypeAstConstructor, TypeAstFn, TypeAstHole, TypeAstTuple, TypeAstVar,
-    UnqualifiedImport, UntypedArg, UntypedClause, UntypedClauseGuard, UntypedConstant,
-    UntypedDefinition, UntypedExpr, UntypedModule, UntypedPattern, UntypedRecordUpdateArg,
-    UntypedStatement, Use, UseAssignment, CAPTURE_VARIABLE,
+    HasLocation, HtmlTagAttr, Import, Module, ModuleConstant, Pattern, Publicity,
+    RecordConstructor, RecordConstructorArg, RecordUpdateSpread, SrcSpan, Statement,
+    TargetedDefinition, TodoKind, TypeAlias, TypeAst, TypeAstConstructor, TypeAstFn, TypeAstHole,
+    TypeAstTuple, TypeAstVar, UnqualifiedImport, UntypedArg, UntypedClause, UntypedClauseGuard,
+    UntypedConstant, UntypedDefinition, UntypedExpr, UntypedModule, UntypedPattern,
+    UntypedRecordUpdateArg, UntypedStatement, Use, UseAssignment, CAPTURE_VARIABLE,
 };
 use crate::build::Target;
 use crate::error::wrap;
@@ -239,10 +239,11 @@ where
             type_info: (),
             definitions,
         };
-        Ok(Parsed {
+        let tt = Ok(Parsed {
             module,
             extra: Default::default(),
-        })
+        });
+        tt
     }
 
     // The way the parser is currently implemented, it cannot exit immediately while advancing
@@ -255,7 +256,8 @@ where
         parse_result: Result<A, ParseError>,
     ) -> Result<A, ParseError> {
         let parse_result = self.ensure_no_errors(parse_result)?;
-        if let Some((start, token, end)) = self.next_tok() {
+        let tk = self.next_tok();
+        if let Some((start, token, end)) = tk {
             // there are still more tokens
             let expected = vec!["An import, const, type, or function.".into()];
             return parse_error(
@@ -266,6 +268,8 @@ where
                 },
                 SrcSpan { start, end },
             );
+        } else {
+            self.token_push(tk);
         }
         // no errors
         Ok(parse_result)
@@ -390,8 +394,6 @@ where
         &mut self,
         is_let_binding: bool,
     ) -> Result<Option<UntypedExpr>, ParseError> {
-        println!("parse_expression_inner");
-
         // uses the simple operator parser algorithm
         let mut opstack = vec![];
         let mut estack = vec![];
@@ -485,7 +487,6 @@ where
     //   A(a.., label: tuple(1))
     //   { expression_sequence }
     fn parse_expression_unit(&mut self) -> Result<Option<UntypedExpr>, ParseError> {
-        println!("parse_expression_unit");
         let mut expr = match self.next_tok() {
             Some((start, Token::String { value }, end)) => UntypedExpr::String {
                 location: SrcSpan { start, end },
@@ -547,12 +548,12 @@ where
             }
 
             Some((start, Token::LtGt, _)) => {
-                self.tokens.change_mode(token::TokenIteratorMode::XML);
+                let vv = self.parse_html_fragment(start)?;
+                vv
+            }
 
-                let _r1 = self.next_tok();
-
-                let _r2 = self.next_tok();
-                let vv = self.parse_html_empty(start)?;
+            Some((start, Token::HtmlStartTag, _)) => {
+                let vv = self.parse_html_tag(start)?;
                 vv
             }
             // list
@@ -686,19 +687,15 @@ where
 
             // case
             Some((start, Token::Case, case_e)) => {
-                println!(" Token::Case 0");
                 let subjects =
                     Parser::series_of(self, &Parser::parse_expression, Some(&Token::Comma))?;
 
-                println!(" Token::Case 1");
                 let _ = self.expect_one_following_series(&Token::LeftBrace, "an expression")?;
 
-                println!(" Token::Case 2");
                 let clauses = Parser::series_of(self, &Parser::parse_case_clause, None)?;
                 let (_, end) =
                     self.expect_one_following_series(&Token::RightBrace, "a case clause")?;
 
-                println!(" Token::Case 3");
                 if subjects.is_empty() {
                     return parse_error(
                         ParseErrorType::ExpectedExpr,
@@ -925,7 +922,6 @@ where
 
     // An assignment, with `Let` already consumed
     fn parse_assignment(&mut self, start: u32) -> Result<UntypedStatement, ParseError> {
-        println!(" parse_assignment 0");
         let tk0: Option<(u32, Token, u32)> = self.next_tok();
         let kind = if let Some((assert_start, Token::Assert, assert_end)) = tk0 {
             AssignmentKind::Assert {
@@ -936,7 +932,6 @@ where
             AssignmentKind::Let
         };
 
-        println!(" parse_assignment 1");
         let pattern = if let Some(p) = self.parse_pattern()? {
             p
         } else {
@@ -944,10 +939,8 @@ where
             return self.next_tok_unexpected(vec!["A pattern".into()])?;
         };
 
-        println!(" parse_assignment 3");
         let annotation = self.parse_type_annotation(&Token::Colon)?;
 
-        println!(" parse_assignment 4");
         let (eq_s, eq_e) = self.maybe_one(&Token::Equal).ok_or(ParseError {
             error: ParseErrorType::ExpectedEqual,
             location: SrcSpan {
@@ -1011,14 +1004,12 @@ where
     }
 
     fn parse_statement(&mut self) -> Result<Option<UntypedStatement>, ParseError> {
-        println!("parse_statement");
         match self.next_tok() {
             Some((start, Token::Use, end)) => Ok(Some(self.parse_use(start, end)?)),
 
             Some((start, Token::Let, _)) => Ok(Some(self.parse_assignment(start)?)),
 
             token => {
-                println!("parse_statement2");
                 self.token_push(token);
                 self.parse_statement_errors()?;
                 let expression = self.parse_expression()?.map(Statement::Expression);
@@ -1028,7 +1019,6 @@ where
     }
 
     fn parse_statement_errors(&mut self) -> Result<(), ParseError> {
-        println!("parse_statement_errors");
         // Better error: name definitions must start with `let`
         let tk0 = self.next_tok();
         if let Some((_, Token::Name { .. }, _)) = tk0 {
@@ -1060,11 +1050,9 @@ where
 
     // The left side of an "=" or a "->"
     fn parse_pattern(&mut self) -> Result<Option<UntypedPattern>, ParseError> {
-        println!("parse_pattern s");
         let pattern = match self.next_tok() {
             // Pattern::Var or Pattern::Constructor start
             Some((start, Token::Name { name }, end)) => {
-                println!("parse_pattern {}", name);
                 // A variable is not permitted on the left hand side of a `<>`
                 let tok0 = self.next_tok();
                 if let Some((_, Token::PlusPlus, _)) = tok0 {
@@ -1104,13 +1092,11 @@ where
             }
             // Constructor
             Some((start, tok @ Token::UpName { .. }, end)) => {
-                println!("parse_pattern {}", tok);
                 self.token_push(Some((start, tok, end)));
                 self.expect_constructor_pattern(None)?
             }
 
             Some((start, Token::DiscardName { name }, end)) => {
-                println!("parse_pattern {}", name);
                 // A discard is not permitted on the left hand side of a `<>`
                 let tk0 = self.next_tok();
                 if let Some((_, Token::PlusPlus, _)) = tk0 {
@@ -1126,7 +1112,6 @@ where
             }
 
             Some((start, Token::String { value }, end)) => {
-                println!("parse_pattern {}", value);
                 match self.next_tok() {
                     // String matching with assignment, it could either be a
                     // String prefix matching: "Hello, " as greeting ++ name -> ...
@@ -1245,7 +1230,6 @@ where
             }
             // List
             Some((start, Token::LeftSquare, _)) => {
-                println!("parse_pattern LeftSquare");
                 let (elements, elements_end_with_comma) = self.series_of_has_trailing_separator(
                     &Parser::parse_pattern,
                     Some(&Token::Comma),
@@ -1373,7 +1357,6 @@ where
     //   pattern, pattern if -> expr
     //   pattern, pattern | pattern, pattern if -> expr
     fn parse_case_clause(&mut self) -> Result<Option<UntypedClause>, ParseError> {
-        println!("parse_case_clause");
         let patterns = self.parse_patterns()?;
         if let Some(lead) = &patterns.first() {
             let mut alternative_patterns = vec![];
@@ -1429,7 +1412,6 @@ where
         &mut self,
         nested: bool,
     ) -> Result<Option<UntypedClauseGuard>, ParseError> {
-        println!("parse_case_clause_guard");
         if self.maybe_one(&Token::If).is_some() || nested {
             let mut opstack = vec![];
             let mut estack = vec![];
@@ -2304,7 +2286,6 @@ where
 
     // Parse the type part of a type annotation, same as `parse_type_annotation` minus the ":"
     fn parse_type(&mut self) -> Result<Option<TypeAst>, ParseError> {
-        println!("parse_type s");
         match self.next_tok() {
             // Type hole
             Some((start, Token::DiscardName { name }, end)) => {
@@ -2675,7 +2656,6 @@ where
             }
 
             Some((start, Token::LeftSquare, _)) => {
-                println!("parse_pattern LeftSquare");
                 let elements =
                     Parser::series_of(self, &Parser::parse_const_value, Some(&Token::Comma))?;
                 let (_, end) =
@@ -3257,28 +3237,25 @@ functions are declared separately from types.";
     fn maybe_one(&mut self, tok: &Token) -> Option<(u32, u32)> {
         match self.next_tok() {
             Some((s, t, e)) if t == *tok => Some((s, e)),
-            t0 => {
-                let result = match (tok, &t0) {
-                    (Token::Greater, Some((s0, Token::GtGt, e))) => {
-                        Some((s0 - 1, Token::Greater, *e))
-                    }
-                    (Token::Greater, Some((s0, Token::GreaterEqual, e))) => {
-                        Some((s0 - 1, Token::Equal, *e))
-                    }
-                    (Token::Greater, Some((s0, Token::GreaterEqualDot, e))) => {
-                        Some((s0 - 1, Token::EqualDot, *e))
-                    }
-                    _ => None,
-                };
-
-                if let Some((s0, new_token, e)) = result {
-                    self.token_push(Some((s0, new_token, e)));
-                    Some((s0, e))
-                } else {
+            t0 => match (tok, &t0) {
+                (Token::Greater, Some((s0, Token::GtGt, e))) => {
+                    self.token_push(Some((*s0, Token::Greater, *e)));
+                    Some((*s0, *e))
+                }
+                (Token::Greater, Some((s0, Token::GreaterEqual, e))) => {
+                    self.token_push(Some((*s0, Token::Equal, *e)));
+                    Some((*s0, *e))
+                }
+                (Token::Greater, Some((start, Token::GreaterEqualDot, end))) => {
+                    self.token_push(Some((*start, Token::EqualDot, *end)));
+                    Some((*start, *end))
+                }
+                (Token::Less, Some((start, Token::HtmlStartTag, end))) => Some((*start, *end)),
+                _ => {
                     self.token_push(t0);
                     None
                 }
-            }
+            },
         }
     }
 
@@ -3373,7 +3350,6 @@ functions are declared separately from types.";
     fn next_tok(&mut self) -> Option<Spanned> {
         while let Some(tok) = self.cache_tokens.pop() {
             // Prints 3, 2, 1
-            println!("next_tok nxt {:?}", tok);
             return tok;
         }
         let mut previous_newline = None;
@@ -3423,7 +3399,6 @@ functions are declared separately from types.";
                 }
             }
         }
-        println!("next_tok nxt {:?}", nxt);
         return nxt;
     }
 
@@ -3585,31 +3560,291 @@ functions are declared separately from types.";
             }
         }
     }
+    fn parse_html_tag(&mut self, start: u32) -> Result<UntypedExpr, ParseError> {
+        let token0: Token;
+        let mut token1: Option<Token> = None;
+        let mut expr: UntypedExpr = match self.next_tok() {
+            Some((start, tk, end)) => {
+                token0 = tk.clone();
+                match tk {
+                    // var lower_name and UpName
+                    Token::Name { name } | Token::UpName { name } => UntypedExpr::Var {
+                        location: SrcSpan { start, end },
+                        name,
+                    },
+                    _ => {
+                        return parse_error(
+                            ParseErrorType::ExpectedTagName,
+                            SrcSpan { start, end },
+                        );
+                    }
+                }
+            }
+            None => {
+                return parse_error(ParseErrorType::UnexpectedEof, SrcSpan { start: 0, end: 0 })
+            }
+        };
+        if let Some((dot_start, _)) = self.maybe_one(&Token::Dot) {
+            let start = expr.location().start;
+            // field access
+            match self.next_tok() {
+                Some((_, tk, end)) => {
+                    token1 = Some(tk.clone());
+                    match tk {
+                        // tuple access
+                        Token::Int { value } => {
+                            let v = value.replace("_", "");
+                            if let Ok(index) = u64::from_str(&v) {
+                                expr = UntypedExpr::TupleIndex {
+                                    location: SrcSpan { start, end },
+                                    index,
+                                    tuple: Box::new(expr),
+                                }
+                            } else {
+                                return parse_error(
+                                    ParseErrorType::InvalidTupleAccess,
+                                    SrcSpan { start, end },
+                                );
+                            }
+                        }
 
-    fn parse_html_empty(&mut self, start: u32) -> Result<UntypedExpr, ParseError> {
+                        Token::Name { name: label } => {
+                            expr = UntypedExpr::FieldAccess {
+                                location: SrcSpan { start, end },
+                                label_location: SrcSpan {
+                                    start: dot_start,
+                                    end,
+                                },
+                                label,
+                                container: Box::new(expr),
+                            }
+                        }
+
+                        Token::UpName { name: label } => {
+                            expr = UntypedExpr::FieldAccess {
+                                location: SrcSpan { start, end },
+                                label_location: SrcSpan {
+                                    start: dot_start,
+                                    end,
+                                },
+                                label,
+                                container: Box::new(expr),
+                            }
+                        }
+
+                        _ => {
+                            return parse_error(
+                                ParseErrorType::ExpectedTagName,
+                                SrcSpan { start, end },
+                            );
+                        }
+                    }
+                }
+                None => {
+                    return parse_error(ParseErrorType::UnexpectedEof, SrcSpan { start: 0, end: 0 })
+                }
+            }
+        }
+
+        let arguments = self.parse_html_tag_attr()?;
+        self.tokens.change_mode(token::TokenIteratorMode::Code);
+
+        if let Some((_, end)) = self.maybe_one(&Token::StGt) {
+            Ok(UntypedExpr::Html {
+                location: SrcSpan { start, end },
+                arguments: arguments,
+                body: vec![],
+                tag: None,
+            })
+        } else {
+            let _ = self.expect_one(&Token::Greater)?;
+            let estack = self.parse_html_content()?;
+
+            let _ = self.expect_one(&Token::LtSt)?;
+
+            let _ = self.compare_name(token0);
+            match token1 {
+                Some(tk) => {
+                    let _ = self.expect_one(&Token::Dot)?;
+                    let _ = self.compare_name(tk);
+                }
+                None => {}
+            }
+            let (_, end) = self.expect_one(&Token::Greater)?;
+
+            Ok(UntypedExpr::Html {
+                location: SrcSpan { start, end },
+                arguments: arguments,
+                body: estack,
+                tag: None,
+            })
+        }
+    }
+
+    fn parse_html_tag_attr(&mut self) -> Result<Vec<HtmlTagAttr<UntypedExpr>>, ParseError> {
+        let mut estack: Vec<HtmlTagAttr<UntypedExpr>> = vec![];
+        self.tokens
+            .change_mode(token::TokenIteratorMode::HtmlTagAttr);
+        loop {
+            match self.next_tok() {
+                Some((start, tok, end)) => match tok {
+                    Token::HtmlTagAttrName { name } => {
+                        let (value, end) = if self.maybe_one(&Token::Equal).is_some() {
+                            self.tokens.change_mode(token::TokenIteratorMode::Code);
+                            let (exp, end) = self.parse_html_tag_attr_value()?;
+                            (Some(exp), end)
+                        } else {
+                            (None, end)
+                        };
+                        self.tokens
+                            .change_mode(token::TokenIteratorMode::HtmlTagAttr);
+                        estack.push(HtmlTagAttr {
+                            attr: name,
+                            location: SrcSpan { start, end },
+                            value: value,
+                        });
+                    }
+                    _ => {
+                        self.token_push(Some((start, tok, end)));
+                        break;
+                    }
+                },
+                None => {
+                    return parse_error(ParseErrorType::UnexpectedEof, SrcSpan { start: 0, end: 0 })
+                }
+            }
+        }
+        Ok(estack)
+    }
+
+    fn parse_html_tag_attr_value(&mut self) -> Result<(UntypedExpr, u32), ParseError> {
+        match self.next_tok() {
+            Some((start, tk, end)) => match tk {
+                Token::LeftBrace => {
+                    let exp = match self.parse_expression()? {
+                        Some(exp) => exp,
+                        _ => {
+                            return parse_error(
+                                ParseErrorType::ExpectedTagName,
+                                SrcSpan { start, end },
+                            )
+                        }
+                    };
+                    let (_, end) = self.expect_one(&Token::RightBrace)?;
+                    Ok((exp, end))
+                }
+                Token::String { value } => Ok((
+                    UntypedExpr::String {
+                        location: SrcSpan { start, end },
+                        value,
+                    },
+                    end,
+                )),
+
+                Token::Int { value } => Ok((
+                    UntypedExpr::Int {
+                        location: SrcSpan { start, end },
+                        value,
+                    },
+                    end,
+                )),
+
+                Token::Float { value } => Ok((
+                    UntypedExpr::Float {
+                        location: SrcSpan { start, end },
+                        value,
+                    },
+                    end,
+                )),
+                _ => return parse_error(ParseErrorType::ExpectedTagName, SrcSpan { start, end }),
+            },
+            None => {
+                return parse_error(ParseErrorType::UnexpectedEof, SrcSpan { start: 0, end: 0 })
+            }
+        }
+    }
+    fn parse_html_fragment(&mut self, start: u32) -> Result<UntypedExpr, ParseError> {
+        let estack = self.parse_html_content()?;
         let (_, end) = self.expect_one(&Token::LtStGt)?;
         self.tokens.change_mode(token::TokenIteratorMode::Code);
         Ok(UntypedExpr::Html {
             location: SrcSpan { start, end },
             arguments: vec![],
-            body: None,
+            body: estack,
             tag: None,
         })
     }
-
-    fn parse_html(&mut self, start: u32) -> Result<UntypedExpr, ParseError> {
-        let (_, end) = self.expect_one(&Token::LtStGt)?;
-        Ok(UntypedExpr::Html {
-            location: SrcSpan { start, end },
-            arguments: vec![],
-            body: None,
-            tag: None,
-        })
+    fn parse_html_content(&mut self) -> Result<Vec<UntypedExpr>, ParseError> {
+        self.tokens
+            .change_mode(token::TokenIteratorMode::HtmlContent);
+        let mut estack = vec![];
+        loop {
+            let tk0 = self.next_tok();
+            if let Some((start, tok, end)) = tk0 {
+                match tok {
+                    Token::HtmlText { value } => estack.push(UntypedExpr::HtmlText {
+                        location: SrcSpan { start, end },
+                        value,
+                    }),
+                    Token::LtGt => {
+                        let exp = self.parse_html_fragment(start)?;
+                        estack.push(exp);
+                    }
+                    Token::LeftBrace => {
+                        self.tokens.change_mode(token::TokenIteratorMode::Code);
+                        match self.parse_expression()? {
+                            Some(exp) => {
+                                estack.push(exp);
+                            }
+                            _ => {}
+                        }
+                        let _ = self.expect_one(&Token::RightBrace)?;
+                        self.tokens
+                            .change_mode(token::TokenIteratorMode::HtmlContent);
+                    }
+                    _ => {
+                        self.tokens.change_mode(token::TokenIteratorMode::Code);
+                        self.token_push(Some((start, tok, end)));
+                        break;
+                    }
+                };
+            } else {
+                self.tokens.change_mode(token::TokenIteratorMode::Code);
+                break;
+            }
+        }
+        Ok(estack)
     }
 
     fn token_push(&mut self, t1: Option<Spanned>) {
-        println!("token_push {:?}", t1);
         self.cache_tokens.push(t1);
+    }
+
+    fn compare_name(&mut self, tk: Token) -> Result<(u32, u32), ParseError> {
+        match self.next_tok() {
+            Some((start, tk0, end)) => match (tk, tk0) {
+                (Token::Name { name }, Token::Name { name: other_name }) if name == other_name => {
+                    Ok((start, end))
+                }
+                (Token::UpName { name }, Token::UpName { name: other_name })
+                    if name == other_name =>
+                {
+                    Ok((start, end))
+                }
+                (Token::DiscardName { name }, Token::DiscardName { name: other_name })
+                    if name == other_name =>
+                {
+                    Ok((start, end))
+                }
+                (_, tk) => {
+                    self.token_push(Some((start, tk, end)));
+                    return parse_error(ParseErrorType::ExpectedTagName, SrcSpan { start, end });
+                }
+            },
+            None => {
+                return parse_error(ParseErrorType::UnexpectedEof, SrcSpan { start: 0, end: 0 })
+            }
+        }
     }
 }
 
@@ -3972,7 +4207,6 @@ pub fn make_call(
     start: u32,
     end: u32,
 ) -> Result<UntypedExpr, ParseError> {
-    println!("make_call");
     let mut num_holes = 0;
     let mut hole_location = None;
 

@@ -990,7 +990,10 @@ impl<'comments> Formatter<'comments> {
                 arguments: args,
                 location,
                 ..
-            } => self.html(tag, body, args, location),
+            } => self.html(tag.as_deref(), location),
+            UntypedExpr::HtmlText {
+                value, location, ..
+            } => self.html_text(value, location),
 
             UntypedExpr::BinOp {
                 name, left, right, ..
@@ -1202,6 +1205,7 @@ impl<'comments> Formatter<'comments> {
             | UntypedExpr::Tuple { .. }
             | UntypedExpr::TupleIndex { .. }
             | UntypedExpr::Html { .. }
+            | UntypedExpr::HtmlText { .. }
             | UntypedExpr::Todo { .. }
             | UntypedExpr::Panic { .. }
             | UntypedExpr::BitArray { .. }
@@ -2470,6 +2474,7 @@ impl<'comments> Formatter<'comments> {
             | UntypedExpr::List { .. }
             | UntypedExpr::Call { .. }
             | UntypedExpr::Html { .. }
+            | UntypedExpr::HtmlText { .. }
             | UntypedExpr::PipeLine { .. }
             | UntypedExpr::Case { .. }
             | UntypedExpr::FieldAccess { .. }
@@ -2687,13 +2692,11 @@ impl<'comments> Formatter<'comments> {
         Some(doc.force_break())
     }
 
-    fn html<'a>(
-        &mut self,
-        tag: &Option<Box<UntypedExpr>>,
-        body: &Option<Box<UntypedExpr>>,
-        args: &[HtmlArg<UntypedExpr>],
-        location: &SrcSpan,
-    ) -> Document<'a> {
+    fn html<'a>(&self, tag: Option<&'a UntypedExpr>, location: &SrcSpan) -> Document<'a> {
+        todo!()
+    }
+
+    fn html_text<'a>(&self, value: &str, location: &SrcSpan) -> Document<'a> {
         todo!()
     }
 }
