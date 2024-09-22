@@ -3649,7 +3649,7 @@ functions are declared separately from types.";
             Ok(UntypedExpr::Html {
                 location: SrcSpan { start, end },
                 arguments: arguments,
-                body: vec![],
+                children: vec![],
                 tag: None,
             })
         } else {
@@ -3672,7 +3672,7 @@ functions are declared separately from types.";
             Ok(UntypedExpr::Html {
                 location: SrcSpan { start, end },
                 arguments: arguments,
-                body: estack,
+                children: estack,
                 tag: None,
             })
         }
@@ -3768,7 +3768,7 @@ functions are declared separately from types.";
         Ok(UntypedExpr::Html {
             location: SrcSpan { start, end },
             arguments: vec![],
-            body: estack,
+            children: estack,
             tag: None,
         })
     }

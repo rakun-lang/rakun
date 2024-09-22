@@ -1,6 +1,5 @@
 ---
 source: compiler-core/src/parse/tests.rs
-assertion_line: 1685
 expression: "\npub fn main() {\n   let is_active = true\n\n   <c.button is_active={is_active} class=\"btn-primary\">\n       Click Me\n   </c.button>\n}\n"
 ---
 Parsed {
@@ -60,7 +59,7 @@ Parsed {
                                         end: 128,
                                     },
                                     tag: None,
-                                    body: [
+                                    content: [
                                         HtmlText {
                                             location: SrcSpan {
                                                 start: 97,

@@ -1,6 +1,5 @@
 ---
 source: compiler-core/src/parse/tests.rs
-assertion_line: 1561
 expression: "\npub fn main() {\n   <img src=\"image.png\" alt=\"Image description\" />\n   <input type=\"text\" placeholder=\"Enter text here\" />\n}\n"
 ---
 Parsed {
@@ -35,7 +34,7 @@ Parsed {
                                         end: 67,
                                     },
                                     tag: None,
-                                    body: [],
+                                    content: [],
                                     arguments: [
                                         HtmlTagAttr {
                                             attr: "src",
@@ -79,7 +78,7 @@ Parsed {
                                         end: 122,
                                     },
                                     tag: None,
-                                    body: [],
+                                    content: [],
                                     arguments: [
                                         HtmlTagAttr {
                                             attr: "type",

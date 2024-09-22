@@ -1,6 +1,5 @@
 ---
 source: compiler-core/src/parse/tests.rs
-assertion_line: 1512
 expression: "\npub fn main() {\n   let a = \"nested\"\n\n   <div>\n       <div>\n           <span>{a}</span>\n           <p>Some text</p>\n       </div>\n   </div>\n}\n"
 ---
 Parsed {
@@ -60,7 +59,7 @@ Parsed {
                                         end: 139,
                                     },
                                     tag: None,
-                                    body: [
+                                    content: [
                                         HtmlText {
                                             location: SrcSpan {
                                                 start: 46,
@@ -74,7 +73,7 @@ Parsed {
                                                 end: 129,
                                             },
                                             tag: None,
-                                            body: [
+                                            content: [
                                                 HtmlText {
                                                     location: SrcSpan {
                                                         start: 59,
@@ -88,7 +87,7 @@ Parsed {
                                                         end: 87,
                                                     },
                                                     tag: None,
-                                                    body: [
+                                                    content: [
                                                         Var {
                                                             location: SrcSpan {
                                                                 start: 78,
@@ -112,7 +111,7 @@ Parsed {
                                                         end: 115,
                                                     },
                                                     tag: None,
-                                                    body: [
+                                                    content: [
                                                         HtmlText {
                                                             location: SrcSpan {
                                                                 start: 102,

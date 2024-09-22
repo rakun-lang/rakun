@@ -1,6 +1,5 @@
 ---
 source: compiler-core/src/parse/tests.rs
-assertion_line: 1588
 expression: "\npub fn main() {\n   <div>\n       { \n            // This is a comment\n       }\n       <span>Hello, world!</span>\n   </div>\n}\n"
 ---
 Parsed {
@@ -35,7 +34,7 @@ Parsed {
                                         end: 121,
                                     },
                                     tag: None,
-                                    body: [
+                                    content: [
                                         HtmlText {
                                             location: SrcSpan {
                                                 start: 25,
@@ -56,7 +55,7 @@ Parsed {
                                                 end: 111,
                                             },
                                             tag: None,
-                                            body: [
+                                            content: [
                                                 HtmlText {
                                                     location: SrcSpan {
                                                         start: 91,

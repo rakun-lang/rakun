@@ -1,6 +1,5 @@
 ---
 source: compiler-core/src/parse/tests.rs
-assertion_line: 1632
 expression: "\npub fn main() {\n   let title = \"My Title\"\n   let description = \"This is a description.\"\n\n   <c.card title={title} description={description}>\n       <p>This is the card content.</p>\n   </c.card>\n}\n"
 ---
 Parsed {
@@ -85,7 +84,7 @@ Parsed {
                                         end: 194,
                                     },
                                     tag: None,
-                                    body: [
+                                    content: [
                                         HtmlText {
                                             location: SrcSpan {
                                                 start: 141,
@@ -99,7 +98,7 @@ Parsed {
                                                 end: 181,
                                             },
                                             tag: None,
-                                            body: [
+                                            content: [
                                                 HtmlText {
                                                     location: SrcSpan {
                                                         start: 152,

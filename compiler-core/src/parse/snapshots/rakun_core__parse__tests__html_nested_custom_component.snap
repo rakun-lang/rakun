@@ -1,6 +1,5 @@
 ---
 source: compiler-core/src/parse/tests.rs
-assertion_line: 1617
 expression: "\npub fn main() {\n   <c.outer_component>\n       <c.inner_component>\n           Nested content\n       </c.inner_component>\n   </c.outer_component>\n}\n"
 ---
 Parsed {
@@ -35,7 +34,7 @@ Parsed {
                                         end: 144,
                                     },
                                     tag: None,
-                                    body: [
+                                    content: [
                                         HtmlText {
                                             location: SrcSpan {
                                                 start: 39,
@@ -49,7 +48,7 @@ Parsed {
                                                 end: 120,
                                             },
                                             tag: None,
-                                            body: [
+                                            content: [
                                                 HtmlText {
                                                     location: SrcSpan {
                                                         start: 66,

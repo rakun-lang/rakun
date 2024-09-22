@@ -2445,3 +2445,34 @@ pub fn main() {
         vec![("main", "fn() -> Int")]
     );
 }
+
+#[test]
+fn html_div() {
+    assert_module_infer!(
+        r#"
+
+pub record Element {
+    Text(value: String)
+    Element
+}
+
+pub record DivProps {
+    DivProps(class: String)
+}
+pub fn div(props:DivProps) {
+    Element
+}
+
+pub fn main() {
+  div(DivProps("645646"))
+}
+"#,
+        vec![
+            ("DivProps", "fn(String) -> DivProps"),
+            ("Element", "Element"),
+            ("Text", "fn(String) -> Element"),
+            ("div", "fn(DivProps) -> Element"),
+            ("main", "fn() -> Element")
+        ]
+    );
+}

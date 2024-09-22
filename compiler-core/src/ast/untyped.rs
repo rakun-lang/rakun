@@ -61,7 +61,7 @@ pub enum UntypedExpr {
     Html {
         location: SrcSpan,
         tag: Option<Box<Self>>,
-        body: Vec<Self>,
+        children: Vec<Self>,
         arguments: Vec<HtmlTagAttr<Self>>,
     },
 

@@ -986,11 +986,11 @@ impl<'comments> Formatter<'comments> {
 
             UntypedExpr::Html {
                 tag,
-                body,
+                children,
                 arguments: args,
                 location,
                 ..
-            } => self.html(tag.as_deref(), location),
+            } => self.html(tag.as_deref(), children, args, location),
             UntypedExpr::HtmlText {
                 value, location, ..
             } => self.html_text(value, location),
@@ -2692,7 +2692,13 @@ impl<'comments> Formatter<'comments> {
         Some(doc.force_break())
     }
 
-    fn html<'a>(&self, tag: Option<&'a UntypedExpr>, location: &SrcSpan) -> Document<'a> {
+    fn html<'a>(
+        &self,
+        tag: Option<&'a UntypedExpr>,
+        children: &'a Vec<UntypedExpr>,
+        args: &'a Vec<HtmlTagAttr<UntypedExpr>>,
+        location: &SrcSpan,
+    ) -> Document<'a> {
         todo!()
     }
 

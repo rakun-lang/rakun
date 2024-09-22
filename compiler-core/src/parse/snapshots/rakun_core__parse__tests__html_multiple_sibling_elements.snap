@@ -1,6 +1,5 @@
 ---
 source: compiler-core/src/parse/tests.rs
-assertion_line: 1573
 expression: "\npub fn main() {\n   <div>\n       <div>First</div>\n       <div>Second</div>\n       <div>Third</div>\n   </div>\n}\n"
 ---
 Parsed {
@@ -35,7 +34,7 @@ Parsed {
                                         end: 108,
                                     },
                                     tag: None,
-                                    body: [
+                                    content: [
                                         HtmlText {
                                             location: SrcSpan {
                                                 start: 25,
@@ -49,7 +48,7 @@ Parsed {
                                                 end: 49,
                                             },
                                             tag: None,
-                                            body: [
+                                            content: [
                                                 HtmlText {
                                                     location: SrcSpan {
                                                         start: 38,
@@ -73,7 +72,7 @@ Parsed {
                                                 end: 74,
                                             },
                                             tag: None,
-                                            body: [
+                                            content: [
                                                 HtmlText {
                                                     location: SrcSpan {
                                                         start: 62,
@@ -97,7 +96,7 @@ Parsed {
                                                 end: 98,
                                             },
                                             tag: None,
-                                            body: [
+                                            content: [
                                                 HtmlText {
                                                     location: SrcSpan {
                                                         start: 87,

@@ -1,6 +1,5 @@
 ---
 source: compiler-core/src/parse/tests.rs
-assertion_line: 1667
 expression: "\npub fn main() {\n   <c.parent_component>\n       <c.child_component>\n           Child content goes here.\n       </c.child_component>\n       <c.child_component>\n           Another child content.\n       </c.child_component>\n   </c.parent_component>\n}\n"
 ---
 Parsed {
@@ -35,7 +34,7 @@ Parsed {
                                         end: 245,
                                     },
                                     tag: None,
-                                    body: [
+                                    content: [
                                         HtmlText {
                                             location: SrcSpan {
                                                 start: 40,
@@ -49,7 +48,7 @@ Parsed {
                                                 end: 131,
                                             },
                                             tag: None,
-                                            body: [
+                                            content: [
                                                 HtmlText {
                                                     location: SrcSpan {
                                                         start: 67,
@@ -73,7 +72,7 @@ Parsed {
                                                 end: 220,
                                             },
                                             tag: None,
-                                            body: [
+                                            content: [
                                                 HtmlText {
                                                     location: SrcSpan {
                                                         start: 158,

@@ -363,10 +363,10 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
             UntypedExpr::Html {
                 location,
                 tag,
-                body,
+                children,
                 arguments: args,
                 ..
-            } => Ok(self.infer_html(tag, body, args, location, CallKind::Function)),
+            } => Ok(self.infer_html(tag, children, args, location, CallKind::Function)),
             UntypedExpr::HtmlText {
                 location, value, ..
             } => Ok(self.infer_html_text(value, CallKind::Function)),
@@ -3521,7 +3521,7 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
     fn infer_html(
         &self,
         tag: Option<Box<UntypedExpr>>,
-        body: Vec<UntypedExpr>,
+        children: Vec<UntypedExpr>,
         args: Vec<crate::ast::HtmlTagAttr<UntypedExpr>>,
         location: SrcSpan,
         function: CallKind,
