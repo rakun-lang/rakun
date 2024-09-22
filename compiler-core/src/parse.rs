@@ -548,13 +548,15 @@ where
             }
 
             Some((start, Token::LtGt, _)) => {
-                let vv = self.parse_html_fragment(start)?;
-                vv
+                let expr = self.parse_html_fragment(start)?;
+                self.tokens.change_mode(token::TokenIteratorMode::Code);
+                expr
             }
 
             Some((start, Token::HtmlStartTag, _)) => {
-                let vv = self.parse_html_tag(start)?;
-                vv
+                let expr = self.parse_html_tag(start)?;
+                self.tokens.change_mode(token::TokenIteratorMode::Code);
+                expr
             }
             // list
             Some((start, Token::LeftSquare, _)) => {
@@ -3562,13 +3564,17 @@ functions are declared separately from types.";
     }
     fn parse_html_tag(&mut self, start: u32) -> Result<UntypedExpr, ParseError> {
         let token0: Token;
+        self.tokens
+            .change_mode(token::TokenIteratorMode::HtmlTagAttr);
         let mut token1: Option<Token> = None;
         let mut expr: UntypedExpr = match self.next_tok() {
             Some((start, tk, end)) => {
                 token0 = tk.clone();
                 match tk {
                     // var lower_name and UpName
-                    Token::Name { name } | Token::UpName { name } => UntypedExpr::Var {
+                    Token::Name { name }
+                    | Token::HtmlTagAttrName { name }
+                    | Token::UpName { name } => UntypedExpr::Var {
                         location: SrcSpan { start, end },
                         name,
                     },
@@ -3608,19 +3614,9 @@ functions are declared separately from types.";
                             }
                         }
 
-                        Token::Name { name: label } => {
-                            expr = UntypedExpr::FieldAccess {
-                                location: SrcSpan { start, end },
-                                label_location: SrcSpan {
-                                    start: dot_start,
-                                    end,
-                                },
-                                label,
-                                container: Box::new(expr),
-                            }
-                        }
-
-                        Token::UpName { name: label } => {
+                        Token::HtmlTagAttrName { name: label }
+                        | Token::Name { name: label }
+                        | Token::UpName { name: label } => {
                             expr = UntypedExpr::FieldAccess {
                                 location: SrcSpan { start, end },
                                 label_location: SrcSpan {
@@ -3647,9 +3643,9 @@ functions are declared separately from types.";
         }
 
         let arguments = self.parse_html_tag_attr()?;
-        self.tokens.change_mode(token::TokenIteratorMode::Code);
 
         if let Some((_, end)) = self.maybe_one(&Token::StGt) {
+            self.tokens.change_mode(token::TokenIteratorMode::Code);
             Ok(UntypedExpr::Html {
                 location: SrcSpan { start, end },
                 arguments: arguments,
@@ -3661,6 +3657,8 @@ functions are declared separately from types.";
             let estack = self.parse_html_content()?;
 
             let _ = self.expect_one(&Token::LtSt)?;
+            self.tokens
+                .change_mode(token::TokenIteratorMode::HtmlTagAttr);
 
             let _ = self.compare_name(token0);
             match token1 {
@@ -3671,7 +3669,6 @@ functions are declared separately from types.";
                 None => {}
             }
             let (_, end) = self.expect_one(&Token::Greater)?;
-
             Ok(UntypedExpr::Html {
                 location: SrcSpan { start, end },
                 arguments: arguments,
@@ -3706,6 +3703,8 @@ functions are declared separately from types.";
                     }
                     _ => {
                         self.token_push(Some((start, tok, end)));
+                        self.tokens
+                            .change_mode(token::TokenIteratorMode::HtmlTagAttr);
                         break;
                     }
                 },
@@ -3766,7 +3765,6 @@ functions are declared separately from types.";
     fn parse_html_fragment(&mut self, start: u32) -> Result<UntypedExpr, ParseError> {
         let estack = self.parse_html_content()?;
         let (_, end) = self.expect_one(&Token::LtStGt)?;
-        self.tokens.change_mode(token::TokenIteratorMode::Code);
         Ok(UntypedExpr::Html {
             location: SrcSpan { start, end },
             arguments: vec![],
@@ -3802,14 +3800,18 @@ functions are declared separately from types.";
                         self.tokens
                             .change_mode(token::TokenIteratorMode::HtmlContent);
                     }
+                    Token::Less => {
+                        let exp = self.parse_html_tag(start)?;
+                        estack.push(exp);
+                        self.tokens
+                            .change_mode(token::TokenIteratorMode::HtmlContent);
+                    }
                     _ => {
-                        self.tokens.change_mode(token::TokenIteratorMode::Code);
                         self.token_push(Some((start, tok, end)));
                         break;
                     }
                 };
             } else {
-                self.tokens.change_mode(token::TokenIteratorMode::Code);
                 break;
             }
         }
@@ -3823,19 +3825,17 @@ functions are declared separately from types.";
     fn compare_name(&mut self, tk: Token) -> Result<(u32, u32), ParseError> {
         match self.next_tok() {
             Some((start, tk0, end)) => match (tk, tk0) {
-                (Token::Name { name }, Token::Name { name: other_name }) if name == other_name => {
-                    Ok((start, end))
-                }
-                (Token::UpName { name }, Token::UpName { name: other_name })
-                    if name == other_name =>
-                {
-                    Ok((start, end))
-                }
-                (Token::DiscardName { name }, Token::DiscardName { name: other_name })
-                    if name == other_name =>
-                {
-                    Ok((start, end))
-                }
+                (
+                    Token::Name { name }
+                    | Token::HtmlTagAttrName { name }
+                    | Token::UpName { name }
+                    | Token::DiscardName { name },
+                    Token::Name { name: other_name }
+                    | Token::HtmlTagAttrName { name: other_name }
+                    | Token::UpName { name: other_name }
+                    | Token::DiscardName { name: other_name },
+                ) if name == other_name => Ok((start, end)),
+
                 (_, tk) => {
                     self.token_push(Some((start, tk, end)));
                     return parse_error(ParseErrorType::ExpectedTagName, SrcSpan { start, end });

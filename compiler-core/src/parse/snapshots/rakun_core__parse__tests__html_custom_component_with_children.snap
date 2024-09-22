@@ -1,7 +1,7 @@
 ---
 source: compiler-core/src/parse/tests.rs
-assertion_line: 1558
-expression: "\npub fn main() {\n   let a = \"5454\"\n\n   <c.div>\n   65656\n    <>\n        123456789 {a}\n    </>\n   </c.div>\n}\n"
+assertion_line: 1667
+expression: "\npub fn main() {\n   <c.parent_component>\n       <c.child_component>\n           Child content goes here.\n       </c.child_component>\n       <c.child_component>\n           Another child content.\n       </c.child_component>\n   </c.parent_component>\n}\n"
 ---
 Parsed {
     module: Module {
@@ -16,7 +16,7 @@ Parsed {
                             start: 1,
                             end: 14,
                         },
-                        end_position: 106,
+                        end_position: 247,
                         name: Some(
                             (
                                 SrcSpan {
@@ -28,76 +28,68 @@ Parsed {
                         ),
                         arguments: [],
                         body: [
-                            Assignment(
-                                Assignment {
-                                    location: SrcSpan {
-                                        start: 20,
-                                        end: 34,
-                                    },
-                                    value: String {
-                                        location: SrcSpan {
-                                            start: 28,
-                                            end: 34,
-                                        },
-                                        value: "5454",
-                                    },
-                                    pattern: Variable {
-                                        location: SrcSpan {
-                                            start: 24,
-                                            end: 25,
-                                        },
-                                        name: "a",
-                                        type_: (),
-                                    },
-                                    kind: Let,
-                                    annotation: None,
-                                },
-                            ),
                             Expression(
                                 Html {
                                     location: SrcSpan {
-                                        start: 39,
-                                        end: 104,
+                                        start: 20,
+                                        end: 245,
                                     },
                                     tag: None,
                                     body: [
                                         HtmlText {
                                             location: SrcSpan {
-                                                start: 46,
-                                                end: 60,
+                                                start: 40,
+                                                end: 48,
                                             },
-                                            value: "\n\n   65656\n    ",
+                                            value: "\n       ",
                                         },
                                         Html {
                                             location: SrcSpan {
-                                                start: 60,
-                                                end: 92,
+                                                start: 48,
+                                                end: 131,
                                             },
                                             tag: None,
                                             body: [
                                                 HtmlText {
                                                     location: SrcSpan {
-                                                        start: 62,
-                                                        end: 81,
+                                                        start: 67,
+                                                        end: 111,
                                                     },
-                                                    value: "\n\n        123456789 ",
-                                                },
-                                                Var {
-                                                    location: SrcSpan {
-                                                        start: 82,
-                                                        end: 83,
-                                                    },
-                                                    name: "a",
-                                                },
-                                                HtmlText {
-                                                    location: SrcSpan {
-                                                        start: 84,
-                                                        end: 89,
-                                                    },
-                                                    value: "\n\n    ",
+                                                    value: "\n           Child content goes here.\n       ",
                                                 },
                                             ],
                                             arguments: [],
+                                        },
+                                        HtmlText {
+                                            location: SrcSpan {
+                                                start: 131,
+                                                end: 139,
+                                            },
+                                            value: "\n       ",
+                                        },
+                                        Html {
+                                            location: SrcSpan {
+                                                start: 139,
+                                                end: 220,
+                                            },
+                                            tag: None,
+                                            body: [
+                                                HtmlText {
+                                                    location: SrcSpan {
+                                                        start: 158,
+                                                        end: 200,
+                                                    },
+                                                    value: "\n           Another child content.\n       ",
+                                                },
+                                            ],
+                                            arguments: [],
+                                        },
+                                        HtmlText {
+                                            location: SrcSpan {
+                                                start: 220,
+                                                end: 224,
+                                            },
+                                            value: "\n   ",
                                         },
                                     ],
                                     arguments: [],
@@ -128,17 +120,12 @@ Parsed {
         module_comments: [],
         doc_comments: [],
         comments: [],
-        empty_lines: [
-            35,
-        ],
+        empty_lines: [],
         new_lines: [
             0,
             16,
-            34,
-            35,
-            92,
-            104,
-            106,
+            245,
+            247,
         ],
     },
 }

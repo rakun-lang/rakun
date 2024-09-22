@@ -1,0 +1,107 @@
+---
+source: compiler-core/src/parse/tests.rs
+assertion_line: 1617
+expression: "\npub fn main() {\n   <c.outer_component>\n       <c.inner_component>\n           Nested content\n       </c.inner_component>\n   </c.outer_component>\n}\n"
+---
+Parsed {
+    module: Module {
+        name: "",
+        documentation: [],
+        type_info: (),
+        definitions: [
+            TargetedDefinition {
+                definition: Function(
+                    Function {
+                        location: SrcSpan {
+                            start: 1,
+                            end: 14,
+                        },
+                        end_position: 146,
+                        name: Some(
+                            (
+                                SrcSpan {
+                                    start: 8,
+                                    end: 12,
+                                },
+                                "main",
+                            ),
+                        ),
+                        arguments: [],
+                        body: [
+                            Expression(
+                                Html {
+                                    location: SrcSpan {
+                                        start: 20,
+                                        end: 144,
+                                    },
+                                    tag: None,
+                                    body: [
+                                        HtmlText {
+                                            location: SrcSpan {
+                                                start: 39,
+                                                end: 47,
+                                            },
+                                            value: "\n       ",
+                                        },
+                                        Html {
+                                            location: SrcSpan {
+                                                start: 47,
+                                                end: 120,
+                                            },
+                                            tag: None,
+                                            body: [
+                                                HtmlText {
+                                                    location: SrcSpan {
+                                                        start: 66,
+                                                        end: 100,
+                                                    },
+                                                    value: "\n           Nested content\n       ",
+                                                },
+                                            ],
+                                            arguments: [],
+                                        },
+                                        HtmlText {
+                                            location: SrcSpan {
+                                                start: 120,
+                                                end: 124,
+                                            },
+                                            value: "\n   ",
+                                        },
+                                    ],
+                                    arguments: [],
+                                },
+                            ),
+                        ],
+                        publicity: Public,
+                        deprecation: NotDeprecated,
+                        return_annotation: None,
+                        return_type: (),
+                        documentation: None,
+                        external_erlang: None,
+                        external_javascript: None,
+                        implementations: Implementations {
+                            rakun: true,
+                            can_run_on_erlang: true,
+                            can_run_on_javascript: true,
+                            uses_erlang_externals: false,
+                            uses_javascript_externals: false,
+                        },
+                    },
+                ),
+                target: None,
+            },
+        ],
+    },
+    extra: ModuleExtra {
+        module_comments: [],
+        doc_comments: [],
+        comments: [],
+        empty_lines: [],
+        new_lines: [
+            0,
+            16,
+            144,
+            146,
+        ],
+    },
+}

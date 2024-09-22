@@ -1,0 +1,126 @@
+---
+source: compiler-core/src/parse/tests.rs
+assertion_line: 1602
+expression: "\npub fn main() {\n   let content = \"Hello from my component\"\n\n   <c.my_component>\n       {content}\n   </c.my_component>\n}\n"
+---
+Parsed {
+    module: Module {
+        name: "",
+        documentation: [],
+        type_info: (),
+        definitions: [
+            TargetedDefinition {
+                definition: Function(
+                    Function {
+                        location: SrcSpan {
+                            start: 1,
+                            end: 14,
+                        },
+                        end_position: 120,
+                        name: Some(
+                            (
+                                SrcSpan {
+                                    start: 8,
+                                    end: 12,
+                                },
+                                "main",
+                            ),
+                        ),
+                        arguments: [],
+                        body: [
+                            Assignment(
+                                Assignment {
+                                    location: SrcSpan {
+                                        start: 20,
+                                        end: 59,
+                                    },
+                                    value: String {
+                                        location: SrcSpan {
+                                            start: 34,
+                                            end: 59,
+                                        },
+                                        value: "Hello from my component",
+                                    },
+                                    pattern: Variable {
+                                        location: SrcSpan {
+                                            start: 24,
+                                            end: 31,
+                                        },
+                                        name: "content",
+                                        type_: (),
+                                    },
+                                    kind: Let,
+                                    annotation: None,
+                                },
+                            ),
+                            Expression(
+                                Html {
+                                    location: SrcSpan {
+                                        start: 64,
+                                        end: 118,
+                                    },
+                                    tag: None,
+                                    body: [
+                                        HtmlText {
+                                            location: SrcSpan {
+                                                start: 80,
+                                                end: 88,
+                                            },
+                                            value: "\n       ",
+                                        },
+                                        Var {
+                                            location: SrcSpan {
+                                                start: 89,
+                                                end: 96,
+                                            },
+                                            name: "content",
+                                        },
+                                        HtmlText {
+                                            location: SrcSpan {
+                                                start: 97,
+                                                end: 101,
+                                            },
+                                            value: "\n   ",
+                                        },
+                                    ],
+                                    arguments: [],
+                                },
+                            ),
+                        ],
+                        publicity: Public,
+                        deprecation: NotDeprecated,
+                        return_annotation: None,
+                        return_type: (),
+                        documentation: None,
+                        external_erlang: None,
+                        external_javascript: None,
+                        implementations: Implementations {
+                            rakun: true,
+                            can_run_on_erlang: true,
+                            can_run_on_javascript: true,
+                            uses_erlang_externals: false,
+                            uses_javascript_externals: false,
+                        },
+                    },
+                ),
+                target: None,
+            },
+        ],
+    },
+    extra: ModuleExtra {
+        module_comments: [],
+        doc_comments: [],
+        comments: [],
+        empty_lines: [
+            60,
+        ],
+        new_lines: [
+            0,
+            16,
+            59,
+            60,
+            118,
+            120,
+        ],
+    },
+}

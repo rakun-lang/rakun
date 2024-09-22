@@ -258,6 +258,11 @@ where
                         let tok_end = self.get_pos();
                         self.emit((tok_start, Token::SlashDot, tok_end));
                     }
+                    Some('>') => {
+                        let _ = self.next_char();
+                        let tok_end = self.get_pos();
+                        self.emit((tok_start, Token::StGt, tok_end));
+                    }
                     Some('/') => {
                         let _ = self.next_char();
                         let comment = self.lex_comment();
@@ -521,15 +526,11 @@ where
 
         let end_pos = self.get_pos();
 
-        if let Some(tok) = str_to_keyword(&name) {
-            Ok((start_pos, tok, end_pos))
-        } else {
-            Ok((
-                start_pos,
-                Token::HtmlTagAttrName { name: name.into() },
-                end_pos,
-            ))
-        }
+        Ok((
+            start_pos,
+            Token::HtmlTagAttrName { name: name.into() },
+            end_pos,
+        ))
     }
     fn is_attr_name_continuation(&self) -> bool {
         self.chr0
@@ -948,11 +949,10 @@ where
 
         Ok((start_pos, tok, end_pos))
     }
-    fn lex_html_string(&mut self, c: char) -> LexResult {
+    fn lex_html_string(&mut self) -> LexResult {
         let start_pos = self.get_pos();
         // advance past the first quote
         let mut string_content = String::new();
-        string_content.push(c);
         loop {
             match self.chr0 {
                 Some('>' | '<' | '{') => break,
@@ -983,6 +983,21 @@ where
     fn consume_normal_html(&mut self) -> Result<(), LexicalError> {
         match self.chr0 {
             Some(c) => match c {
+                '/' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    match self.chr0 {
+                        Some('>') => {
+                            let _ = self.next_char();
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::StGt, tok_end));
+                        }
+                        _ => {
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::Slash, tok_end));
+                        }
+                    }
+                }
                 '<' => {
                     let tok_start = self.get_pos();
                     let _ = self.next_char();
@@ -1024,8 +1039,8 @@ where
                     let tok_end = self.get_pos();
                     self.emit((tok_start, Token::LeftBrace, tok_end));
                 }
-                c => {
-                    let string = self.lex_html_string(c)?;
+                _ => {
+                    let string = self.lex_html_string()?;
                     self.emit(string);
                 }
             },
@@ -1041,6 +1056,33 @@ where
     fn consume_normal_html_tag_attr(&mut self) -> Result<(), LexicalError> {
         match self.chr0 {
             Some(c) => match c {
+                '.' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    if let Some('.') = &self.chr0 {
+                        let _ = self.next_char();
+                        let tok_end = self.get_pos();
+                        self.emit((tok_start, Token::DotDot, tok_end));
+                    } else {
+                        let tok_end = self.get_pos();
+                        self.emit((tok_start, Token::Dot, tok_end));
+                    }
+                }
+                '/' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    match self.chr0 {
+                        Some('>') => {
+                            let _ = self.next_char();
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::StGt, tok_end));
+                        }
+                        _ => {
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::Slash, tok_end));
+                        }
+                    }
+                }
                 '<' => {
                     let tok_start = self.get_pos();
                     let _ = self.next_char();

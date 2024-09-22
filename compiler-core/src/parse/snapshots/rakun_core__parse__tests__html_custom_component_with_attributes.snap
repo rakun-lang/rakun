@@ -1,7 +1,7 @@
 ---
 source: compiler-core/src/parse/tests.rs
-assertion_line: 1525
-expression: "\npub fn main() {\n   let a = \"5454\"\n\n   <div>\n      123456789 {a}\n   </div>\n}\n"
+assertion_line: 1685
+expression: "\npub fn main() {\n   let is_active = true\n\n   <c.button is_active={is_active} class=\"btn-primary\">\n       Click Me\n   </c.button>\n}\n"
 ---
 Parsed {
     module: Module {
@@ -16,7 +16,7 @@ Parsed {
                             start: 1,
                             end: 14,
                         },
-                        end_position: 76,
+                        end_position: 130,
                         name: Some(
                             (
                                 SrcSpan {
@@ -32,21 +32,21 @@ Parsed {
                                 Assignment {
                                     location: SrcSpan {
                                         start: 20,
-                                        end: 34,
+                                        end: 40,
                                     },
-                                    value: String {
+                                    value: Var {
                                         location: SrcSpan {
-                                            start: 28,
-                                            end: 34,
+                                            start: 36,
+                                            end: 40,
                                         },
-                                        value: "5454",
+                                        name: "true",
                                     },
                                     pattern: Variable {
                                         location: SrcSpan {
                                             start: 24,
-                                            end: 25,
+                                            end: 33,
                                         },
-                                        name: "a",
+                                        name: "is_active",
                                         type_: (),
                                     },
                                     kind: Let,
@@ -56,34 +56,53 @@ Parsed {
                             Expression(
                                 Html {
                                     location: SrcSpan {
-                                        start: 39,
-                                        end: 74,
+                                        start: 45,
+                                        end: 128,
                                     },
                                     tag: None,
                                     body: [
                                         HtmlText {
                                             location: SrcSpan {
-                                                start: 44,
-                                                end: 61,
+                                                start: 97,
+                                                end: 117,
                                             },
-                                            value: "\n\n      123456789 ",
-                                        },
-                                        Var {
-                                            location: SrcSpan {
-                                                start: 62,
-                                                end: 63,
-                                            },
-                                            name: "a",
-                                        },
-                                        HtmlText {
-                                            location: SrcSpan {
-                                                start: 64,
-                                                end: 68,
-                                            },
-                                            value: "\n\n   ",
+                                            value: "\n       Click Me\n   ",
                                         },
                                     ],
-                                    arguments: [],
+                                    arguments: [
+                                        HtmlTagAttr {
+                                            attr: "is_active",
+                                            location: SrcSpan {
+                                                start: 55,
+                                                end: 76,
+                                            },
+                                            value: Some(
+                                                Var {
+                                                    location: SrcSpan {
+                                                        start: 66,
+                                                        end: 75,
+                                                    },
+                                                    name: "is_active",
+                                                },
+                                            ),
+                                        },
+                                        HtmlTagAttr {
+                                            attr: "class",
+                                            location: SrcSpan {
+                                                start: 77,
+                                                end: 96,
+                                            },
+                                            value: Some(
+                                                String {
+                                                    location: SrcSpan {
+                                                        start: 83,
+                                                        end: 96,
+                                                    },
+                                                    value: "btn-primary",
+                                                },
+                                            ),
+                                        },
+                                    ],
                                 },
                             ),
                         ],
@@ -112,15 +131,15 @@ Parsed {
         doc_comments: [],
         comments: [],
         empty_lines: [
-            35,
+            41,
         ],
         new_lines: [
             0,
             16,
-            34,
-            35,
-            74,
-            76,
+            40,
+            41,
+            128,
+            130,
         ],
     },
 }

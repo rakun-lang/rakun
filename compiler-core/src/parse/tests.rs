@@ -1506,29 +1506,19 @@ pub fn main() {
 "#
     );
 }
+
 #[test]
-fn html() {
+fn html_nested_elements() {
     assert_parse_module!(
         r#"
 pub fn main() {
-   let a = "5454"
-
-    <>d1123 {a} <>e1123 {a ++ "t8741"} </> </> 
-   
-}
-"#
-    );
-}
-
-#[test]
-fn html_div() {
-    assert_parse_module!(
-        r#"
-pub fn main() {
-   let a = "5454"
+   let a = "nested"
 
    <div>
-      123456789 {a}
+       <div>
+           <span>{a}</span>
+           <p>Some text</p>
+       </div>
    </div>
 }
 "#
@@ -1536,17 +1526,15 @@ pub fn main() {
 }
 
 #[test]
-fn html_div_html_fragment() {
+fn html_conditional_rendering() {
     assert_parse_module!(
         r#"
 pub fn main() {
-   let a = "5454"
+   let show = True
+   let a = "conditional"
 
    <div>
-   65656
-    <>
-        123456789 {a}
-    </>
+       {case show { True -> <span>{a}</span> False  -> <span>Not shown</span> }}
    </div>
 }
 "#
@@ -1554,36 +1542,152 @@ pub fn main() {
 }
 
 #[test]
-fn html_module_div_html_fragment() {
+fn html_dynamic_attributes() {
     assert_parse_module!(
         r#"
 pub fn main() {
-   let a = "5454"
+   let id = "unique-id"
 
-   <c.div>
-   65656
-    <>
-        123456789 {a}
-    </>
-   </c.div>
+   <div id={id} class="container">
+       Content here
+   </div>
 }
 "#
     );
 }
 
 #[test]
-fn html_module_div_tag() {
+fn html_self_closing_with_attributes() {
     assert_parse_module!(
         r#"
 pub fn main() {
-   let a = "5454"
+   <img src="image.png" alt="Image description" />
+   <input type="text" placeholder="Enter text here" />
+}
+"#
+    );
+}
 
-   <c.div class="5646546" style={a} data-rule="656" der=12 valid>
-    65656
-    <>
-        123456789 
-    </>
-   </c.div>
+#[test]
+fn html_multiple_sibling_elements() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   <div>
+       <div>First</div>
+       <div>Second</div>
+       <div>Third</div>
+   </div>
+}
+"#
+    );
+}
+
+#[test]
+fn html_with_comments() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   <div>
+       { 
+            // This is a comment
+       }
+       <span>Hello, world!</span>
+   </div>
+}
+"#
+    );
+}
+
+#[test]
+fn html_custom_component() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let content = "Hello from my component"
+
+   <c.my_component>
+       {content}
+   </c.my_component>
+}
+"#
+    );
+}
+
+#[test]
+fn html_nested_custom_component() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   <c.outer_component>
+       <c.inner_component>
+           Nested content
+       </c.inner_component>
+   </c.outer_component>
+}
+"#
+    );
+}
+
+#[test]
+fn html_custom_component_with_props() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let title = "My Title"
+   let description = "This is a description."
+
+   <c.card title={title} description={description}>
+       <p>This is the card content.</p>
+   </c.card>
+}
+"#
+    );
+}
+
+#[test]
+fn html_custom_component_with_conditional() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let show_details = true
+
+   <c.toggle_component>
+       {case show_details { True -> <p>Details are shown!</p> False -> <p>No details to show.</p>}}
+   </c.toggle_component>
+}
+"#
+    );
+}
+
+#[test]
+fn html_custom_component_with_children() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   <c.parent_component>
+       <c.child_component>
+           Child content goes here.
+       </c.child_component>
+       <c.child_component>
+           Another child content.
+       </c.child_component>
+   </c.parent_component>
+}
+"#
+    );
+}
+
+#[test]
+fn html_custom_component_with_attributes() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let is_active = true
+
+   <c.button is_active={is_active} class="btn-primary">
+       Click Me
+   </c.button>
 }
 "#
     );
