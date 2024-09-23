@@ -1193,13 +1193,6 @@ impl BinOp {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct HtmlTagAttr<A> {
-    pub attr: EcoString,
-    pub location: SrcSpan,
-    pub value: Option<A>,
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct CallArg<A> {
     pub label: Option<EcoString>,
     pub location: SrcSpan,

@@ -59,7 +59,7 @@ Parsed {
                                         end: 128,
                                     },
                                     tag: None,
-                                    content: [
+                                    children: [
                                         HtmlText {
                                             location: SrcSpan {
                                                 start: 97,
@@ -69,37 +69,39 @@ Parsed {
                                         },
                                     ],
                                     arguments: [
-                                        HtmlTagAttr {
-                                            attr: "is_active",
+                                        CallArg {
+                                            label: Some(
+                                                "is_active",
+                                            ),
                                             location: SrcSpan {
                                                 start: 55,
                                                 end: 76,
                                             },
-                                            value: Some(
-                                                Var {
-                                                    location: SrcSpan {
-                                                        start: 66,
-                                                        end: 75,
-                                                    },
-                                                    name: "is_active",
+                                            value: Var {
+                                                location: SrcSpan {
+                                                    start: 66,
+                                                    end: 75,
                                                 },
-                                            ),
+                                                name: "is_active",
+                                            },
+                                            implicit: None,
                                         },
-                                        HtmlTagAttr {
-                                            attr: "class",
+                                        CallArg {
+                                            label: Some(
+                                                "class",
+                                            ),
                                             location: SrcSpan {
                                                 start: 77,
                                                 end: 96,
                                             },
-                                            value: Some(
-                                                String {
-                                                    location: SrcSpan {
-                                                        start: 83,
-                                                        end: 96,
-                                                    },
-                                                    value: "btn-primary",
+                                            value: String {
+                                                location: SrcSpan {
+                                                    start: 83,
+                                                    end: 96,
                                                 },
-                                            ),
+                                                value: "btn-primary",
+                                            },
+                                            implicit: None,
                                         },
                                     ],
                                 },

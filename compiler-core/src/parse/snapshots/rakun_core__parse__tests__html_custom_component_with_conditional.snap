@@ -59,7 +59,7 @@ Parsed {
                                         end: 193,
                                     },
                                     tag: None,
-                                    content: [
+                                    children: [
                                         HtmlText {
                                             location: SrcSpan {
                                                 start: 68,
@@ -109,7 +109,7 @@ Parsed {
                                                             end: 130,
                                                         },
                                                         tag: None,
-                                                        content: [
+                                                        children: [
                                                             HtmlText {
                                                                 location: SrcSpan {
                                                                     start: 108,
@@ -148,7 +148,7 @@ Parsed {
                                                             end: 166,
                                                         },
                                                         tag: None,
-                                                        content: [
+                                                        children: [
                                                             HtmlText {
                                                                 location: SrcSpan {
                                                                     start: 143,

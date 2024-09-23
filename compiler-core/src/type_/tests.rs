@@ -2476,3 +2476,41 @@ pub fn main() {
         ]
     );
 }
+#[test]
+fn html_div_2() {
+    assert_module_infer!(
+        r#"
+
+pub record Element {
+    Text(value: String)
+    Element
+}
+
+pub record DivProps {
+    DivProps(class: String)
+}
+pub fn div(props:DivProps) {
+    Element
+}
+
+pub fn hakun_html_component(e:Element) {
+    e
+}
+pub fn hakun_html_text(e:String) {
+    e
+}
+
+
+pub fn main() {
+  <div class="56464"/>
+}
+"#,
+        vec![
+            ("DivProps", "fn(String) -> DivProps"),
+            ("Element", "Element"),
+            ("Text", "fn(String) -> Element"),
+            ("div", "fn(DivProps) -> Element"),
+            ("main", "fn() -> Element")
+        ]
+    );
+}

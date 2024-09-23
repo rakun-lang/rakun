@@ -58,12 +58,12 @@ use crate::analyse::Inferred;
 use crate::ast::{
     Arg, ArgNames, AssignName, Assignment, AssignmentKind, BinOp, BitArrayOption, BitArraySegment,
     CallArg, Clause, ClauseGuard, Constant, CustomType, CustomTypeMode, Definition, Function,
-    HasLocation, HtmlTagAttr, Import, Module, ModuleConstant, Pattern, Publicity,
-    RecordConstructor, RecordConstructorArg, RecordUpdateSpread, SrcSpan, Statement,
-    TargetedDefinition, TodoKind, TypeAlias, TypeAst, TypeAstConstructor, TypeAstFn, TypeAstHole,
-    TypeAstTuple, TypeAstVar, UnqualifiedImport, UntypedArg, UntypedClause, UntypedClauseGuard,
-    UntypedConstant, UntypedDefinition, UntypedExpr, UntypedModule, UntypedPattern,
-    UntypedRecordUpdateArg, UntypedStatement, Use, UseAssignment, CAPTURE_VARIABLE,
+    HasLocation, Import, Module, ModuleConstant, Pattern, Publicity, RecordConstructor,
+    RecordConstructorArg, RecordUpdateSpread, SrcSpan, Statement, TargetedDefinition, TodoKind,
+    TypeAlias, TypeAst, TypeAstConstructor, TypeAstFn, TypeAstHole, TypeAstTuple, TypeAstVar,
+    UnqualifiedImport, UntypedArg, UntypedClause, UntypedClauseGuard, UntypedConstant,
+    UntypedDefinition, UntypedExpr, UntypedModule, UntypedPattern, UntypedRecordUpdateArg,
+    UntypedStatement, Use, UseAssignment, CAPTURE_VARIABLE,
 };
 use crate::build::Target;
 use crate::error::wrap;
@@ -3642,15 +3642,15 @@ functions are declared separately from types.";
             }
         }
 
-        let arguments = self.parse_html_tag_attr()?;
+        let attributes = self.parse_html_tag_attr()?;
 
         if let Some((_, end)) = self.maybe_one(&Token::StGt) {
             self.tokens.change_mode(token::TokenIteratorMode::Code);
             Ok(UntypedExpr::Html {
                 location: SrcSpan { start, end },
-                arguments: arguments,
+                attributes: attributes,
                 children: vec![],
-                tag: None,
+                tag: Some(Box::new(expr)),
             })
         } else {
             let _ = self.expect_one(&Token::Greater)?;
@@ -3671,15 +3671,15 @@ functions are declared separately from types.";
             let (_, end) = self.expect_one(&Token::Greater)?;
             Ok(UntypedExpr::Html {
                 location: SrcSpan { start, end },
-                arguments: arguments,
+                attributes: attributes,
                 children: estack,
-                tag: None,
+                tag: Some(Box::new(expr)),
             })
         }
     }
 
-    fn parse_html_tag_attr(&mut self) -> Result<Vec<HtmlTagAttr<UntypedExpr>>, ParseError> {
-        let mut estack: Vec<HtmlTagAttr<UntypedExpr>> = vec![];
+    fn parse_html_tag_attr(&mut self) -> Result<Vec<CallArg<UntypedExpr>>, ParseError> {
+        let mut estack: Vec<CallArg<UntypedExpr>> = vec![];
         self.tokens
             .change_mode(token::TokenIteratorMode::HtmlTagAttr);
         loop {
@@ -3695,10 +3695,17 @@ functions are declared separately from types.";
                         };
                         self.tokens
                             .change_mode(token::TokenIteratorMode::HtmlTagAttr);
-                        estack.push(HtmlTagAttr {
-                            attr: name,
+                        estack.push(CallArg {
+                            label: Some(name),
                             location: SrcSpan { start, end },
-                            value: value,
+                            value: match value {
+                                Some(value) => value,
+                                None => UntypedExpr::Var {
+                                    location: SrcSpan { start, end },
+                                    name: EcoString::inline("True"),
+                                },
+                            },
+                            implicit: None,
                         });
                     }
                     _ => {
@@ -3767,7 +3774,7 @@ functions are declared separately from types.";
         let (_, end) = self.expect_one(&Token::LtStGt)?;
         Ok(UntypedExpr::Html {
             location: SrcSpan { start, end },
-            arguments: vec![],
+            attributes: vec![],
             children: estack,
             tag: None,
         })

@@ -34,7 +34,7 @@ Parsed {
                                         end: 121,
                                     },
                                     tag: None,
-                                    content: [
+                                    children: [
                                         HtmlText {
                                             location: SrcSpan {
                                                 start: 25,
@@ -55,7 +55,7 @@ Parsed {
                                                 end: 111,
                                             },
                                             tag: None,
-                                            content: [
+                                            children: [
                                                 HtmlText {
                                                     location: SrcSpan {
                                                         start: 91,

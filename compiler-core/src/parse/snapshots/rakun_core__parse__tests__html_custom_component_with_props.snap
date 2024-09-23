@@ -84,7 +84,7 @@ Parsed {
                                         end: 194,
                                     },
                                     tag: None,
-                                    content: [
+                                    children: [
                                         HtmlText {
                                             location: SrcSpan {
                                                 start: 141,
@@ -98,7 +98,7 @@ Parsed {
                                                 end: 181,
                                             },
                                             tag: None,
-                                            content: [
+                                            children: [
                                                 HtmlText {
                                                     location: SrcSpan {
                                                         start: 152,
@@ -118,37 +118,39 @@ Parsed {
                                         },
                                     ],
                                     arguments: [
-                                        HtmlTagAttr {
-                                            attr: "title",
+                                        CallArg {
+                                            label: Some(
+                                                "title",
+                                            ),
                                             location: SrcSpan {
                                                 start: 101,
                                                 end: 114,
                                             },
-                                            value: Some(
-                                                Var {
-                                                    location: SrcSpan {
-                                                        start: 108,
-                                                        end: 113,
-                                                    },
-                                                    name: "title",
+                                            value: Var {
+                                                location: SrcSpan {
+                                                    start: 108,
+                                                    end: 113,
                                                 },
-                                            ),
+                                                name: "title",
+                                            },
+                                            implicit: None,
                                         },
-                                        HtmlTagAttr {
-                                            attr: "description",
+                                        CallArg {
+                                            label: Some(
+                                                "description",
+                                            ),
                                             location: SrcSpan {
                                                 start: 115,
                                                 end: 140,
                                             },
-                                            value: Some(
-                                                Var {
-                                                    location: SrcSpan {
-                                                        start: 128,
-                                                        end: 139,
-                                                    },
-                                                    name: "description",
+                                            value: Var {
+                                                location: SrcSpan {
+                                                    start: 128,
+                                                    end: 139,
                                                 },
-                                            ),
+                                                name: "description",
+                                            },
+                                            implicit: None,
                                         },
                                     ],
                                 },

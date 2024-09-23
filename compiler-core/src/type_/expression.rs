@@ -364,9 +364,9 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
                 location,
                 tag,
                 children,
-                arguments: args,
+                attributes,
                 ..
-            } => Ok(self.infer_html(tag, children, args, location, CallKind::Function)),
+            } => Ok(self.infer_html(tag, children, attributes, location, CallKind::Function)?),
             UntypedExpr::HtmlText {
                 location, value, ..
             } => Ok(self.infer_html_text(value, CallKind::Function)),
@@ -3519,18 +3519,81 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
     }
 
     fn infer_html(
-        &self,
+        &mut self,
         tag: Option<Box<UntypedExpr>>,
         children: Vec<UntypedExpr>,
-        args: Vec<crate::ast::HtmlTagAttr<UntypedExpr>>,
+        attributes: Vec<crate::ast::CallArg<UntypedExpr>>,
         location: SrcSpan,
         function: CallKind,
-    ) -> TypedExpr {
-        todo!()
+    ) -> Result<TypedExpr, Error> {
+        match tag {
+            Some(expr) => {
+                let _fn = *expr.to_owned();
+                let record_props = self.infer_html_record_props(_fn)?;
+                Ok(self.infer_call(
+                    *expr.to_owned(),
+                    vec![CallArg {
+                        label: None,
+                        location: location,
+                        implicit: None,
+                        value: UntypedExpr::Call {
+                            location: location,
+                            fun: Box::new(record_props),
+                            arguments: attributes,
+                        },
+                    }],
+                    location,
+                    function,
+                ))
+            }
+            None => {
+                todo!()
+            }
+        }
     }
 
     fn infer_html_text(&self, value: EcoString, function: CallKind) -> TypedExpr {
         todo!()
+    }
+
+    fn infer_html_record_props(&mut self, expr: UntypedExpr) -> Result<UntypedExpr, Error> {
+        match expr {
+            UntypedExpr::Var { location, name, .. } => {
+                let constructor: ValueConstructor =
+                    self.environment
+                        .get_variable(&name)
+                        .cloned()
+                        .ok_or_else(|| self.report_name_error(&name, &location))?;
+
+                // Register the value as seen for detection of unused values
+                self.environment.increment_usage(&name);
+
+                let _type1 = match constructor.type_.as_ref() {
+                    Type::Fn { args, .. } => match args.get(0) {
+                        Some(arg) => arg.as_ref().clone(),
+                        None => {
+                            todo!()
+                        }
+                    },
+                    e => {
+                        println!("infer_html {:?}", e);
+                        todo!()
+                    }
+                };
+                let name = match _type1 {
+                    Type::Named { name, .. } => name,
+                    e => {
+                        println!("infer_html {:?}", e);
+                        todo!()
+                    }
+                };
+                Ok(UntypedExpr::Var { location, name })
+            }
+            e => {
+                println!("infer_html {:?}", e);
+                todo!()
+            }
+        }
     }
 }
 

@@ -34,39 +34,41 @@ Parsed {
                                         end: 67,
                                     },
                                     tag: None,
-                                    content: [],
+                                    children: [],
                                     arguments: [
-                                        HtmlTagAttr {
-                                            attr: "src",
+                                        CallArg {
+                                            label: Some(
+                                                "src",
+                                            ),
                                             location: SrcSpan {
                                                 start: 25,
                                                 end: 40,
                                             },
-                                            value: Some(
-                                                String {
-                                                    location: SrcSpan {
-                                                        start: 29,
-                                                        end: 40,
-                                                    },
-                                                    value: "image.png",
+                                            value: String {
+                                                location: SrcSpan {
+                                                    start: 29,
+                                                    end: 40,
                                                 },
-                                            ),
+                                                value: "image.png",
+                                            },
+                                            implicit: None,
                                         },
-                                        HtmlTagAttr {
-                                            attr: "alt",
+                                        CallArg {
+                                            label: Some(
+                                                "alt",
+                                            ),
                                             location: SrcSpan {
                                                 start: 41,
                                                 end: 64,
                                             },
-                                            value: Some(
-                                                String {
-                                                    location: SrcSpan {
-                                                        start: 45,
-                                                        end: 64,
-                                                    },
-                                                    value: "Image description",
+                                            value: String {
+                                                location: SrcSpan {
+                                                    start: 45,
+                                                    end: 64,
                                                 },
-                                            ),
+                                                value: "Image description",
+                                            },
+                                            implicit: None,
                                         },
                                     ],
                                 },
@@ -78,39 +80,41 @@ Parsed {
                                         end: 122,
                                     },
                                     tag: None,
-                                    content: [],
+                                    children: [],
                                     arguments: [
-                                        HtmlTagAttr {
-                                            attr: "type",
+                                        CallArg {
+                                            label: Some(
+                                                "type",
+                                            ),
                                             location: SrcSpan {
                                                 start: 78,
                                                 end: 89,
                                             },
-                                            value: Some(
-                                                String {
-                                                    location: SrcSpan {
-                                                        start: 83,
-                                                        end: 89,
-                                                    },
-                                                    value: "text",
+                                            value: String {
+                                                location: SrcSpan {
+                                                    start: 83,
+                                                    end: 89,
                                                 },
-                                            ),
+                                                value: "text",
+                                            },
+                                            implicit: None,
                                         },
-                                        HtmlTagAttr {
-                                            attr: "placeholder",
+                                        CallArg {
+                                            label: Some(
+                                                "placeholder",
+                                            ),
                                             location: SrcSpan {
                                                 start: 90,
                                                 end: 119,
                                             },
-                                            value: Some(
-                                                String {
-                                                    location: SrcSpan {
-                                                        start: 102,
-                                                        end: 119,
-                                                    },
-                                                    value: "Enter text here",
+                                            value: String {
+                                                location: SrcSpan {
+                                                    start: 102,
+                                                    end: 119,
                                                 },
-                                            ),
+                                                value: "Enter text here",
+                                            },
+                                            implicit: None,
                                         },
                                     ],
                                 },
