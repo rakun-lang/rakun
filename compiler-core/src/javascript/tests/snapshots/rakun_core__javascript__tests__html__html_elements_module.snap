@@ -1,0 +1,77 @@
+---
+source: compiler-core/src/javascript/tests/html.rs
+expression: "\nimport rakun/rkx\n    \n\npub fn main() {\n    <rkx.div class=\"container\">\n        <rkx.h1 class=\"title\">Título do Conteúdo</rkx.h1>\n        <rkx.p class=\"description\">Descrição breve sobre o conteúdo apresentado.</rkx.p>\n        <rkx.div class=\"nested-container\">\n            <rkx.h2 class=\"subtitle\">Subtítulo</rkx.h2>\n            <rkx.p class=\"nested-content\">Informação adicional sobre o conteúdo.</rkx.p>\n        </rkx.div>\n    </rkx.div>\n}\n"
+---
+import * as $rkx from "../../package/rakun/rkx.mjs";
+import { toList } from "../rakun.mjs";
+
+export function main() {
+  return $rkx.hakun_html_init(
+    $rkx.div(
+      new $rkx.DivProps(
+        "container",
+        toList([
+          $rkx.hakun_html_init(
+            $rkx.hakun_html_init(
+              $rkx.h1(
+                new $rkx.H1Props(
+                  "title",
+                  toList([$rkx.hakun_html_init("Título do Conteúdo")]),
+                ),
+              ),
+            ),
+          ),
+          $rkx.hakun_html_init(
+            $rkx.hakun_html_init(
+              $rkx.p(
+                new $rkx.ParagraphProps(
+                  "description",
+                  toList([
+                    $rkx.hakun_html_init(
+                      "Descrição breve sobre o conteúdo apresentado.",
+                    ),
+                  ]),
+                ),
+              ),
+            ),
+          ),
+          $rkx.hakun_html_init(
+            $rkx.hakun_html_init(
+              $rkx.div(
+                new $rkx.DivProps(
+                  "nested-container",
+                  toList([
+                    $rkx.hakun_html_init(
+                      $rkx.hakun_html_init(
+                        $rkx.h2(
+                          new $rkx.H1Props(
+                            "subtitle",
+                            toList([$rkx.hakun_html_init("Subtítulo")]),
+                          ),
+                        ),
+                      ),
+                    ),
+                    $rkx.hakun_html_init(
+                      $rkx.hakun_html_init(
+                        $rkx.p(
+                          new $rkx.ParagraphProps(
+                            "nested-content",
+                            toList([
+                              $rkx.hakun_html_init(
+                                "Informação adicional sobre o conteúdo.",
+                              ),
+                            ]),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ]),
+                ),
+              ),
+            ),
+          ),
+        ]),
+      ),
+    ),
+  );
+}

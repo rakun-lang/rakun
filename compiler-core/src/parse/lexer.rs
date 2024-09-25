@@ -949,7 +949,7 @@ where
 
         Ok((start_pos, tok, end_pos))
     }
-    fn lex_html_string(&mut self) -> LexResult {
+    fn lex_html_string(&mut self) -> Result<Option<Spanned>, LexicalError> {
         let start_pos = self.get_pos();
         // advance past the first quote
         let mut string_content = String::new();
@@ -973,11 +973,15 @@ where
         }
         let end_pos = self.get_pos();
 
+        let trimmed_content = string_content.trim().to_string();
+        if trimmed_content.is_empty() {
+            return Ok(None); // Return None if the content is empty
+        }
         let tok = Token::HtmlText {
-            value: string_content.into(),
+            value: trimmed_content.into(),
         };
 
-        Ok((start_pos, tok, end_pos))
+        Ok(Some((start_pos, tok, end_pos)))
     }
 
     fn consume_normal_html(&mut self) -> Result<(), LexicalError> {
@@ -1040,8 +1044,11 @@ where
                     self.emit((tok_start, Token::LeftBrace, tok_end));
                 }
                 _ => {
-                    let string = self.lex_html_string()?;
-                    self.emit(string);
+                    if let Some(spanned) = self.lex_html_string()? {
+                        self.emit(spanned);
+                    } else {
+                        return self.consume_normal_html();
+                    }
                 }
             },
             None => {

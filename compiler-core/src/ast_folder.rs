@@ -281,7 +281,6 @@ pub trait UntypedExprFolder: TypeAstFolder + UntypedConstantFolder + PatternFold
                 children,
                 attributes,
             } => self.fold_html(location, tag, children, attributes),
-            UntypedExpr::HtmlText { location, value } => self.fold_html_text(location, value),
 
             UntypedExpr::BinOp {
                 location,
@@ -423,11 +422,6 @@ pub trait UntypedExprFolder: TypeAstFolder + UntypedConstantFolder + PatternFold
                     children,
                     attributes,
                 }
-            }
-
-            UntypedExpr::HtmlText { location, value } => {
-                // UntypedExpr::Html
-                UntypedExpr::HtmlText { location, value }
             }
             UntypedExpr::Call {
                 location,
@@ -736,7 +730,7 @@ pub trait UntypedExprFolder: TypeAstFolder + UntypedConstantFolder + PatternFold
         &mut self,
         location: SrcSpan,
         tag: Option<Box<UntypedExpr>>,
-        children: Vec<UntypedExpr>,
+        children: Option<Vec<UntypedExpr>>,
         attributes: Vec<CallArg<UntypedExpr>>,
     ) -> UntypedExpr {
         UntypedExpr::Html {
@@ -745,9 +739,6 @@ pub trait UntypedExprFolder: TypeAstFolder + UntypedConstantFolder + PatternFold
             children,
             attributes,
         }
-    }
-    fn fold_html_text(&mut self, location: SrcSpan, value: EcoString) -> UntypedExpr {
-        UntypedExpr::HtmlText { location, value }
     }
 
     fn fold_bin_op(

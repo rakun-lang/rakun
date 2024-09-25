@@ -3649,7 +3649,7 @@ functions are declared separately from types.";
             Ok(UntypedExpr::Html {
                 location: SrcSpan { start, end },
                 attributes: attributes,
-                children: vec![],
+                children: None,
                 tag: Some(Box::new(expr)),
             })
         } else {
@@ -3672,7 +3672,7 @@ functions are declared separately from types.";
             Ok(UntypedExpr::Html {
                 location: SrcSpan { start, end },
                 attributes: attributes,
-                children: estack,
+                children: Some(estack),
                 tag: Some(Box::new(expr)),
             })
         }
@@ -3775,7 +3775,7 @@ functions are declared separately from types.";
         Ok(UntypedExpr::Html {
             location: SrcSpan { start, end },
             attributes: vec![],
-            children: estack,
+            children: Some(estack),
             tag: None,
         })
     }
@@ -3787,7 +3787,7 @@ functions are declared separately from types.";
             let tk0 = self.next_tok();
             if let Some((start, tok, end)) = tk0 {
                 match tok {
-                    Token::HtmlText { value } => estack.push(UntypedExpr::HtmlText {
+                    Token::HtmlText { value } => estack.push(UntypedExpr::String {
                         location: SrcSpan { start, end },
                         value,
                     }),

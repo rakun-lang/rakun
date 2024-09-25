@@ -193,9 +193,6 @@ impl<'a> CallGraphBuilder<'a> {
             UntypedExpr::Html { .. } => {
                 // UntypedExpr::Html
             }
-            UntypedExpr::HtmlText { .. } => {
-                // UntypedExpr::Html
-            }
 
             UntypedExpr::PipeLine { expressions } => {
                 for expression in expressions {

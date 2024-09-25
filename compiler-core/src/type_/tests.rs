@@ -2463,43 +2463,9 @@ pub fn div(props:DivProps) {
     Element
 }
 
-pub fn main() {
-  div(DivProps("645646"))
-}
-"#,
-        vec![
-            ("DivProps", "fn(String) -> DivProps"),
-            ("Element", "Element"),
-            ("Text", "fn(String) -> Element"),
-            ("div", "fn(DivProps) -> Element"),
-            ("main", "fn() -> Element")
-        ]
-    );
-}
-#[test]
-fn html_div_2() {
-    assert_module_infer!(
-        r#"
-
-pub record Element {
-    Text(value: String)
+pub fn hakun_html_init(value:e) {
     Element
 }
-
-pub record DivProps {
-    DivProps(class: String)
-}
-pub fn div(props:DivProps) {
-    Element
-}
-
-pub fn hakun_html_component(e:Element) {
-    e
-}
-pub fn hakun_html_text(e:String) {
-    e
-}
-
 
 pub fn main() {
   <div class="56464"/>
@@ -2510,6 +2476,7 @@ pub fn main() {
             ("Element", "Element"),
             ("Text", "fn(String) -> Element"),
             ("div", "fn(DivProps) -> Element"),
+            ("hakun_html_init", "fn(a) -> Element"),
             ("main", "fn() -> Element")
         ]
     );

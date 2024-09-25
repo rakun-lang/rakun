@@ -53,15 +53,10 @@ pub enum UntypedExpr {
         fun: Box<Self>,
         arguments: Vec<CallArg<Self>>,
     },
-
-    HtmlText {
-        location: SrcSpan,
-        value: EcoString,
-    },
     Html {
         location: SrcSpan,
         tag: Option<Box<Self>>,
-        children: Vec<Self>,
+        children: Option<Vec<Self>>,
         attributes: Vec<CallArg<Self>>,
     },
 
@@ -156,7 +151,6 @@ impl UntypedExpr {
             Self::PipeLine { expressions, .. } => expressions.last().location(),
 
             Self::Fn { location, .. }
-            | Self::HtmlText { location, .. }
             | Self::Var { location, .. }
             | Self::Int { location, .. }
             | Self::Todo { location, .. }
