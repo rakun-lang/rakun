@@ -7,12 +7,16 @@ fn test_html_elements() {
             "package",
             "rakun/rkx",
             r#"
-pub fn hakun_html_init(value:e) {
+pub record Element {
     Element
 }
-
-pub record Element {
-    Text(value: String)
+pub fn html_text(value:e) {
+    Element
+}
+pub fn html_interpolation(value:e) {
+    Element
+}
+pub fn component_init(value:e) {
     Element
 }
         
@@ -79,15 +83,18 @@ fn test_html_elements_module() {
             "package",
             "rakun/rkx",
             r#"
-pub fn hakun_html_init(value:e) {
-    Element
-}
-
 pub record Element {
-    Text(value: String)
     Element
 }
-
+pub fn html_text(value:e) {
+    Element
+}
+pub fn html_interpolation(value:e) {
+    Element
+}
+pub fn component_init(value:e) {
+    Element
+}
     
 pub record DivProps {
     DivProps(class: String, children: List<Element>)

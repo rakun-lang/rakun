@@ -58,67 +58,57 @@ export function h2(props) {
 }
 
 export function main() {
-  return $rkx.hakun_html_init(
+  return $rkx.component_init(
     div(
       new DivProps(
         "container",
         toList([
-          $rkx.hakun_html_init(
-            $rkx.hakun_html_init(
-              h1(
-                new H1Props(
-                  "title",
-                  toList([$rkx.hakun_html_init("Título do Conteúdo")]),
-                ),
+          $rkx.component_init(
+            h1(
+              new H1Props(
+                "title",
+                toList([$rkx.html_text("Título do Conteúdo")]),
               ),
             ),
           ),
-          $rkx.hakun_html_init(
-            $rkx.hakun_html_init(
-              p(
-                new ParagraphProps(
-                  "description",
-                  toList([
-                    $rkx.hakun_html_init(
-                      "Descrição breve sobre o conteúdo apresentado.",
-                    ),
-                  ]),
-                ),
+          $rkx.component_init(
+            p(
+              new ParagraphProps(
+                "description",
+                toList([
+                  $rkx.html_text(
+                    "Descrição breve sobre o conteúdo apresentado.",
+                  ),
+                ]),
               ),
             ),
           ),
-          $rkx.hakun_html_init(
-            $rkx.hakun_html_init(
-              div(
-                new DivProps(
-                  "nested-container",
-                  toList([
-                    $rkx.hakun_html_init(
-                      $rkx.hakun_html_init(
-                        h2(
-                          new H1Props(
-                            "subtitle",
-                            toList([$rkx.hakun_html_init("Subtítulo")]),
-                          ),
-                        ),
+          $rkx.component_init(
+            div(
+              new DivProps(
+                "nested-container",
+                toList([
+                  $rkx.component_init(
+                    h2(
+                      new H1Props(
+                        "subtitle",
+                        toList([$rkx.html_text("Subtítulo")]),
                       ),
                     ),
-                    $rkx.hakun_html_init(
-                      $rkx.hakun_html_init(
-                        p(
-                          new ParagraphProps(
-                            "nested-content",
-                            toList([
-                              $rkx.hakun_html_init(
-                                "Informação adicional sobre o conteúdo.",
-                              ),
-                            ]),
+                  ),
+                  $rkx.component_init(
+                    p(
+                      new ParagraphProps(
+                        "nested-content",
+                        toList([
+                          $rkx.html_text(
+                            "Informação adicional sobre o conteúdo.",
                           ),
-                        ),
+                        ]),
                       ),
                     ),
-                  ]),
-                ),
+                  ),
+                ]),
               ),
             ),
           ),

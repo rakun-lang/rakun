@@ -58,31 +58,62 @@ Parsed {
                                         start: 45,
                                         end: 128,
                                     },
-                                    tag: None,
-                                    children: [
-                                        HtmlText {
+                                    tag: Some(
+                                        FieldAccess {
                                             location: SrcSpan {
-                                                start: 97,
-                                                end: 117,
+                                                start: 46,
+                                                end: 54,
                                             },
-                                            value: "\n       Click Me\n   ",
+                                            label_location: SrcSpan {
+                                                start: 47,
+                                                end: 54,
+                                            },
+                                            label: "button",
+                                            container: Var {
+                                                location: SrcSpan {
+                                                    start: 46,
+                                                    end: 47,
+                                                },
+                                                name: "c",
+                                            },
                                         },
-                                    ],
-                                    arguments: [
+                                    ),
+                                    children: Some(
+                                        [
+                                            HtmlText {
+                                                location: SrcSpan {
+                                                    start: 97,
+                                                    end: 117,
+                                                },
+                                                value: "Click Me",
+                                            },
+                                        ],
+                                    ),
+                                    attributes: [
                                         CallArg {
                                             label: Some(
                                                 "is_active",
                                             ),
                                             location: SrcSpan {
                                                 start: 55,
-                                                end: 76,
+                                                end: 66,
                                             },
-                                            value: Var {
+                                            value: Block {
                                                 location: SrcSpan {
-                                                    start: 66,
-                                                    end: 75,
+                                                    start: 65,
+                                                    end: 76,
                                                 },
-                                                name: "is_active",
+                                                statements: [
+                                                    Expression(
+                                                        Var {
+                                                            location: SrcSpan {
+                                                                start: 66,
+                                                                end: 75,
+                                                            },
+                                                            name: "is_active",
+                                                        },
+                                                    ),
+                                                ],
                                             },
                                             implicit: None,
                                         },

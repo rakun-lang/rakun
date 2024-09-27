@@ -33,9 +33,17 @@ Parsed {
                                         start: 20,
                                         end: 67,
                                     },
-                                    tag: None,
-                                    children: [],
-                                    arguments: [
+                                    tag: Some(
+                                        Var {
+                                            location: SrcSpan {
+                                                start: 21,
+                                                end: 24,
+                                            },
+                                            name: "img",
+                                        },
+                                    ),
+                                    children: None,
+                                    attributes: [
                                         CallArg {
                                             label: Some(
                                                 "src",
@@ -79,9 +87,17 @@ Parsed {
                                         start: 71,
                                         end: 122,
                                     },
-                                    tag: None,
-                                    children: [],
-                                    arguments: [
+                                    tag: Some(
+                                        Var {
+                                            location: SrcSpan {
+                                                start: 72,
+                                                end: 77,
+                                            },
+                                            name: "input",
+                                        },
+                                    ),
+                                    children: None,
+                                    attributes: [
                                         CallArg {
                                             label: Some(
                                                 "type",

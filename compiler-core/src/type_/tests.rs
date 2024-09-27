@@ -2448,23 +2448,33 @@ pub fn main() {
 
 #[test]
 fn html_div() {
-    assert_module_infer!(
-        r#"
-
+    assert_infer_with_module!(
+        (
+            "rakun/rkx",
+            r#"
 pub record Element {
-    Text(value: String)
     Element
 }
+pub fn html_text(value:e) {
+    Element
+}
+pub fn html_interpolation(value:e) {
+    Element
+}
+pub fn component_init(value:e) {
+    Element
+}
+        
+    "#
+        ),
+        r#"
+import rakun/rkx
 
 pub record DivProps {
     DivProps(class: String)
-}
-pub fn div(props:DivProps) {
-    Element
-}
-
-pub fn hakun_html_init(value:e) {
-    Element
+}      
+pub fn div(props: DivProps) {
+    rkx.Element
 }
 
 pub fn main() {
@@ -2473,10 +2483,7 @@ pub fn main() {
 "#,
         vec![
             ("DivProps", "fn(String) -> DivProps"),
-            ("Element", "Element"),
-            ("Text", "fn(String) -> Element"),
             ("div", "fn(DivProps) -> Element"),
-            ("hakun_html_init", "fn(a) -> Element"),
             ("main", "fn() -> Element")
         ]
     );

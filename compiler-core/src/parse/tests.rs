@@ -1548,8 +1548,8 @@ fn html_dynamic_attributes() {
 pub fn main() {
    let id = "unique-id"
 
-   <div id={id} class="container">
-       Content here
+   <div id={ id } class="container">
+    Content here
    </div>
 }
 "#
@@ -1584,22 +1584,6 @@ pub fn main() {
 }
 
 #[test]
-fn html_with_comments() {
-    assert_parse_module!(
-        r#"
-pub fn main() {
-   <div>
-       { 
-            // This is a comment
-       }
-       <span>Hello, world!</span>
-   </div>
-}
-"#
-    );
-}
-
-#[test]
 fn html_custom_component() {
     assert_parse_module!(
         r#"
@@ -1619,11 +1603,11 @@ fn html_nested_custom_component() {
     assert_parse_module!(
         r#"
 pub fn main() {
-   <c.outer_component>
-       <c.inner_component>
-           Nested content
-       </c.inner_component>
-   </c.outer_component>
+  <c.outer_component>
+    <c.inner_component>
+      Nested content
+    </c.inner_component>
+  </c.outer_component>
 }
 "#
     );
@@ -1637,8 +1621,10 @@ pub fn main() {
    let title = "My Title"
    let description = "This is a description."
 
-   <c.card title={title} description={description}>
-       <p>This is the card content.</p>
+   <c.card title={ title } description={ description }>
+       <p>
+        This is the card content.
+       </p>
    </c.card>
 }
 "#

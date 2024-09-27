@@ -1,6 +1,6 @@
 ---
 source: compiler-core/src/parse/tests.rs
-expression: "\npub fn main() {\n   let title = \"My Title\"\n   let description = \"This is a description.\"\n\n   <c.card title={title} description={description}>\n       <p>This is the card content.</p>\n   </c.card>\n}\n"
+expression: "\npub fn main() {\n   let title = \"My Title\"\n   let description = \"This is a description.\"\n\n   <c.card title={ title } description={ description }>\n       <p>\n        This is the card content.\n       </p>\n   </c.card>\n}\n"
 ---
 Parsed {
     module: Module {
@@ -15,7 +15,7 @@ Parsed {
                             start: 1,
                             end: 14,
                         },
-                        end_position: 196,
+                        end_position: 217,
                         name: Some(
                             (
                                 SrcSpan {
@@ -81,57 +81,84 @@ Parsed {
                                 Html {
                                     location: SrcSpan {
                                         start: 93,
-                                        end: 194,
+                                        end: 215,
                                     },
-                                    tag: None,
-                                    children: [
-                                        HtmlText {
+                                    tag: Some(
+                                        FieldAccess {
                                             location: SrcSpan {
-                                                start: 141,
-                                                end: 149,
+                                                start: 94,
+                                                end: 100,
                                             },
-                                            value: "\n       ",
-                                        },
-                                        Html {
-                                            location: SrcSpan {
-                                                start: 149,
-                                                end: 181,
+                                            label_location: SrcSpan {
+                                                start: 95,
+                                                end: 100,
                                             },
-                                            tag: None,
-                                            children: [
-                                                HtmlText {
-                                                    location: SrcSpan {
-                                                        start: 152,
-                                                        end: 177,
-                                                    },
-                                                    value: "This is the card content.",
+                                            label: "card",
+                                            container: Var {
+                                                location: SrcSpan {
+                                                    start: 94,
+                                                    end: 95,
                                                 },
-                                            ],
-                                            arguments: [],
-                                        },
-                                        HtmlText {
-                                            location: SrcSpan {
-                                                start: 181,
-                                                end: 185,
+                                                name: "c",
                                             },
-                                            value: "\n   ",
                                         },
-                                    ],
-                                    arguments: [
+                                    ),
+                                    children: Some(
+                                        [
+                                            Html {
+                                                location: SrcSpan {
+                                                    start: 153,
+                                                    end: 202,
+                                                },
+                                                tag: Some(
+                                                    Var {
+                                                        location: SrcSpan {
+                                                            start: 154,
+                                                            end: 155,
+                                                        },
+                                                        name: "p",
+                                                    },
+                                                ),
+                                                children: Some(
+                                                    [
+                                                        HtmlText {
+                                                            location: SrcSpan {
+                                                                start: 156,
+                                                                end: 198,
+                                                            },
+                                                            value: "This is the card content.",
+                                                        },
+                                                    ],
+                                                ),
+                                                attributes: [],
+                                            },
+                                        ],
+                                    ),
+                                    attributes: [
                                         CallArg {
                                             label: Some(
                                                 "title",
                                             ),
                                             location: SrcSpan {
                                                 start: 101,
-                                                end: 114,
+                                                end: 108,
                                             },
-                                            value: Var {
+                                            value: Block {
                                                 location: SrcSpan {
-                                                    start: 108,
-                                                    end: 113,
+                                                    start: 107,
+                                                    end: 116,
                                                 },
-                                                name: "title",
+                                                statements: [
+                                                    Expression(
+                                                        Var {
+                                                            location: SrcSpan {
+                                                                start: 109,
+                                                                end: 114,
+                                                            },
+                                                            name: "title",
+                                                        },
+                                                    ),
+                                                ],
                                             },
                                             implicit: None,
                                         },
@@ -140,15 +167,25 @@ Parsed {
                                                 "description",
                                             ),
                                             location: SrcSpan {
-                                                start: 115,
-                                                end: 140,
+                                                start: 117,
+                                                end: 130,
                                             },
-                                            value: Var {
+                                            value: Block {
                                                 location: SrcSpan {
-                                                    start: 128,
-                                                    end: 139,
+                                                    start: 129,
+                                                    end: 144,
                                                 },
-                                                name: "description",
+                                                statements: [
+                                                    Expression(
+                                                        Var {
+                                                            location: SrcSpan {
+                                                                start: 131,
+                                                                end: 142,
+                                                            },
+                                                            name: "description",
+                                                        },
+                                                    ),
+                                                ],
                                             },
                                             implicit: None,
                                         },
@@ -189,8 +226,8 @@ Parsed {
             42,
             88,
             89,
-            194,
-            196,
+            215,
+            217,
         ],
     },
 }

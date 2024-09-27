@@ -360,13 +360,17 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
                 ..
             } => Ok(self.infer_call(*fun, args, location, CallKind::Function)),
 
+            UntypedExpr::HtmlText {
+                location, value, ..
+            } => Ok(self.infer_html_text(value, location)?),
+
             UntypedExpr::Html {
                 location,
                 tag,
                 children,
                 attributes,
                 ..
-            } => Ok(self.infer_html(tag, children, attributes, location, CallKind::Function)?),
+            } => Ok(self.infer_html(tag, children, attributes, location)?),
 
             UntypedExpr::BinOp {
                 location,
@@ -3515,13 +3519,36 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
         }
     }
 
+    fn infer_html_text(&mut self, value: EcoString, location: SrcSpan) -> Result<TypedExpr, Error> {
+        Ok(self.infer_call(
+            UntypedExpr::FieldAccess {
+                location: location,
+                label_location: location,
+                label: EcoString::from("html_text"),
+                container: Box::new(UntypedExpr::Var {
+                    location: location,
+                    name: EcoString::from("rkx"),
+                }),
+            },
+            vec![CallArg {
+                label: None,
+                location: location,
+                implicit: None,
+                value: UntypedExpr::String {
+                    location: location,
+                    value: value,
+                },
+            }],
+            location,
+            CallKind::Function,
+        ))
+    }
     fn infer_html(
         &mut self,
         tag: Option<Box<UntypedExpr>>,
         children: Option<Vec<UntypedExpr>>,
         attributes: Vec<crate::ast::CallArg<UntypedExpr>>,
         location: SrcSpan,
-        kind: CallKind,
     ) -> Result<TypedExpr, Error> {
         match tag {
             Some(expr) => {
@@ -3540,23 +3567,29 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
                             location,
                             elements: children
                                 .into_iter()
-                                .map(|child| UntypedExpr::Call {
-                                    location: location,
-                                    fun: Box::new(UntypedExpr::FieldAccess {
-                                        location: location,
-                                        label_location: location,
-                                        label: EcoString::from("hakun_html_init"),
-                                        container: Box::new(UntypedExpr::Var {
+                                .map(|child| {
+                                    if let UntypedExpr::Block { .. } = child {
+                                        UntypedExpr::Call {
                                             location: location,
-                                            name: EcoString::from("rkx"),
-                                        }),
-                                    }),
-                                    arguments: vec![CallArg {
-                                        label: None,
-                                        location: location,
-                                        implicit: None,
-                                        value: child,
-                                    }],
+                                            fun: Box::new(UntypedExpr::FieldAccess {
+                                                location: location,
+                                                label_location: location,
+                                                label: EcoString::from("html_interpolation"),
+                                                container: Box::new(UntypedExpr::Var {
+                                                    location: location,
+                                                    name: EcoString::from("rkx"),
+                                                }),
+                                            }),
+                                            arguments: vec![CallArg {
+                                                label: None,
+                                                location: location,
+                                                implicit: None,
+                                                value: child,
+                                            }],
+                                        }
+                                    } else {
+                                        child
+                                    }
                                 })
                                 .collect(),
                             tail: None,
@@ -3568,7 +3601,7 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
                     UntypedExpr::FieldAccess {
                         location: location,
                         label_location: location,
-                        label: EcoString::from("hakun_html_init"),
+                        label: EcoString::from("component_init"),
                         container: Box::new(UntypedExpr::Var {
                             location: location,
                             name: EcoString::from("rkx"),
@@ -3594,7 +3627,7 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
                         },
                     }],
                     location,
-                    kind,
+                    CallKind::Function,
                 ))
             }
             None => {

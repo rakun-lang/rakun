@@ -165,6 +165,7 @@ impl<'a> CallGraphBuilder<'a> {
             UntypedExpr::Int { .. }
             | UntypedExpr::Float { .. }
             | UntypedExpr::String { .. }
+            | UntypedExpr::HtmlText { .. }
             | UntypedExpr::Placeholder { .. } => (),
 
             UntypedExpr::Todo { message, .. } => {

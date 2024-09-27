@@ -13,6 +13,10 @@ pub enum UntypedExpr {
         location: SrcSpan,
         value: EcoString,
     },
+    HtmlText {
+        location: SrcSpan,
+        value: EcoString,
+    },
 
     String {
         location: SrcSpan,
@@ -59,7 +63,6 @@ pub enum UntypedExpr {
         children: Option<Vec<Self>>,
         attributes: Vec<CallArg<Self>>,
     },
-
     BinOp {
         location: SrcSpan,
         name: BinOp,
@@ -160,6 +163,7 @@ impl UntypedExpr {
             | Self::Float { location, .. }
             | Self::Block { location, .. }
             | Self::BinOp { location, .. }
+            | Self::HtmlText { location, .. }
             | Self::Html { location, .. }
             | Self::Tuple { location, .. }
             | Self::Panic { location, .. }

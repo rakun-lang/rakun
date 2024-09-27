@@ -10,60 +10,50 @@ expression: "\nimport rakun/rkx\n    \n\npub fn main() {\n    <rkx.div class=\"c
 -file("/root/project/test/my/mod.rakun", 5).
 -spec main() -> rakun@rkx:element().
 main() ->
-    rakun@rkx:hakun_html_init(
+    rakun@rkx:component_init(
         rakun@rkx:'div'(
             {div_props,
                 <<"container"/utf8>>,
-                [rakun@rkx:hakun_html_init(
-                        rakun@rkx:hakun_html_init(
-                            rakun@rkx:h1(
-                                {h1_props,
-                                    <<"title"/utf8>>,
-                                    [rakun@rkx:hakun_html_init(
-                                            <<"Título do Conteúdo"/utf8>>
-                                        )]}
-                            )
+                [rakun@rkx:component_init(
+                        rakun@rkx:h1(
+                            {h1_props,
+                                <<"title"/utf8>>,
+                                [rakun@rkx:html_text(
+                                        <<"Título do Conteúdo"/utf8>>
+                                    )]}
                         )
                     ),
-                    rakun@rkx:hakun_html_init(
-                        rakun@rkx:hakun_html_init(
-                            rakun@rkx:p(
-                                {paragraph_props,
-                                    <<"description"/utf8>>,
-                                    [rakun@rkx:hakun_html_init(
-                                            <<"Descrição breve sobre o conteúdo apresentado."/utf8>>
-                                        )]}
-                            )
+                    rakun@rkx:component_init(
+                        rakun@rkx:p(
+                            {paragraph_props,
+                                <<"description"/utf8>>,
+                                [rakun@rkx:html_text(
+                                        <<"Descrição breve sobre o conteúdo apresentado."/utf8>>
+                                    )]}
                         )
                     ),
-                    rakun@rkx:hakun_html_init(
-                        rakun@rkx:hakun_html_init(
-                            rakun@rkx:'div'(
-                                {div_props,
-                                    <<"nested-container"/utf8>>,
-                                    [rakun@rkx:hakun_html_init(
-                                            rakun@rkx:hakun_html_init(
-                                                rakun@rkx:h2(
-                                                    {h1_props,
-                                                        <<"subtitle"/utf8>>,
-                                                        [rakun@rkx:hakun_html_init(
-                                                                <<"Subtítulo"/utf8>>
-                                                            )]}
-                                                )
-                                            )
-                                        ),
-                                        rakun@rkx:hakun_html_init(
-                                            rakun@rkx:hakun_html_init(
-                                                rakun@rkx:p(
-                                                    {paragraph_props,
-                                                        <<"nested-content"/utf8>>,
-                                                        [rakun@rkx:hakun_html_init(
-                                                                <<"Informação adicional sobre o conteúdo."/utf8>>
-                                                            )]}
-                                                )
-                                            )
-                                        )]}
-                            )
+                    rakun@rkx:component_init(
+                        rakun@rkx:'div'(
+                            {div_props,
+                                <<"nested-container"/utf8>>,
+                                [rakun@rkx:component_init(
+                                        rakun@rkx:h2(
+                                            {h1_props,
+                                                <<"subtitle"/utf8>>,
+                                                [rakun@rkx:html_text(
+                                                        <<"Subtítulo"/utf8>>
+                                                    )]}
+                                        )
+                                    ),
+                                    rakun@rkx:component_init(
+                                        rakun@rkx:p(
+                                            {paragraph_props,
+                                                <<"nested-content"/utf8>>,
+                                                [rakun@rkx:html_text(
+                                                        <<"Informação adicional sobre o conteúdo."/utf8>>
+                                                    )]}
+                                        )
+                                    )]}
                         )
                     )]}
         )

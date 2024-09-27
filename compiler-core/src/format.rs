@@ -988,9 +988,10 @@ impl<'comments> Formatter<'comments> {
                 tag,
                 children,
                 attributes,
-                location,
                 ..
-            } => self.html(tag.as_deref(), children, attributes, location),
+            } => self.html(tag.as_deref(), children, attributes),
+
+            UntypedExpr::HtmlText { value, .. } => self.html_text(value),
             UntypedExpr::BinOp {
                 name, left, right, ..
             } => self.bin_op(name, left, right, false),
@@ -1201,6 +1202,7 @@ impl<'comments> Formatter<'comments> {
             | UntypedExpr::Tuple { .. }
             | UntypedExpr::TupleIndex { .. }
             | UntypedExpr::Html { .. }
+            | UntypedExpr::HtmlText { .. }
             | UntypedExpr::Todo { .. }
             | UntypedExpr::Panic { .. }
             | UntypedExpr::BitArray { .. }
@@ -2469,6 +2471,7 @@ impl<'comments> Formatter<'comments> {
             | UntypedExpr::List { .. }
             | UntypedExpr::Call { .. }
             | UntypedExpr::Html { .. }
+            | UntypedExpr::HtmlText { .. }
             | UntypedExpr::PipeLine { .. }
             | UntypedExpr::Case { .. }
             | UntypedExpr::FieldAccess { .. }
@@ -2686,14 +2689,81 @@ impl<'comments> Formatter<'comments> {
         Some(doc.force_break())
     }
 
+    fn html_tag_and_attributes<'a>(
+        &mut self,
+        tag: Option<&'a UntypedExpr>,
+        attributes: &'a Vec<CallArg<UntypedExpr>>,
+        children: &'a Option<Vec<UntypedExpr>>,
+    ) -> Document<'a> {
+        let tag_doc = tag.map_or("".to_doc(), |t| self.expr(t));
+
+        let attributes_doc = if attributes.is_empty() {
+            "".to_doc()
+        } else {
+            " ".to_doc().append(join(
+                attributes.iter().map(|call_expr| {
+                    call_expr
+                        .label
+                        .clone()
+                        .unwrap()
+                        .to_doc()
+                        .append("=")
+                        .append(self.expr(&call_expr.value))
+                }),
+                break_("", " "),
+            ))
+        };
+
+        docvec![
+            "<".to_doc(),
+            tag_doc,
+            attributes_doc,
+            if let Some(..) = children { ">" } else { "/>" }
+        ]
+    }
+
+    fn html_content_and_close<'a>(
+        &mut self,
+        tag: Option<&'a UntypedExpr>,
+        children: &'a Option<Vec<UntypedExpr>>,
+    ) -> Document<'a> {
+        if let Some(children) = children {
+            let content_doc = join(
+                children
+                    .into_iter()
+                    .map(|child| "".to_doc().append(line()).append(self.expr(child))),
+                "".to_doc(),
+            )
+            .nest(INDENT);
+
+            let tag_doc = tag.map_or("".to_doc(), |t| self.expr(t));
+
+            docvec![
+                content_doc,
+                "".to_doc().append(line()).append("</"),
+                tag_doc,
+                ">",
+            ]
+        } else {
+            "".to_doc()
+        }
+    }
+
     fn html<'a>(
-        &self,
+        &mut self,
         tag: Option<&'a UntypedExpr>,
         children: &'a Option<Vec<UntypedExpr>>,
         attributes: &'a Vec<CallArg<UntypedExpr>>,
-        location: &SrcSpan,
     ) -> Document<'a> {
-        todo!()
+        let tag_doc = self.html_tag_and_attributes(tag, attributes, children);
+
+        let children_doc = self.html_content_and_close(tag, children);
+
+        docvec![tag_doc, children_doc].group()
+    }
+
+    fn html_text<'a>(&self, value: &'a EcoString) -> Document<'a> {
+        return value.to_doc();
     }
 }
 

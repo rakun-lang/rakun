@@ -58,89 +58,104 @@ Parsed {
                                         start: 41,
                                         end: 139,
                                     },
-                                    tag: None,
-                                    children: [
-                                        HtmlText {
+                                    tag: Some(
+                                        Var {
                                             location: SrcSpan {
-                                                start: 46,
-                                                end: 54,
+                                                start: 42,
+                                                end: 45,
                                             },
-                                            value: "\n       ",
+                                            name: "div",
                                         },
-                                        Html {
-                                            location: SrcSpan {
-                                                start: 54,
-                                                end: 129,
-                                            },
-                                            tag: None,
-                                            children: [
-                                                HtmlText {
-                                                    location: SrcSpan {
-                                                        start: 59,
-                                                        end: 71,
-                                                    },
-                                                    value: "\n           ",
+                                    ),
+                                    children: Some(
+                                        [
+                                            Html {
+                                                location: SrcSpan {
+                                                    start: 54,
+                                                    end: 129,
                                                 },
-                                                Html {
-                                                    location: SrcSpan {
-                                                        start: 71,
-                                                        end: 87,
+                                                tag: Some(
+                                                    Var {
+                                                        location: SrcSpan {
+                                                            start: 55,
+                                                            end: 58,
+                                                        },
+                                                        name: "div",
                                                     },
-                                                    tag: None,
-                                                    children: [
-                                                        Var {
+                                                ),
+                                                children: Some(
+                                                    [
+                                                        Html {
                                                             location: SrcSpan {
-                                                                start: 78,
-                                                                end: 79,
+                                                                start: 71,
+                                                                end: 87,
                                                             },
-                                                            name: "a",
+                                                            tag: Some(
+                                                                Var {
+                                                                    location: SrcSpan {
+                                                                        start: 72,
+                                                                        end: 76,
+                                                                    },
+                                                                    name: "span",
+                                                                },
+                                                            ),
+                                                            children: Some(
+                                                                [
+                                                                    Block {
+                                                                        location: SrcSpan {
+                                                                            start: 77,
+                                                                            end: 80,
+                                                                        },
+                                                                        statements: [
+                                                                            Expression(
+                                                                                Var {
+                                                                                    location: SrcSpan {
+                                                                                        start: 78,
+                                                                                        end: 79,
+                                                                                    },
+                                                                                    name: "a",
+                                                                                },
+                                                                            ),
+                                                                        ],
+                                                                    },
+                                                                ],
+                                                            ),
+                                                            attributes: [],
+                                                        },
+                                                        Html {
+                                                            location: SrcSpan {
+                                                                start: 99,
+                                                                end: 115,
+                                                            },
+                                                            tag: Some(
+                                                                Var {
+                                                                    location: SrcSpan {
+                                                                        start: 100,
+                                                                        end: 101,
+                                                                    },
+                                                                    name: "p",
+                                                                },
+                                                            ),
+                                                            children: Some(
+                                                                [
+                                                                    HtmlText {
+                                                                        location: SrcSpan {
+                                                                            start: 102,
+                                                                            end: 111,
+                                                                        },
+                                                                        value: "Some text",
+                                                                    },
+                                                                ],
+                                                            ),
+                                                            attributes: [],
                                                         },
                                                     ],
-                                                    arguments: [],
-                                                },
-                                                HtmlText {
-                                                    location: SrcSpan {
-                                                        start: 87,
-                                                        end: 99,
-                                                    },
-                                                    value: "\n           ",
-                                                },
-                                                Html {
-                                                    location: SrcSpan {
-                                                        start: 99,
-                                                        end: 115,
-                                                    },
-                                                    tag: None,
-                                                    children: [
-                                                        HtmlText {
-                                                            location: SrcSpan {
-                                                                start: 102,
-                                                                end: 111,
-                                                            },
-                                                            value: "Some text",
-                                                        },
-                                                    ],
-                                                    arguments: [],
-                                                },
-                                                HtmlText {
-                                                    location: SrcSpan {
-                                                        start: 115,
-                                                        end: 123,
-                                                    },
-                                                    value: "\n       ",
-                                                },
-                                            ],
-                                            arguments: [],
-                                        },
-                                        HtmlText {
-                                            location: SrcSpan {
-                                                start: 129,
-                                                end: 133,
+                                                ),
+                                                attributes: [],
                                             },
-                                            value: "\n   ",
-                                        },
-                                    ],
-                                    arguments: [],
+                                        ],
+                                    ),
+                                    attributes: [],
                                 },
                             ),
                         ],

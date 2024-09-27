@@ -1,6 +1,6 @@
 ---
 source: compiler-core/src/parse/tests.rs
-expression: "\npub fn main() {\n   let id = \"unique-id\"\n\n   <div id={id} class=\"container\">\n       Content here\n   </div>\n}\n"
+expression: "\npub fn main() {\n   let id = \"unique-id\"\n\n   <div id={ id } class=\"container\">\n    Content here\n   </div>\n}\n"
 ---
 Parsed {
     module: Module {
@@ -15,7 +15,7 @@ Parsed {
                             start: 1,
                             end: 14,
                         },
-                        end_position: 108,
+                        end_position: 107,
                         name: Some(
                             (
                                 SrcSpan {
@@ -56,33 +56,53 @@ Parsed {
                                 Html {
                                     location: SrcSpan {
                                         start: 45,
-                                        end: 106,
+                                        end: 105,
                                     },
-                                    tag: None,
-                                    children: [
-                                        HtmlText {
+                                    tag: Some(
+                                        Var {
                                             location: SrcSpan {
-                                                start: 76,
-                                                end: 100,
+                                                start: 46,
+                                                end: 49,
                                             },
-                                            value: "\n       Content here\n   ",
+                                            name: "div",
                                         },
-                                    ],
-                                    arguments: [
+                                    ),
+                                    children: Some(
+                                        [
+                                            HtmlText {
+                                                location: SrcSpan {
+                                                    start: 78,
+                                                    end: 99,
+                                                },
+                                                value: "Content here",
+                                            },
+                                        ],
+                                    ),
+                                    attributes: [
                                         CallArg {
                                             label: Some(
                                                 "id",
                                             ),
                                             location: SrcSpan {
                                                 start: 50,
-                                                end: 57,
+                                                end: 54,
                                             },
-                                            value: Var {
+                                            value: Block {
                                                 location: SrcSpan {
-                                                    start: 54,
-                                                    end: 56,
+                                                    start: 53,
+                                                    end: 59,
                                                 },
-                                                name: "id",
+                                                statements: [
+                                                    Expression(
+                                                        Var {
+                                                            location: SrcSpan {
+                                                                start: 55,
+                                                                end: 57,
+                                                            },
+                                                            name: "id",
+                                                        },
+                                                    ),
+                                                ],
                                             },
                                             implicit: None,
                                         },
@@ -91,13 +111,13 @@ Parsed {
                                                 "class",
                                             ),
                                             location: SrcSpan {
-                                                start: 58,
-                                                end: 75,
+                                                start: 60,
+                                                end: 77,
                                             },
                                             value: String {
                                                 location: SrcSpan {
-                                                    start: 64,
-                                                    end: 75,
+                                                    start: 66,
+                                                    end: 77,
                                                 },
                                                 value: "container",
                                             },
@@ -139,8 +159,8 @@ Parsed {
             16,
             40,
             41,
-            106,
-            108,
+            105,
+            107,
         ],
     },
 }

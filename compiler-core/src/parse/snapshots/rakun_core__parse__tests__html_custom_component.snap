@@ -58,31 +58,48 @@ Parsed {
                                         start: 64,
                                         end: 118,
                                     },
-                                    tag: None,
-                                    children: [
-                                        HtmlText {
+                                    tag: Some(
+                                        FieldAccess {
                                             location: SrcSpan {
-                                                start: 80,
-                                                end: 88,
+                                                start: 65,
+                                                end: 79,
                                             },
-                                            value: "\n       ",
-                                        },
-                                        Var {
-                                            location: SrcSpan {
-                                                start: 89,
-                                                end: 96,
+                                            label_location: SrcSpan {
+                                                start: 66,
+                                                end: 79,
                                             },
-                                            name: "content",
-                                        },
-                                        HtmlText {
-                                            location: SrcSpan {
-                                                start: 97,
-                                                end: 101,
+                                            label: "my_component",
+                                            container: Var {
+                                                location: SrcSpan {
+                                                    start: 65,
+                                                    end: 66,
+                                                },
+                                                name: "c",
                                             },
-                                            value: "\n   ",
                                         },
-                                    ],
-                                    arguments: [],
+                                    ),
+                                    children: Some(
+                                        [
+                                            Block {
+                                                location: SrcSpan {
+                                                    start: 88,
+                                                    end: 97,
+                                                },
+                                                statements: [
+                                                    Expression(
+                                                        Var {
+                                                            location: SrcSpan {
+                                                                start: 89,
+                                                                end: 96,
+                                                            },
+                                                            name: "content",
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                        ],
+                                    ),
+                                    attributes: [],
                                 },
                             ),
                         ],

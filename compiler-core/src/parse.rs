@@ -1036,7 +1036,6 @@ where
         }
         Ok(())
     }
-
     fn parse_block(&mut self, start: u32) -> Result<UntypedExpr, ParseError> {
         let body = self.parse_statement_seq()?;
         let (_, end) = self.expect_one(&Token::RightBrace)?;
@@ -3727,16 +3726,7 @@ functions are declared separately from types.";
         match self.next_tok() {
             Some((start, tk, end)) => match tk {
                 Token::LeftBrace => {
-                    let exp = match self.parse_expression()? {
-                        Some(exp) => exp,
-                        _ => {
-                            return parse_error(
-                                ParseErrorType::ExpectedTagName,
-                                SrcSpan { start, end },
-                            )
-                        }
-                    };
-                    let (_, end) = self.expect_one(&Token::RightBrace)?;
+                    let exp = self.parse_block(start)?;
                     Ok((exp, end))
                 }
                 Token::String { value } => Ok((
@@ -3787,7 +3777,7 @@ functions are declared separately from types.";
             let tk0 = self.next_tok();
             if let Some((start, tok, end)) = tk0 {
                 match tok {
-                    Token::HtmlText { value } => estack.push(UntypedExpr::String {
+                    Token::HtmlText { value } => estack.push(UntypedExpr::HtmlText {
                         location: SrcSpan { start, end },
                         value,
                     }),
@@ -3797,13 +3787,7 @@ functions are declared separately from types.";
                     }
                     Token::LeftBrace => {
                         self.tokens.change_mode(token::TokenIteratorMode::Code);
-                        match self.parse_expression()? {
-                            Some(exp) => {
-                                estack.push(exp);
-                            }
-                            _ => {}
-                        }
-                        let _ = self.expect_one(&Token::RightBrace)?;
+                        estack.push(self.parse_block(start)?);
                         self.tokens
                             .change_mode(token::TokenIteratorMode::HtmlContent);
                     }
