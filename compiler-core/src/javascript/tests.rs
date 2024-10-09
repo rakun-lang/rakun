@@ -19,6 +19,7 @@ mod custom_types;
 mod externals;
 mod functions;
 mod generics;
+mod html;
 mod lists;
 mod modules;
 mod numbers;

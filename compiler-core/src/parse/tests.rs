@@ -7,8 +7,8 @@ use crate::parse::token::Token;
 use crate::warning::WarningEmitter;
 use camino::Utf8PathBuf;
 
+use crate::parse::token::TokenIterator;
 use ecow::EcoString;
-use itertools::Itertools;
 use pretty_assertions::assert_eq;
 
 macro_rules! assert_error {
@@ -1502,6 +1502,178 @@ pub fn main() {
   let a = if wibble {
     wobble
   }
+}
+"#
+    );
+}
+
+#[test]
+fn html_nested_elements() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let a = "nested"
+
+   <div>
+       <div>
+           <span>{a}</span>
+           <p>Some text</p>
+       </div>
+   </div>
+}
+"#
+    );
+}
+
+#[test]
+fn html_conditional_rendering() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let show = True
+   let a = "conditional"
+
+   <div>
+       {case show { True -> <span>{a}</span> False  -> <span>Not shown</span> }}
+   </div>
+}
+"#
+    );
+}
+
+#[test]
+fn html_dynamic_attributes() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let id = "unique-id"
+
+   <div id={ id } class="container">
+    Content here
+   </div>
+}
+"#
+    );
+}
+
+#[test]
+fn html_self_closing_with_attributes() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   <img src="image.png" alt="Image description" />
+   <input type="text" placeholder="Enter text here" />
+}
+"#
+    );
+}
+
+#[test]
+fn html_multiple_sibling_elements() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   <div>
+       <div>First</div>
+       <div>Second</div>
+       <div>Third</div>
+   </div>
+}
+"#
+    );
+}
+
+#[test]
+fn html_custom_component() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let content = "Hello from my component"
+
+   <c.my_component>
+       {content}
+   </c.my_component>
+}
+"#
+    );
+}
+
+#[test]
+fn html_nested_custom_component() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+  <c.outer_component>
+    <c.inner_component>
+      Nested content
+    </c.inner_component>
+  </c.outer_component>
+}
+"#
+    );
+}
+
+#[test]
+fn html_custom_component_with_props() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let title = "My Title"
+   let description = "This is a description."
+
+   <c.card title={ title } description={ description }>
+       <p>
+        This is the card content.
+       </p>
+   </c.card>
+}
+"#
+    );
+}
+
+#[test]
+fn html_custom_component_with_conditional() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let show_details = true
+
+   <c.toggle_component>
+       {case show_details { True -> <p>Details are shown!</p> False -> <p>No details to show.</p>}}
+   </c.toggle_component>
+}
+"#
+    );
+}
+
+#[test]
+fn html_custom_component_with_children() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   <c.parent_component>
+       <c.child_component>
+           Child content goes here.
+       </c.child_component>
+       <c.child_component>
+           Another child content.
+       </c.child_component>
+   </c.parent_component>
+}
+"#
+    );
+}
+
+#[test]
+fn html_custom_component_with_attributes() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let is_active = true
+
+   <c.button is_active={is_active} class="btn-primary">
+       Click Me
+   </c.button>
 }
 "#
     );

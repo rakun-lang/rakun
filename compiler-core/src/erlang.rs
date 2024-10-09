@@ -1653,6 +1653,7 @@ fn needs_begin_end_wrapping(expression: &TypedExpr) -> bool {
         | TypedExpr::Fn { .. }
         | TypedExpr::List { .. }
         | TypedExpr::Call { .. }
+        | TypedExpr::Html { .. }
         | TypedExpr::BinOp { .. }
         | TypedExpr::Case { .. }
         | TypedExpr::RecordAccess { .. }
@@ -1769,6 +1770,8 @@ fn expr<'a>(expression: &'a TypedExpr, env: &mut Env<'a>) -> Document<'a> {
         TypedExpr::List { elements, tail, .. } => expr_list(elements, tail, env),
 
         TypedExpr::Call { fun, args, .. } => call(fun, args, env),
+
+        TypedExpr::Html { fun, args, .. } => call(fun, args, env),
 
         TypedExpr::ModuleSelect {
             constructor: ModuleValueConstructor::Record { name, arity: 0, .. },

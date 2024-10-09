@@ -360,6 +360,18 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
                 ..
             } => Ok(self.infer_call(*fun, args, location, CallKind::Function)),
 
+            UntypedExpr::HtmlText {
+                location, value, ..
+            } => Ok(self.infer_html_text(value, location)?),
+
+            UntypedExpr::Html {
+                location,
+                tag,
+                children,
+                attributes,
+                ..
+            } => Ok(self.infer_html(tag, children, attributes, location)?),
+
             UntypedExpr::BinOp {
                 location,
                 name,
@@ -3504,6 +3516,235 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
 
         if minimum_required_version > self.minimum_required_version {
             self.minimum_required_version = minimum_required_version;
+        }
+    }
+
+    fn infer_html_text(&mut self, value: EcoString, location: SrcSpan) -> Result<TypedExpr, Error> {
+        Ok(self.infer_call(
+            UntypedExpr::FieldAccess {
+                location: location,
+                label_location: location,
+                label: EcoString::from("html_text"),
+                container: Box::new(UntypedExpr::Var {
+                    location: location,
+                    name: EcoString::from("rkx"),
+                }),
+            },
+            vec![CallArg {
+                label: None,
+                location: location,
+                implicit: None,
+                value: UntypedExpr::String {
+                    location: location,
+                    value: value,
+                },
+            }],
+            location,
+            CallKind::Function,
+        ))
+    }
+    fn infer_html(
+        &mut self,
+        tag: Option<Box<UntypedExpr>>,
+        children: Option<Vec<UntypedExpr>>,
+        attributes: Vec<crate::ast::CallArg<UntypedExpr>>,
+        location: SrcSpan,
+    ) -> Result<TypedExpr, Error> {
+        match tag {
+            Some(expr) => {
+                let _fn = *expr.to_owned();
+                let record_props = self.infer_html_record_props(_fn)?.unwrap();
+
+                let mut new_attributes = Vec::new();
+
+                new_attributes.extend(attributes);
+                if let Some(children) = children {
+                    new_attributes.push(crate::ast::CallArg {
+                        label: Some(EcoString::from("children")),
+                        location,
+                        implicit: None,
+                        value: UntypedExpr::List {
+                            location,
+                            elements: children
+                                .into_iter()
+                                .map(|child| {
+                                    if let UntypedExpr::Block { .. } = child {
+                                        UntypedExpr::Call {
+                                            location: location,
+                                            fun: Box::new(UntypedExpr::FieldAccess {
+                                                location: location,
+                                                label_location: location,
+                                                label: EcoString::from("html_interpolation"),
+                                                container: Box::new(UntypedExpr::Var {
+                                                    location: location,
+                                                    name: EcoString::from("rkx"),
+                                                }),
+                                            }),
+                                            arguments: vec![CallArg {
+                                                label: None,
+                                                location: location,
+                                                implicit: None,
+                                                value: child,
+                                            }],
+                                        }
+                                    } else {
+                                        child
+                                    }
+                                })
+                                .collect(),
+                            tail: None,
+                        },
+                    });
+                }
+
+                Ok(self.infer_call(
+                    UntypedExpr::FieldAccess {
+                        location: location,
+                        label_location: location,
+                        label: EcoString::from("component_init"),
+                        container: Box::new(UntypedExpr::Var {
+                            location: location,
+                            name: EcoString::from("rkx"),
+                        }),
+                    },
+                    vec![CallArg {
+                        label: None,
+                        location: location,
+                        implicit: None,
+                        value: UntypedExpr::Call {
+                            location: location,
+                            fun: Box::new(*expr.to_owned()),
+                            arguments: vec![CallArg {
+                                label: None,
+                                location: location,
+                                implicit: None,
+                                value: UntypedExpr::Call {
+                                    location: location,
+                                    fun: Box::new(record_props),
+                                    arguments: new_attributes,
+                                },
+                            }],
+                        },
+                    }],
+                    location,
+                    CallKind::Function,
+                ))
+            }
+            None => {
+                todo!()
+            }
+        }
+    }
+    fn infer_html_record_props(&mut self, expr: UntypedExpr) -> Result<Option<UntypedExpr>, Error> {
+        match expr {
+            UntypedExpr::FieldAccess {
+                location,
+                label_location,
+                label,
+                container,
+                ..
+            } => self.infer_html_handle_field_access(
+                location,
+                label_location,
+                label,
+                container.as_ref(),
+            ),
+            UntypedExpr::Var { location, name, .. } => {
+                self.infer_html_handle_variable(location, name)
+            }
+            _ => Ok(None),
+        }
+    }
+
+    fn infer_html_handle_field_access(
+        &mut self,
+        location: SrcSpan,
+        label_location: SrcSpan,
+        label: EcoString,
+        container: &UntypedExpr,
+    ) -> Result<Option<UntypedExpr>, Error> {
+        match container {
+            UntypedExpr::Var {
+                location: module_location,
+                name: module_alias,
+                ..
+            } => {
+                let (_, module) = self
+                    .environment
+                    .imported_modules
+                    .get(module_alias)
+                    .ok_or_else(|| Error::UnknownModule {
+                        name: module_alias.clone(),
+                        location: label_location,
+                        suggestions: self
+                            .environment
+                            .suggest_modules(&module_alias, Imported::Value(label.clone())),
+                    })?;
+
+                let constructor =
+                    module
+                        .get_public_value(&label)
+                        .ok_or_else(|| Error::UnknownModuleValue {
+                            name: label.clone(),
+                            location: SrcSpan {
+                                start: module_location.end,
+                                end: label_location.end,
+                            },
+                            module_name: module.name.clone(),
+                            value_constructors: module.public_value_names(),
+                            type_with_same_name: false,
+                        })?;
+                if let Some(arg_type) = self.infer_html_get_first_argument_type(&constructor.type_)
+                {
+                    if let Some(name) = self.infer_html_extract_name_from_type(arg_type) {
+                        return Ok(Some(UntypedExpr::FieldAccess {
+                            location: location,
+                            label_location: location,
+                            label: name,
+                            container: Box::new(UntypedExpr::Var {
+                                location,
+                                name: module_alias.clone(),
+                            }),
+                        }));
+                    }
+                }
+                Ok(None)
+            }
+            _ => Ok(None),
+        }
+    }
+
+    fn infer_html_handle_variable(
+        &mut self,
+        location: SrcSpan,
+        name: EcoString,
+    ) -> Result<Option<UntypedExpr>, Error> {
+        let constructor = self
+            .environment
+            .get_variable(&name)
+            .cloned()
+            .ok_or_else(|| self.report_name_error(&name, &location))?;
+
+        self.environment.increment_usage(&name);
+        if let Some(arg_type) = self.infer_html_get_first_argument_type(&constructor.type_) {
+            if let Some(name) = self.infer_html_extract_name_from_type(arg_type) {
+                return Ok(Some(UntypedExpr::Var { location, name }));
+            }
+        }
+        Ok(None)
+    }
+
+    fn infer_html_get_first_argument_type(&self, type_: &Type) -> Option<Type> {
+        match type_ {
+            Type::Fn { args, .. } => args.get(0).map(|arg| arg.as_ref().clone()),
+            _ => None,
+        }
+    }
+
+    fn infer_html_extract_name_from_type(&self, type_: Type) -> Option<EcoString> {
+        match type_ {
+            Type::Named { name, .. } => Some(name),
+            _ => None,
         }
     }
 }

@@ -26,6 +26,7 @@ mod exhaustiveness;
 mod externals;
 mod functions;
 mod guards;
+mod html;
 mod imports;
 mod pipes;
 mod pretty;
