@@ -45,7 +45,7 @@ fn pretty_definition(project: TestProject<'_>, position_finder: PositionFinder) 
     );
 
     format!(
-        "----- Jumping from `src/app.gleam`
+        "----- Jumping from `src/app.rakun`
 {src}
 ----- Jumped to `{pretty_destination}`
 {destination}",
@@ -108,7 +108,7 @@ pub fn main() {
 fn goto_definition_same_module_records() {
     assert_goto!(
         "
-pub type Rec {
+pub record Rec {
   Var1(Int)
   Var2(Int, Int)
 }
@@ -169,7 +169,7 @@ fn main() {
 #[test]
 fn goto_definition_imported_module_records() {
     let dep_src = "
-pub type Rec {
+pub record Rec {
   Var1(Int)
   Var2(Int, Int)
 }";
@@ -190,7 +190,7 @@ fn main() {
 #[test]
 fn goto_definition_unqualified_imported_module_records() {
     let dep_src = "
-pub type Rec {
+pub record Rec {
   Var1(Int)
   Var2(Int, Int)
 }";
@@ -264,9 +264,9 @@ fn main() {
         response,
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\build\packages\hex\src\example_module.gleam"
+                r"\\?\C:\build\packages\hex\src\example_module.rakun"
             } else {
-                "/build/packages/hex/src/example_module.gleam"
+                "/build/packages/hex/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -293,9 +293,9 @@ fn main() {
         response,
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\build\packages\hex\src\example_module.gleam"
+                r"\\?\C:\build\packages\hex\src\example_module.rakun"
             } else {
-                "/build/packages/hex/src/example_module.gleam"
+                "/build/packages/hex/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -339,9 +339,9 @@ fn main() {
         response,
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\dep\src\example_module.gleam"
+                r"\\?\C:\dep\src\example_module.rakun"
             } else {
-                "/dep/src/example_module.gleam"
+                "/dep/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -368,9 +368,9 @@ fn main() {
         response,
         Some(Location {
             uri: Url::from_file_path(Utf8PathBuf::from(if cfg!(target_family = "windows") {
-                r"\\?\C:\dep\src\example_module.gleam"
+                r"\\?\C:\dep\src\example_module.rakun"
             } else {
-                "/dep/src/example_module.gleam"
+                "/dep/src/example_module.rakun"
             }))
             .unwrap(),
             range: Range {
@@ -390,7 +390,7 @@ fn main() {
 #[test]
 fn goto_definition_external_module_records() {
     let hex_src = "
-pub type Rec {
+pub record Rec {
   Var1(Int)
   Var2(Int, Int)
 }
@@ -428,7 +428,7 @@ fn main() {
 fn goto_definition_type() {
     assert_goto!(
         "
-pub type Rec {
+pub record Rec {
   Var1(Int)
   Var2(Int, Int)
 }
@@ -443,7 +443,7 @@ pub fn make_var() -> Rec {
 #[test]
 fn goto_definition_type_in_module() {
     let hex_src = "
-pub type Rec {
+pub record Rec {
   Var1(Int)
   Var2(Int, Int)
 }
@@ -465,7 +465,7 @@ fn make_var() -> example_module.Rec {
 #[test]
 fn goto_definition_type_in_path_dep() {
     let dep = "
-pub type Rec {
+pub record Rec {
   Var1(Int)
   Var2(Int, Int)
 }
@@ -487,22 +487,22 @@ fn make_var() -> example_module.Rec {
 #[test]
 fn goto_definition_deep_type_in_module() {
     let hex_src = "
-pub type Wobble {
+pub record Wobble {
   Wobble(Int)
 }
 
-pub type Wibble(a) {
+pub record Wibble<a> {
   Wibble(a)
 }
 
-pub type Wabble(a) {
+pub record Wabble<a> {
   Wabble(a)
 }
 ";
 
     let code = "
 import example_module
-fn make_var() -> example_module.Wabble(example_module.Wibble(example_module.Wobble)) {
+fn make_var() -> example_module.Wabble<example_module.Wibble<example_module.Wobble>> {
   example_module.Wabble(example_module.Wibble(example_module.Wobble(1)))
 }
 ";
@@ -590,7 +590,7 @@ fn main() -> MyType {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3610
+
 #[test]
 fn goto_definition_of_external_function_in_same_module() {
     let code = "
@@ -610,7 +610,7 @@ fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3758
+
 #[test]
 fn goto_definition_from_anonymous_function() {
     let code = "

@@ -97,7 +97,7 @@ fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2654
+
 #[test]
 fn hover_local_function_in_pipe() {
     assert_hover!(
@@ -121,7 +121,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2654
+
 #[test]
 fn hover_local_function_in_pipe_1() {
     assert_hover!(
@@ -145,7 +145,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2654
+
 #[test]
 fn hover_local_function_in_pipe_2() {
     assert_hover!(
@@ -169,7 +169,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2654
+
 #[test]
 fn hover_local_function_in_pipe_3() {
     assert_hover!(
@@ -382,7 +382,7 @@ fn hover_function_definition_with_docs() {
 /// Exciting documentation
 /// Maybe even multiple lines
 fn append(x, y) {
-  x <> y
+  x ++ y
 }
 ",
         find_position_of("append")
@@ -396,7 +396,7 @@ fn hover_function_argument() {
 /// Exciting documentation
 /// Maybe even multiple lines
 fn append(x, y) {
-  x <> y
+  x ++ y
 }
 ",
         find_position_of("append(x, y)").under_char('x')
@@ -409,7 +409,7 @@ fn hover_function_body() {
 /// Exciting documentation
 /// Maybe even multiple lines
 fn append(x, y) {
-  x <> y
+  x ++ y
 }
 ";
 
@@ -424,7 +424,7 @@ fn hover_expressions_in_function_body() {
     assert_hover!(
         "
 fn append(x, y) {
-  x <> y
+  x ++ y
 }
 ",
         find_position_of("x").nth_occurrence(2)
@@ -507,7 +507,7 @@ fn hover_function_arg_annotation_2() {
 /// Exciting documentation
 /// Maybe even multiple lines
 fn append(x: String, y: String) -> String {
-  x <> y
+  x ++ y
 }
 ",
         find_position_of("String").under_char('n')
@@ -521,7 +521,7 @@ fn hover_function_return_annotation() {
 /// Exciting documentation
 /// Maybe even multiple lines
 fn append(x: String, y: String) -> String {
-  x <> y
+  x ++ y
 }
 ",
         find_position_of("String").under_char('n').nth_occurrence(3)
@@ -558,7 +558,7 @@ const one: Int = 1
 fn hover_type_constructor_annotation() {
     assert_hover!(
         "
-type Wibble {
+record Wibble {
     Wibble(arg: String)
 }
 ",
@@ -590,7 +590,7 @@ fn hover_function_arg_annotation_with_documentation() {
         "
 /// Exciting documentation
 /// Maybe even multiple lines
-type Wibble {
+record Wibble {
     Wibble(arg: String)
 }
 
@@ -661,7 +661,7 @@ fn main() -> MyType {
             "
 /// Exciting documentation
 /// Maybe even multiple lines
-pub type MyType {
+pub record MyType {
   MyType
 }"
         ),
@@ -684,7 +684,7 @@ fn valid() { Nil }
 fn hover_for_pattern_spread_ignoring_all_fields() {
     assert_hover!(
         "
-pub type Model {
+pub record Model {
   Model(
     Int,
     Float,
@@ -707,7 +707,7 @@ pub fn main() {
 fn hover_for_pattern_spread_ignoring_some_fields() {
     assert_hover!(
         "
-pub type Model {
+pub record Model {
   Model(
     Int,
     Float,
@@ -730,7 +730,7 @@ pub fn main() {
 fn hover_for_pattern_spread_ignoring_all_positional_fields() {
     assert_hover!(
         "
-pub type Model {
+pub record Model {
   Model(
     Int,
     Float,
@@ -769,7 +769,7 @@ fn main() {
 fn hover_label_shorthand_in_pattern_call_arg() {
     assert_hover!(
         "
-pub type Wibble { Wibble(arg1: Int, arg2: Bool) }
+pub record Wibble { Wibble(arg1: Int, arg2: Bool) }
 
 pub fn main() {
   case todo {
@@ -787,7 +787,7 @@ pub fn main() {
 fn hover_label_shorthand_in_pattern_call_arg_2() {
     assert_hover!(
         "
-pub type Wibble { Wibble(arg1: Int, arg2: Bool) }
+pub record Wibble { Wibble(arg1: Int, arg2: Bool) }
 
 pub fn main() {
   let Wibble(arg2:, ..) = todo
@@ -805,7 +805,8 @@ const value = wobble.Wobble
 ";
 
     assert_hover!(
-        TestProject::for_source(code).add_hex_module("wibble/wobble", "pub type Wibble { Wobble }"),
+        TestProject::for_source(code)
+            .add_hex_module("wibble/wobble", "pub record Wibble { Wobble }"),
         find_position_of("value").under_char('v')
     );
 }
@@ -818,7 +819,8 @@ const value = wubble.Wobble
 ";
 
     assert_hover!(
-        TestProject::for_source(code).add_hex_module("wibble/wobble", "pub type Wibble { Wobble }"),
+        TestProject::for_source(code)
+            .add_hex_module("wibble/wobble", "pub record Wibble { Wobble }"),
         find_position_of("value").under_char('v')
     );
 }
@@ -831,7 +833,8 @@ const value = wobble.Wobble
 ";
 
     assert_hover!(
-        TestProject::for_source(code).add_hex_module("wibble/wobble", "pub type Wibble { Wobble }"),
+        TestProject::for_source(code)
+            .add_hex_module("wibble/wobble", "pub record Wibble { Wobble }"),
         find_position_of("value").under_char('v')
     );
 }
@@ -844,7 +847,8 @@ const value = wobble.Wobble
 ";
 
     assert_hover!(
-        TestProject::for_source(code).add_hex_module("wibble/wobble", "pub type Wibble { Wobble }"),
+        TestProject::for_source(code)
+            .add_hex_module("wibble/wobble", "pub record Wibble { Wobble }"),
         find_position_of("value").under_char('v')
     );
 }
@@ -858,7 +862,8 @@ const value = wobble.Wobble
 ";
 
     assert_hover!(
-        TestProject::for_source(code).add_hex_module("wibble/wobble", "pub type Wibble { Wobble }"),
+        TestProject::for_source(code)
+            .add_hex_module("wibble/wobble", "pub record Wibble { Wobble }"),
         find_position_of("value").under_char('v')
     );
 }
@@ -872,7 +877,8 @@ fn func(value: wobble.Wibble) -> MyInt { 1 }
 ";
 
     assert_hover!(
-        TestProject::for_source(code).add_hex_module("wibble/wobble", "pub type Wibble { Wobble }"),
+        TestProject::for_source(code)
+            .add_hex_module("wibble/wobble", "pub record Wibble { Wobble }"),
         find_position_of("func").under_char('f')
     );
 }
@@ -884,7 +890,8 @@ import wibble/wobble.{type Wibble as Wobble, Wobble}
 ";
 
     assert_hover!(
-        TestProject::for_source(code).add_hex_module("wibble/wobble", "pub type Wibble { Wobble }"),
+        TestProject::for_source(code)
+            .add_hex_module("wibble/wobble", "pub record Wibble { Wobble }"),
         find_position_of("Wobble}").under_char('W')
     );
 }
@@ -904,8 +911,10 @@ pub fn cycle(wibble: wobble.Wibble) {
 ";
 
     assert_hover!(
-        TestProject::for_source(code)
-            .add_hex_module("wibble/wobble", "pub type Wibble { Wibble Wobble Wubble }"),
+        TestProject::for_source(code).add_hex_module(
+            "wibble/wobble",
+            "pub record Wibble { Wibble Wobble Wubble }"
+        ),
         find_position_of("Wubble ->").under_char('u')
     );
 }
@@ -915,7 +924,7 @@ fn hover_contextual_type_pattern_spread() {
     let code = "
 import wibble/wobble.{type Wibble as Wobble}
 
-type Thing {
+record Thing {
   Thing(id: Int, value: Wobble)
 }
 
@@ -928,7 +937,8 @@ pub fn main(thing: Thing) {
 ";
 
     assert_hover!(
-        TestProject::for_source(code).add_hex_module("wibble/wobble", "pub type Wibble { Wibble }"),
+        TestProject::for_source(code)
+            .add_hex_module("wibble/wobble", "pub record Wibble { Wibble }"),
         find_position_of("..").under_char('.')
     );
 }
@@ -944,7 +954,8 @@ pub fn main() {
 ";
 
     assert_hover!(
-        TestProject::for_source(code).add_hex_module("wibble/wobble", "pub type Wibble { Wibble }"),
+        TestProject::for_source(code)
+            .add_hex_module("wibble/wobble", "pub record Wibble { Wibble }"),
         find_position_of(".Wibble").under_char('l')
     );
 }
@@ -958,7 +969,8 @@ fn do_things(wibble: wobble.Wibble) { wibble }
 ";
 
     assert_hover!(
-        TestProject::for_source(code).add_hex_module("wibble/wobble", "pub type Wibble { Wibble }"),
+        TestProject::for_source(code)
+            .add_hex_module("wibble/wobble", "pub record Wibble { Wibble }"),
         find_position_of("wibble:").under_char('w')
     );
 }
@@ -966,7 +978,7 @@ fn do_things(wibble: wobble.Wibble) { wibble }
 #[test]
 fn hover_print_type_variable_names() {
     let code = "
-fn main(value: Result(ok, error)) {
+fn main(value: Result<ok, error>) {
   let v = value
   v
 }
@@ -1036,7 +1048,7 @@ const number = 100
 #[test]
 fn hover_shadowed_prelude_type() {
     let code = "
-type Int { Int }
+record Int { Int }
 const number = 100
 ";
 
@@ -1068,7 +1080,8 @@ fn make_wibble() -> wobble.Wibble { wobble.Wibble }
 ";
 
     assert_hover!(
-        TestProject::for_source(code).add_hex_module("wibble/wobble", "pub type Wibble { Wibble }"),
+        TestProject::for_source(code)
+            .add_hex_module("wibble/wobble", "pub record Wibble { Wibble }"),
         find_position_of("-> wobble").under_char('o')
     );
 }
@@ -1082,7 +1095,8 @@ fn add_one(a: Int) -> Int {
 ";
 
     assert_hover!(
-        TestProject::for_source(code).add_hex_module("wibble/wobble", "pub type Wibble { Wibble }"),
+        TestProject::for_source(code)
+            .add_hex_module("wibble/wobble", "pub record Wibble { Wibble }"),
         find_position_of("-> Int").under_char('I')
     );
 }
@@ -1098,7 +1112,8 @@ fn main(wibble: Wibble) {
 ";
 
     assert_hover!(
-        TestProject::for_source(code).add_hex_module("wibble/wobble", "pub type Wibble { Wibble }"),
+        TestProject::for_source(code)
+            .add_hex_module("wibble/wobble", "pub record Wibble { Wibble }"),
         find_position_of(": Wibble").under_char('W')
     );
 }
@@ -1114,7 +1129,8 @@ fn main(wibble: Wubble) {
 ";
 
     assert_hover!(
-        TestProject::for_source(code).add_hex_module("wibble/wobble", "pub type Wibble { Wibble }"),
+        TestProject::for_source(code)
+            .add_hex_module("wibble/wobble", "pub record Wibble { Wibble }"),
         find_position_of(": Wubble").under_char('W')
     );
 }
@@ -1130,7 +1146,8 @@ fn main(wibble: wubble.Wibble) {
 ";
 
     assert_hover!(
-        TestProject::for_source(code).add_hex_module("wibble/wobble", "pub type Wibble { Wibble }"),
+        TestProject::for_source(code)
+            .add_hex_module("wibble/wobble", "pub record Wibble { Wibble }"),
         find_position_of(": wubble").under_char('e')
     );
 }
@@ -1148,7 +1165,8 @@ fn main(wibble: Wubble) {
 ";
 
     assert_hover!(
-        TestProject::for_source(code).add_hex_module("wibble/wobble", "pub type Wibble { Wibble }"),
+        TestProject::for_source(code)
+            .add_hex_module("wibble/wobble", "pub record Wibble { Wibble }"),
         find_position_of(": Wubble").under_char('e')
     );
 }
@@ -1156,7 +1174,7 @@ fn main(wibble: Wubble) {
 #[test]
 fn hover_print_underlying_for_alias_with_parameters() {
     let code = "
-type LocalResult = Result(String, Int)
+type LocalResult = Result<String, Int>
 
 fn do_thing() -> LocalResult {
   Error(1)
@@ -1172,9 +1190,9 @@ fn do_thing() -> LocalResult {
 #[test]
 fn hover_print_alias_when_parameters_match() {
     let code = "
-type MyResult(a, b) = Result(a, b)
+type MyResult<a, b> = Result<a, b>
 
-fn do_thing() -> MyResult(Int, Int) {
+fn do_thing() -> MyResult<Int, Int> {
   Error(1)
 }
 ";
@@ -1190,13 +1208,13 @@ fn hover_print_underlying_for_imported_alias() {
     let code = "
 import alias.{type A}
 
-fn wibble() -> Result(Int, String) {
+fn wibble() -> Result<Int, String> {
   todo
 }
 ";
 
     assert_hover!(
-        TestProject::for_source(code).add_hex_module("alias", "pub type A = Result(Int, String)"),
+        TestProject::for_source(code).add_hex_module("alias", "pub type A = Result<Int, String>"),
         find_position_of("wibble").under_char('l')
     );
 }
@@ -1204,14 +1222,14 @@ fn wibble() -> Result(Int, String) {
 #[test]
 fn hover_print_aliased_imported_generic_type() {
     let code = "
-import gleam/option.{type Option as Maybe}
+import rakun/option.{type Option as Maybe}
 
-const none: Maybe(Int) = option.None
+const none: Maybe<Int> = option.None
 ";
 
     assert_hover!(
         TestProject::for_source(code)
-            .add_hex_module("gleam/option", "pub type Option(a) { None Some(a) }"),
+            .add_hex_module("rakun/option", "pub record Option<a> { None Some(a) }"),
         find_position_of("none").under_char('e')
     );
 }
@@ -1242,7 +1260,7 @@ const value = True
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3761
+
 #[test]
 fn hover_over_block_in_list_spread() {
     let code = "
@@ -1257,7 +1275,7 @@ pub fn main() {
     assert_hover!(TestProject::for_source(code), find_position_of("x"));
 }
 
-// https://github.com/gleam-lang/gleam/issues/3758
+
 #[test]
 fn hover_for_anonymous_function_annotation() {
     let code = "

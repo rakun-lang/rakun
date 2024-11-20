@@ -3,7 +3,7 @@ source: test-package-compiler/src/generated_tests.rs
 expression: "./cases/import_cycle"
 ---
 error: Import cycle
-  ┌─ src/one.gleam:1:1
+  ┌─ src/one.rakun:1:1
   │
 1 │ import one
   │ ^ Imported here
@@ -13,5 +13,5 @@ The import statements for these modules form a cycle:
     ┌─────┐
     │     one
     └─────┘
-Gleam doesn't support dependency cycles like these, please break the
+Rakun doesn't support dependency cycles like these, please break the
 cycle to continue.

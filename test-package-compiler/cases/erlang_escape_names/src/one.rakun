@@ -1,0 +1,4 @@
+
+pub fn receive(x) {
+  x
+}

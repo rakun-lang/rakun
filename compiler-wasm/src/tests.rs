@@ -15,14 +15,14 @@ fn test_reset_filesystem() {
 #[wasm_bindgen_test]
 fn test_write_module() {
     reset_filesystem(0);
-    assert_eq!(read_file_bytes(0, "/src/some/module.gleam"), None);
+    assert_eq!(read_file_bytes(0, "/src/some/module.rakun"), None);
     write_module(0, "some/module", "const x = 1");
     assert_eq!(
-        read_file_bytes(0, "/src/some/module.gleam"),
+        read_file_bytes(0, "/src/some/module.rakun"),
         Some(vec![99, 111, 110, 115, 116, 32, 120, 32, 61, 32, 49]),
     );
     reset_filesystem(0);
-    assert_eq!(read_file_bytes(0, "/src/some/module.gleam"), None);
+    assert_eq!(read_file_bytes(0, "/src/some/module.rakun"), None);
 }
 
 #[wasm_bindgen_test]

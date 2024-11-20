@@ -14,7 +14,7 @@ use std::fmt::Debug;
 use camino::Utf8Path;
 
 /// A code generator that creates a .erl Erlang module and record header files
-/// for each Gleam module in the package.
+/// for each Rakun module in the package.
 #[derive(Debug)]
 pub struct Erlang<'a> {
     build_directory: &'a Utf8Path,
@@ -192,9 +192,9 @@ impl<'a> JavaScript<'a> {
 
     fn write_prelude(&self, writer: &impl FileSystemWriter) -> Result<()> {
         let rexport = format!("export * from \"{}\";\n", self.prelude_location);
-        let prelude_path = &self.output_directory.join("gleam.mjs");
+        let prelude_path = &self.output_directory.join("rakun.mjs");
 
-        // This check skips unnecessary `gleam.mjs` writes which confuse
+        // This check skips unnecessary `rakun.mjs` writes which confuse
         // watchers and HMR build tools
         if !writer.exists(prelude_path) {
             writer.write(prelude_path, &rexport)?;
@@ -206,7 +206,7 @@ impl<'a> JavaScript<'a> {
                 self.prelude_location,
                 self.prelude_location.as_str().replace(".mjs", ".d.mts")
             );
-            let prelude_declaration_path = &self.output_directory.join("gleam.d.mts");
+            let prelude_declaration_path = &self.output_directory.join("rakun.d.mts");
 
             // Type declaration may trigger badly configured watchers
             if !writer.exists(prelude_declaration_path) {

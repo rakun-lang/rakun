@@ -1,0 +1,11 @@
+---
+source: compiler-core/src/language_server/tests/action.rs
+expression: "record IntWrapper { IntWrapper(innerInt: Int) }"
+---
+----- BEFORE ACTION
+record IntWrapper { IntWrapper(innerInt: Int) }
+                    ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔↑       
+
+
+----- AFTER ACTION
+record IntWrapper { IntWrapper(inner_int: Int) }

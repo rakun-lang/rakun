@@ -28,7 +28,7 @@ use std::collections::{HashMap, HashSet};
 /// This class is responsible for handling the language server protocol and
 /// delegating the work to the engine.
 ///
-/// - Configuring watching of the `gleam.toml` file.
+/// - Configuring watching of the `rakun.toml` file.
 /// - Decoding requests.
 /// - Encoding responses.
 /// - Sending diagnostics and messages to the client.
@@ -71,7 +71,7 @@ where
     }
 
     pub fn run(&mut self) -> Result<()> {
-        self.start_watching_gleam_toml();
+        self.start_watching_rakun_toml();
         let mut buffer = MessageBuffer::new();
 
         loop {
@@ -163,7 +163,7 @@ where
         }
     }
 
-    fn start_watching_gleam_toml(&mut self) {
+    fn start_watching_rakun_toml(&mut self) {
         let supports_watch_files = self
             .initialise_params
             .capabilities
@@ -174,19 +174,19 @@ where
             .unwrap_or(false);
 
         if !supports_watch_files {
-            tracing::warn!("lsp_client_cannot_watch_gleam_toml");
+            tracing::warn!("lsp_client_cannot_watch_rakun_toml");
             return;
         }
 
-        // Register gleam.toml as a watched file so we get a notification when
+        // Register rakun.toml as a watched file so we get a notification when
         // it changes and thus know that we need to rebuild the entire project.
         let watch_config = lsp::Registration {
-            id: "watch-gleam-toml".into(),
+            id: "watch-rakun-toml".into(),
             method: "workspace/didChangeWatchedFiles".into(),
             register_options: Some(
                 serde_json::value::to_value(lsp::DidChangeWatchedFilesRegistrationOptions {
                     watchers: vec![lsp::FileSystemWatcher {
-                        glob_pattern: "**/gleam.toml".to_string().into(),
+                        glob_pattern: "**/rakun.toml".to_string().into(),
                         kind: Some(lsp::WatchKind::Change),
                     }],
                 })

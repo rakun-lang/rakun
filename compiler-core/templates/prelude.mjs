@@ -81,7 +81,7 @@ class ListIterator {
   }
 }
 
-export class Empty extends List {}
+export class Empty extends List { }
 
 export class NonEmpty extends List {
   constructor(head, tail) {
@@ -399,7 +399,7 @@ export function isEqual(x, y) {
       try {
         if (a.equals(b)) continue;
         else return false;
-      } catch {}
+      } catch { }
     }
 
     let [keys, get] = getters(a);
@@ -490,11 +490,11 @@ export function divideFloat(a, b) {
 // @internal
 export function makeError(variant, module, line, fn, message, extra) {
   let error = new globalThis.Error(message);
-  error.gleam_error = variant;
+  error.rakun_error = variant;
   error.module = module;
   error.line = line;
   error.function = fn;
-  // TODO: Remove this with Gleam v2.0.0
+  // TODO: Remove this with Rakun v2.0.0
   error.fn = fn;
   for (let k in extra) error[k] = extra[k];
   return error;

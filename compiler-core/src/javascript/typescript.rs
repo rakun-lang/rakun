@@ -1,7 +1,7 @@
 //! This module is responsible for generating TypeScript type declaration files.
 //! This code is run during the code generation phase along side the normal
 //! Javascript code emission. Here we walk through the typed AST and translate
-//! the Gleam statements into their TypeScript equivalent. Unlike the Javascript
+//! the Rakun statements into their TypeScript equivalent. Unlike the Javascript
 //! code generation, the TypeScript generation only needs to look at the module
 //! statements and not the expressions that may be _inside_ those statements.
 //! This is due to the TypeScript declarations only caring about inputs and outputs
@@ -78,7 +78,7 @@ fn name_with_generics<'a>(
 ///
 ///   Examples:
 ///     fn(a) -> String       // `a` is `any`
-///     `fn()` -> Result(a, b)  // `a` and `b` are `any`
+///     `fn()` -> Result<a, b>  // `a` and `b` are `any`
 ///     fn(a) -> a            // `a` is a generic
 fn collect_generic_usages<'a>(
     mut ids: HashMap<u64, u64>,
@@ -118,7 +118,7 @@ fn generic_ids(type_: &Type, ids: &mut HashMap<u64, u64>) {
     }
 }
 
-/// Prints a Gleam tuple in the TypeScript equivalent syntax
+/// Prints a Rakun tuple in the TypeScript equivalent syntax
 ///
 fn tuple<'a>(elems: impl IntoIterator<Item = Document<'a>>) -> Document<'a> {
     break_("", "")
@@ -169,7 +169,7 @@ fn ts_safe_type_name(mut name: String) -> EcoString {
     }
 }
 
-/// The `TypeScriptGenerator` contains the logic of how to convert Gleam's typed
+/// The `TypeScriptGenerator` contains the logic of how to convert Rakun's typed
 /// AST into the equivalent TypeScript type declaration file.
 ///
 #[derive(Debug)]
@@ -292,7 +292,7 @@ impl<'a> TypeScriptGenerator<'a> {
                 args,
                 ..
             } => {
-                let is_prelude = module == "gleam" && package.is_empty();
+                let is_prelude = module == "rakun" && package.is_empty();
                 let is_current_module = *module == self.module.name;
 
                 if !is_prelude && !is_current_module {
@@ -329,7 +329,7 @@ impl<'a> TypeScriptGenerator<'a> {
 
     /// Registers an import of an external module so that it can be added to
     /// the top of the generated Document. The module names are prefixed with a
-    /// "$" symbol to prevent any clashes with other Gleam names that may be
+    /// "$" symbol to prevent any clashes with other Rakun names that may be
     /// used in this module.
     ///
     fn register_import<'b>(
@@ -422,11 +422,11 @@ impl<'a> TypeScriptGenerator<'a> {
         ])
     }
 
-    /// Converts a Gleam custom type definition into the TypeScript equivalent.
-    /// In Gleam, all custom types have one to many concrete constructors. This
+    /// Converts a Rakun custom type definition into the TypeScript equivalent.
+    /// In Rakun, all custom types have one to many concrete constructors. This
     /// function first converts the constructors into TypeScript then finally
     /// emits a union type to represent the TypeScript type itself. Because in
-    /// Gleam constructors can have the same name as the custom type, here we
+    /// Rakun constructors can have the same name as the custom type, here we
     /// append a "$" symbol to the emitted TypeScript type to prevent those
     /// naming classes.
     ///
@@ -596,7 +596,7 @@ impl<'a> TypeScriptGenerator<'a> {
         ])
     }
 
-    /// Converts a Gleam type into a TypeScript type string
+    /// Converts a Rakun type into a TypeScript type string
     ///
     pub fn print_type(&mut self, type_: &Type) -> Document<'static> {
         self.do_print(type_, None)
@@ -695,10 +695,10 @@ impl<'a> TypeScriptGenerator<'a> {
         }
     }
 
-    /// Prints a type coming from the Gleam prelude module. These are often the
+    /// Prints a type coming from the Rakun prelude module. These are often the
     /// low level types the rest of the type system are built up from. If there
     /// is no built-in TypeScript equivalent, the type is prefixed with "_."
-    /// and the Gleam prelude namespace will be imported during the code emission.
+    /// and the Rakun prelude namespace will be imported during the code emission.
     ///
     fn print_prelude_type(
         &mut self,
@@ -739,7 +739,7 @@ impl<'a> TypeScriptGenerator<'a> {
         }
     }
 
-    /// Prints a "named" programmer-defined Gleam type into the TypeScript
+    /// Prints a "named" programmer-defined Rakun type into the TypeScript
     /// equivalent.
     ///
     fn print_type_app(
@@ -789,13 +789,13 @@ impl<'a> TypeScriptGenerator<'a> {
         ]
     }
 
-    /// Allows an outside module to mark the Gleam prelude as "used"
+    /// Allows an outside module to mark the Rakun prelude as "used"
     ///
     pub fn set_prelude_used(&mut self) {
         self.tracker.prelude_used = true
     }
 
-    /// Returns if the Gleam prelude has been used at all during the process
+    /// Returns if the Rakun prelude has been used at all during the process
     /// of printing the TypeScript types
     ///
     pub fn prelude_used(&self) -> bool {

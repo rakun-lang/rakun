@@ -93,7 +93,7 @@ pub struct Completer<'a, IO> {
 
 impl<'a, IO> Completer<'a, IO>
 where
-    // IO to be supplied from outside of gleam-core
+    // IO to be supplied from outside of rakun-core
     IO: FileSystemReader
         + FileSystemWriter
         + BeamCompiler
@@ -484,7 +484,7 @@ where
         );
         for (module_full_name, module) in self.completable_modules_for_import() {
             // Do not try to import the prelude.
-            if module_full_name == "gleam" {
+            if module_full_name == "rakun" {
                 continue;
             }
 
@@ -674,7 +674,7 @@ where
         );
         for (module_full_name, module) in self.completable_modules_for_import() {
             // Do not try to import the prelude.
-            if module_full_name == "gleam" {
+            if module_full_name == "rakun" {
                 continue;
             }
             let qualifier = module_full_name

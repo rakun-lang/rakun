@@ -20,6 +20,7 @@ mod custom_types;
 mod external_fn;
 mod functions;
 mod guards;
+mod html;
 mod let_assert;
 mod numbers;
 mod panic;
@@ -102,7 +103,7 @@ macro_rules! assert_erl {
     (($dep_package:expr, $dep_name:expr, $dep_src:expr), $src:expr $(,)?) => {{
         let compiled = $crate::erlang::tests::compile_test_project(
             $src,
-            "/root/project/test/my/mod.gleam",
+            "/root/project/test/my/mod.rakun",
             Some(($dep_package, $dep_name, $dep_src)),
         );
         let output = format!(
@@ -115,7 +116,7 @@ macro_rules! assert_erl {
     ($src:expr $(,)?) => {{
         let compiled = $crate::erlang::tests::compile_test_project(
             $src,
-            "/root/project/test/my/mod.gleam",
+            "/root/project/test/my/mod.rakun",
             None,
         );
         let output = format!(
@@ -179,7 +180,7 @@ fn integration_test1() {
 #[test]
 fn integration_test1_1() {
     assert_erl!(
-        r#"pub type Money { Pound(Int) }
+        r#"pub record Money { Pound(Int) }
                     fn pound(x) { Pound(x) }"#
     );
 }
@@ -252,19 +253,19 @@ fn integration_test8() {
 fn integration_test9() {
     // Custom type creation
     assert_erl!(
-        r#"pub type Pair(x, y) { Pair(x: x, y: y) } pub fn x() { Pair(1, 2) Pair(3., 4.) }"#
+        r#"pub record Pair<x, y> { Pair(x: x, y: y) } pub fn x() { Pair(1, 2) Pair(3., 4.) }"#
     );
 }
 
 #[test]
 fn integration_test10() {
-    assert_erl!(r#"type Null { Null } fn x() { Null }"#);
+    assert_erl!(r#"record Null { Null } fn x() { Null }"#);
 }
 
 #[test]
 fn integration_test3() {
     assert_erl!(
-        r#"type Point { Point(x: Int, y: Int) }
+        r#"record Point { Point(x: Int, y: Int) }
                 fn y() { fn() { Point }()(4, 6) }"#
     );
 }
@@ -272,21 +273,21 @@ fn integration_test3() {
 #[test]
 fn integration_test11() {
     assert_erl!(
-        r#"type Point { Point(x: Int, y: Int) }
+        r#"record Point { Point(x: Int, y: Int) }
                 fn x() { Point(x: 4, y: 6) Point(y: 1, x: 9) }"#
     );
 }
 
 #[test]
 fn integration_test12() {
-    assert_erl!(r#"type Point { Point(x: Int, y: Int) } fn x(y) { let Point(a, b) = y a }"#);
+    assert_erl!(r#"record Point { Point(x: Int, y: Int) } fn x(y) { let Point(a, b) = y a }"#);
 }
-//https://github.com/gleam-lang/gleam/issues/1106
+//https://github.com/rakun-lang/rakun/issues/1106
 
 #[test]
 fn integration_test13() {
     assert_erl!(
-        r#"pub type State{ Start(Int) End(Int) }
+        r#"pub record State{ Start(Int) End(Int) }
             pub fn build(constructor : fn(Int) -> a) -> a { constructor(1) }
             pub fn main() { build(End) }"#
     );
@@ -302,10 +303,10 @@ pub fn x() { go(x: 1, y: 2) go(y: 3, x: 4) }"#
 
 #[test]
 fn integration_test17() {
-    // https://github.com/gleam-lang/gleam/issues/289
+    
     assert_erl!(
         r#"
-type User { User(id: Int, name: String, age: Int) }
+record User { User(id: Int, name: String, age: Int) }
 fn create_user(user_id) { User(age: 22, id: user_id, name: "") }
                     "#
     );
@@ -319,7 +320,7 @@ fn integration_test18() {
 #[test]
 fn integration_test19() {
     assert_erl!(
-        r#"type X { X(x: Int, y: Float) }
+        r#"record X { X(x: Int, y: Float) }
                     fn x() { X(x: 1, y: 2.) X(y: 3., x: 4) }"#
     );
 }
@@ -352,14 +353,14 @@ pub fn go(a) {
 
 #[test]
 fn integration_test22() {
-    // https://github.com/gleam-lang/gleam/issues/358
+    
     assert_erl!(
         r#"
 pub fn factory(f, i) {
   f(i)
 }
 
-pub type Box {
+pub record Box {
   Box(i: Int)
 }
 
@@ -372,7 +373,7 @@ pub fn main() {
 
 #[test]
 fn integration_test23() {
-    // https://github.com/gleam-lang/gleam/issues/384
+    
     assert_erl!(
         r#"
 pub fn main(args) {
@@ -408,7 +409,7 @@ fn field_access_function_call() {
     // Parentheses are added when calling functions returned by record access
     assert_erl!(
         r#"
-type FnBox {
+record FnBox {
   FnBox(f: fn(Int) -> Int)
 }
 fn main() {
@@ -433,7 +434,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/777
+
 #[test]
 fn block_assignment() {
     assert_erl!(
@@ -501,16 +502,16 @@ fn allowed_string_escapes() {
     assert_erl!(r#"pub fn a() { "\n" "\r" "\t" "\\" "\"" "\\^" }"#);
 }
 
-// https://github.com/gleam-lang/gleam/issues/1006
+
 #[test]
 fn keyword_constructors() {
-    assert_erl!("pub type X { Div }");
+    assert_erl!("pub record X { Div }");
 }
 
-// https://github.com/gleam-lang/gleam/issues/1006
+
 #[test]
 fn keyword_constructors1() {
-    assert_erl!("pub type X { Fun(Int) }");
+    assert_erl!("pub record X { Fun(Int) }");
 }
 
 #[test]
@@ -523,7 +524,7 @@ fn discard_in_assert() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1424
+
 #[test]
 fn operator_pipe_right_hand_side() {
     assert_erl!(
@@ -558,7 +559,7 @@ fn negation_block() {
     )
 }
 
-// https://github.com/gleam-lang/gleam/issues/1655
+
 #[test]
 fn tail_maybe_expr_block() {
     assert_erl!(
@@ -576,7 +577,7 @@ fn tail_maybe_expr_block() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1587
+
 #[test]
 fn guard_variable_rewriting() {
     assert_erl!(
@@ -593,7 +594,7 @@ fn guard_variable_rewriting() {
     )
 }
 
-// https://github.com/gleam-lang/gleam/issues/1816
+
 #[test]
 fn function_argument_shadowing() {
     assert_erl!(
@@ -601,20 +602,20 @@ fn function_argument_shadowing() {
   Box
 }
 
-pub type Box {
+pub record Box {
   Box(Int)
 }
 "
     )
 }
 
-// https://github.com/gleam-lang/gleam/issues/2156
+
 #[test]
 fn dynamic() {
     assert_erl!("pub type Dynamic")
 }
 
-// https://github.com/gleam-lang/gleam/issues/2166
+
 #[test]
 fn inline_const_pattern_option() {
     assert_erl!(
@@ -632,7 +633,7 @@ fn inline_const_pattern_option() {
     )
 }
 
-// https://github.com/gleam-lang/gleam/issues/2349
+
 #[test]
 fn positive_zero() {
     assert_erl!(
@@ -644,7 +645,7 @@ pub fn main() {
     )
 }
 
-// https://github.com/gleam-lang/gleam/issues/3073
+
 #[test]
 fn scientific_notation() {
     assert_erl!(
@@ -657,12 +658,12 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3304
+
 #[test]
 fn type_named_else() {
     assert_erl!(
         "
-pub type Else {
+pub record Else {
   Else
 }
 
@@ -673,12 +674,12 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3382
+
 #[test]
 fn type_named_module_info() {
     assert_erl!(
         "
-pub type ModuleInfo {
+pub record ModuleInfo {
     ModuleInfo
 }
 
@@ -689,7 +690,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3382
+
 #[test]
 fn function_named_module_info() {
     assert_erl!(
@@ -705,7 +706,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3382
+
 #[test]
 fn function_named_module_info_imported() {
     assert_erl!(
@@ -728,7 +729,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3382
+
 #[test]
 fn function_named_module_info_imported_qualified() {
     assert_erl!(
@@ -751,7 +752,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3382
+
 #[test]
 fn constant_named_module_info() {
     assert_erl!(
@@ -765,7 +766,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3382
+
 #[test]
 fn constant_named_module_info_imported() {
     assert_erl!(
@@ -786,7 +787,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3382
+
 #[test]
 fn constant_named_module_info_imported_qualified() {
     assert_erl!(
@@ -807,7 +808,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3382
+
 #[test]
 fn constant_named_module_info_with_function_inside() {
     assert_erl!(
@@ -825,7 +826,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3382
+
 #[test]
 fn constant_named_module_info_with_function_inside_imported() {
     assert_erl!(
@@ -850,7 +851,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3382
+
 #[test]
 fn constant_named_module_info_with_function_inside_imported_qualified() {
     assert_erl!(
@@ -875,7 +876,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3382
+
 #[test]
 fn function_named_module_info_in_constant() {
     assert_erl!(
@@ -893,7 +894,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3382
+
 #[test]
 fn function_named_module_info_in_constant_imported() {
     assert_erl!(
@@ -918,7 +919,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3382
+
 #[test]
 fn function_named_module_info_in_constant_imported_qualified() {
     assert_erl!(
@@ -943,16 +944,16 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3648
+
 #[test]
 fn windows_file_escaping_bug() {
     let src = "pub fn main() { Nil }";
-    let path = "C:\\root\\project\\test\\my\\mod.gleam";
+    let path = "C:\\root\\project\\test\\my\\mod.rakun";
     let output = compile_test_project(src, path, None);
     insta::assert_snapshot!(insta::internals::AutoName, output, src);
 }
 
-// https://github.com/gleam-lang/gleam/issues/3315
+
 #[test]
 fn bit_pattern_shadowing() {
     assert_erl!(
@@ -965,5 +966,5 @@ pub fn main() {
     _ -> panic
   }
 }        "
-    );
+    )
 }

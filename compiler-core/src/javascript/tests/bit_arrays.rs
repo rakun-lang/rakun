@@ -181,7 +181,7 @@ fn utf8() {
     assert_js!(
         r#"
 fn go(x) {
-  <<256, 4, x, "Gleam":utf8>>
+  <<256, 4, x, "Rakun":utf8>>
 }
 "#,
     );
@@ -192,7 +192,7 @@ fn match_utf8() {
     assert_js!(
         r#"
 fn go(x) {
-  let assert <<"Gleam 👍":utf8>> = x
+  let assert <<"Rakun 👍":utf8>> = x
 }
 "#,
     );
@@ -203,7 +203,7 @@ fn utf8_codepoint() {
     assert_js!(
         r#"
 fn go(x) {
-  <<x:utf8_codepoint, "Gleam":utf8>>
+  <<x:utf8_codepoint, "Rakun":utf8>>
 }
 "#,
     );
@@ -214,7 +214,7 @@ fn utf8_codepoint_typescript() {
     assert_ts_def!(
         r#"
 pub fn go(x) {
-  <<x:utf8_codepoint, "Gleam":utf8>>
+  <<x:utf8_codepoint, "Rakun":utf8>>
 }
 "#,
     );
@@ -552,12 +552,12 @@ fn as_module_const() {
             2:size(16),
             0x4:size(32),
             -1:32,
-            "Gleam":utf8,
+            "Rakun":utf8,
             4.2:float,
             4.2:32-float,
             <<
               <<1, 2, 3>>:bits,
-              "Gleam":utf8,
+              "Rakun":utf8,
               1024
             >>:bits
           >>
@@ -576,7 +576,7 @@ fn go() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1591
+
 #[test]
 fn not_byte_aligned() {
     assert_js_error!(

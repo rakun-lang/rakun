@@ -248,7 +248,7 @@ pub fn export() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1208
+
 #[test]
 fn reserved_word_argument() {
     assert_js!(
@@ -259,7 +259,7 @@ fn reserved_word_argument() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1186
+
 #[test]
 fn multiple_discard() {
     assert_js!(
@@ -321,7 +321,7 @@ fn fn_return_fn_typescript() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1637
+
 #[test]
 fn variable_rewriting_in_anon_fn_with_matching_parameter() {
     assert_js!(
@@ -335,7 +335,7 @@ fn variable_rewriting_in_anon_fn_with_matching_parameter() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1637
+
 #[test]
 fn variable_rewriting_in_anon_fn_with_matching_parameter_in_case() {
     assert_js!(
@@ -351,7 +351,7 @@ fn variable_rewriting_in_anon_fn_with_matching_parameter_in_case() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1508
+
 #[test]
 fn pipe_variable_rebinding() {
     assert_js!(
@@ -406,7 +406,7 @@ pub const compound: #(fn(Int) -> Int, fn(Int) -> Int) =
     )
 }
 
-// https://github.com/gleam-lang/gleam/issues/2399
+
 #[test]
 fn bad_comma() {
     assert_js!(
@@ -427,7 +427,7 @@ pub fn main() {
     )
 }
 
-// https://github.com/gleam-lang/gleam/issues/2518
+
 #[test]
 fn function_literals_get_properly_wrapped_1() {
     assert_js!(
@@ -438,7 +438,7 @@ fn function_literals_get_properly_wrapped_1() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2518
+
 #[test]
 fn function_literals_get_properly_wrapped_2() {
     assert_js!(
@@ -449,7 +449,7 @@ fn function_literals_get_properly_wrapped_2() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2518
+
 #[test]
 fn function_literals_get_properly_wrapped_3() {
     assert_js!(
@@ -462,13 +462,13 @@ fn function_literals_get_properly_wrapped_3() {
 
 #[test]
 fn labelled_argument_ordering() {
-    // https://github.com/gleam-lang/gleam/issues/3671
+    
     assert_js!(
         "
-type A { A }
-type B { B }
-type C { C }
-type D { D }
+record A { A }
+record B { B }
+record C { C }
+record D { D }
 
 fn wibble(a a: A, b b: B, c c: C, d d: D) {
   Nil

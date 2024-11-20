@@ -2,23 +2,23 @@
 source: test-package-compiler/src/generated_tests.rs
 expression: "./cases/javascript_d_ts"
 ---
-//// /out/lib/the_package/_gleam_artefacts/hello.cache
+//// /out/lib/the_package/_rakun_artefacts/hello.cache
 <.cache binary>
 
-//// /out/lib/the_package/_gleam_artefacts/hello.cache_meta
+//// /out/lib/the_package/_rakun_artefacts/hello.cache_meta
 <73 byte binary>
 
-//// /out/lib/the_package/gleam.d.mts
+//// /out/lib/the_package/rakun.d.mts
 export * from "../prelude.mjs";
 export type * from "../prelude.d.mts";
 
 
-//// /out/lib/the_package/gleam.mjs
+//// /out/lib/the_package/rakun.mjs
 export * from "../prelude.mjs";
 
 
 //// /out/lib/the_package/hello.d.mts
-import type * as _ from "./gleam.d.mts";
+import type * as _ from "./rakun.d.mts";
 
 export class Woo extends _.CustomType {}
 
@@ -29,7 +29,7 @@ export function wobble(): Wibble$;
 
 //// /out/lib/the_package/hello.mjs
 /// <reference types="./hello.d.mts" />
-import { CustomType as $CustomType } from "./gleam.mjs";
+import { CustomType as $CustomType } from "./rakun.mjs";
 
 export class Woo extends $CustomType {}
 

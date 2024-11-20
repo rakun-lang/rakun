@@ -1,0 +1,22 @@
+---
+source: compiler-core/src/type_/tests/custom_types.rs
+expression: "import wibble.{type A} record A { C }"
+---
+----- SOURCE CODE
+-- wibble.rakun
+pub record A { B }
+
+-- main.rakun
+import wibble.{type A} record A { C }
+
+----- ERROR
+error: Duplicate type definition
+  ┌─ /src/one/two.rakun:1:16
+  │
+1 │ import wibble.{type A} record A { C }
+  │                ^^^^^^  ^^^^^^^^ Redefined here
+  │                │        
+  │                First defined here
+
+The type `A` has been defined multiple times.
+Names in a Rakun module must be unique so one will need to be renamed.

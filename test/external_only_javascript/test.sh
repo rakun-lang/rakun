@@ -2,11 +2,11 @@
 
 set -eu
 
-GLEAM_COMMAND=${GLEAM_COMMAND:-"cargo run --quiet --"}
+RAKUN_COMMAND=${RAKUN_COMMAND:-"cargo run --quiet --"}
 
 g() {
-  echo "Running: $GLEAM_COMMAND $@"
-  $GLEAM_COMMAND "$@"
+  echo "Running: $RAKUN_COMMAND $@"
+  $RAKUN_COMMAND "$@"
 }
 
 echo Resetting the build directory to get to a known state

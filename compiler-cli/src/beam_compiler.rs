@@ -1,4 +1,4 @@
-use gleam_core::{
+use rakun_core::{
     error::Error,
     io::{FileSystemWriter, Stdio},
     paths, Result,
@@ -66,8 +66,8 @@ impl BeamCompiler {
         let mut buf = String::new();
         while let (Ok(_), Ok(None)) = (inner.stdout.read_line(&mut buf), inner.process.try_wait()) {
             match buf.trim() {
-                "gleam-compile-result-ok" => return Ok(()),
-                "gleam-compile-result-error" => {
+                "rakun-compile-result-ok" => return Ok(()),
+                "rakun-compile-result-error" => {
                     return Err(Error::ShellCommand {
                         program: "escript".into(),
                         err: None,
@@ -96,9 +96,9 @@ impl BeamCompiler {
     ) -> Result<BeamCompilerInner, Error> {
         let escript_path = out
             .join(paths::ARTEFACT_DIRECTORY_NAME)
-            .join("gleam@@compile.erl");
+            .join("rakun@@compile.erl");
 
-        let escript_source = std::include_str!("../templates/gleam@@compile.erl");
+        let escript_source = std::include_str!("../templates/rakun@@compile.erl");
         io.write(&escript_path, escript_source)?;
 
         tracing::trace!(escript_path=?escript_path, "spawn_beam_compiler");

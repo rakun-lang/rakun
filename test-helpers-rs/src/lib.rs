@@ -1,16 +1,16 @@
 use camino::{Utf8Path, Utf8PathBuf};
-use gleam_core::{
+use itertools::Itertools;
+use rakun_core::{
     io::{memory::InMemoryFileSystem, Content, FileSystemWriter},
     version::COMPILER_VERSION,
 };
-use itertools::Itertools;
 use regex::Regex;
 use std::{collections::HashMap, fmt::Write, sync::OnceLock};
 
 #[derive(Debug)]
 pub struct TestCompileOutput {
     pub files: HashMap<Utf8PathBuf, Content>,
-    pub warnings: Vec<gleam_core::Warning>,
+    pub warnings: Vec<rakun_core::Warning>,
 }
 
 impl TestCompileOutput {
@@ -57,7 +57,7 @@ impl TestCompileOutput {
                             let line_number = caps.get(2).expect("line number").as_str();
                             format!("-file(\"{path}\", {line_number}).")
                         })
-                        .replace(COMPILER_VERSION, "<gleam compiler version string>");
+                        .replace(COMPILER_VERSION, "<rakun compiler version string>");
                     buffer.push_str(&text)
                 }
             };

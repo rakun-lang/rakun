@@ -1,4 +1,4 @@
-use gleam_core::build::Telemetry;
+use rakun_core::build::Telemetry;
 #[derive(Debug)]
 pub struct LogTelemetry;
 

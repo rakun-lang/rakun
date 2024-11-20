@@ -25,7 +25,7 @@ pub struct PatternTyper<'a, 'b> {
     inferred_variant_variables: HashMap<EcoString, u16>,
     problems: &'a mut Problems,
 
-    /// The minimum Gleam version required to compile the typed pattern.
+    /// The minimum Rakun version required to compile the typed pattern.
     pub minimum_required_version: Version,
 }
 
@@ -316,7 +316,7 @@ impl<'a, 'b> PatternTyper<'a, 'b> {
         // The name of the variable this pattern matches on, if any. Used for variant inference.
         //
         // Example:
-        // ```gleam
+        // ```rakun
         // case some_wibble {
         //   Wibble(..) -> {
         //     some_wibble.field_only_present_in_wibble
@@ -604,10 +604,10 @@ impl<'a, 'b> PatternTyper<'a, 'b> {
                                 .position(|a| a.label.is_some())
                                 .unwrap_or(pattern_args.len());
 
-                            // In Gleam we can pass in positional unlabelled args to a constructor
+                            // In Rakun we can pass in positional unlabelled args to a constructor
                             // even if the field was defined as labelled
                             //
-                            //     pub type Wibble {
+                            //     pub record Wibble {
                             //       Wibble(Int, two: Int, three: Int, four: Int)
                             //     }
                             //     Wibble(1, 2, 3, 4)
@@ -844,15 +844,15 @@ impl<'a, 'b> PatternTyper<'a, 'b> {
 
         // Then if the required version is not in the specified version for the
         // range we emit a warning highlighting the usage of the feature.
-        if let Some(gleam_version) = &self.environment.gleam_version {
-            if let Some(lowest_allowed_version) = gleam_version.lowest_version() {
+        if let Some(rakun_version) = &self.environment.rakun_version {
+            if let Some(lowest_allowed_version) = rakun_version.lowest_version() {
                 // There is a version in the specified range that is lower than
                 // the one required by this feature! This means that the
                 // specified range is wrong and would allow someone to run a
                 // compiler that is too old to know of this feature.
                 if minimum_required_version > lowest_allowed_version {
                     self.problems
-                        .warning(Warning::FeatureRequiresHigherGleamVersion {
+                        .warning(Warning::FeatureRequiresHigherRakunVersion {
                             location,
                             feature_kind,
                             minimum_required_version: minimum_required_version.clone(),
@@ -873,8 +873,8 @@ impl<'a, 'b> PatternTyper<'a, 'b> {
 /// This ensures that constructor variant information is only stored if
 /// all alternate pattern variables have the same variant. For example:
 ///
-/// ```gleam
-/// type Wibble {
+/// ```rakun
+/// record Wibble {
 ///   Wibble(wibble: Int, wobble: Float)
 ///   Wobble(wubble: String, wooble, Bool)
 /// }

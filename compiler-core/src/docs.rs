@@ -74,7 +74,6 @@ pub fn generate_html<IO: FileSystemReader>(
         path,
     });
 
-    // https://github.com/gleam-lang/gleam/issues/3020
     let links: Vec<_> = match is_hex_publish {
         DocContext::HexPublish => doc_links
             .chain(repo_link)
@@ -121,7 +120,7 @@ pub fn generate_html<IO: FileSystemReader>(
         };
 
         let temp = PageTemplate {
-            gleam_version: COMPILER_VERSION,
+            rakun_version: COMPILER_VERSION,
             links: &links,
             pages: &pages,
             modules: &modules_links,
@@ -254,7 +253,7 @@ pub fn generate_html<IO: FileSystemReader>(
         let page_meta_description = "";
 
         let template = ModuleTemplate {
-            gleam_version: COMPILER_VERSION,
+            rakun_version: COMPILER_VERSION,
             unnest,
             links: &links,
             pages: &pages,
@@ -312,9 +311,9 @@ pub fn generate_html<IO: FileSystemReader>(
     });
 
     files.push(OutputFile {
-        path: Utf8PathBuf::from("js/highlightjs-gleam.js"),
+        path: Utf8PathBuf::from("js/highlightjs-rakun.js"),
         content: Content::Text(
-            std::include_str!("../templates/docs-js/highlightjs-gleam.js").to_string(),
+            std::include_str!("../templates/docs-js/highlightjs-rakun.js").to_string(),
         ),
     });
 
@@ -356,7 +355,7 @@ pub fn generate_html<IO: FileSystemReader>(
     files.push(OutputFile {
         path: Utf8PathBuf::from("search-data.js"),
         content: Content::Text(format!(
-            "window.Gleam.initSearch({});",
+            "window.Rakun.initSearch({});",
             serde_to_string(&escape_html_contents(search_indexes))
                 .expect("search index serialization")
         )),
@@ -481,8 +480,8 @@ fn page_unnest_test() {
 
     // Modules
     assert_eq!(page_unnest("string"), ".");
-    assert_eq!(page_unnest("gleam/string"), "..");
-    assert_eq!(page_unnest("gleam/string/inspect"), "../..");
+    assert_eq!(page_unnest("rakun/string"), "..");
+    assert_eq!(page_unnest("rakun/string/inspect"), "../..");
 }
 
 fn escape_html_content(it: String) -> String {
@@ -558,7 +557,7 @@ fn text_documentation(doc: &Option<(u32, EcoString)>) -> String {
         .unwrap_or_else(|| "".into());
 
     // TODO: parse markdown properly and extract the text nodes
-    raw_text.replace("```gleam", "").replace("```", "")
+    raw_text.replace("```rakun", "").replace("```", "")
 }
 
 fn markdown_documentation(doc: &Option<(u32, EcoString)>) -> String {
@@ -774,7 +773,7 @@ struct Constant<'a> {
 #[derive(Template)]
 #[template(path = "documentation_page.html")]
 struct PageTemplate<'a> {
-    gleam_version: &'a str,
+    rakun_version: &'a str,
     unnest: &'a str,
     page_title: &'a str,
     page_meta_description: &'a str,
@@ -790,7 +789,7 @@ struct PageTemplate<'a> {
 #[derive(Template)]
 #[template(path = "documentation_module.html")]
 struct ModuleTemplate<'a> {
-    gleam_version: &'a str,
+    rakun_version: &'a str,
     unnest: String,
     page_title: &'a str,
     page_meta_description: &'a str,

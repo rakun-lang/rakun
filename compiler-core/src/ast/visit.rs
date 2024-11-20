@@ -11,7 +11,7 @@
 //! we can do the following:
 //!
 //! ```no_run
-//! use gleam_core::ast::{TypedFunction, visit::{self, Visit}};
+//! use rakun_core::ast::{TypedFunction, visit::{self, Visit}};
 //!
 //! struct FnCollector<'ast> {
 //!     functions: Vec<&'ast TypedFunction>
@@ -645,6 +645,12 @@ where
             tail,
         } => v.visit_typed_expr_list(location, type_, elements, tail),
         TypedExpr::Call {
+            location,
+            type_,
+            fun,
+            args,
+        } => v.visit_typed_expr_call(location, type_, fun, args),
+        TypedExpr::Html {
             location,
             type_,
             fun,

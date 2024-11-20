@@ -41,7 +41,7 @@ fn bitarray_with_var() {
     )
 }
 
-// https://github.com/gleam-lang/gleam/issues/3004
+
 #[test]
 fn keyword_var() {
     assert_js!(
@@ -225,7 +225,7 @@ fn alternative_patterns_guard() {
 fn field_access() {
     assert_js!(
         r#"
-        pub type Person {
+        pub record Person {
           Person(username: String, name: String, age: Int)
         }
         pub fn main() {
@@ -244,15 +244,15 @@ fn field_access() {
 fn nested_record_access() {
     assert_js!(
         r#"
-pub type A {
+pub record A {
   A(b: B)
 }
 
-pub type B {
+pub record B {
   B(c: C)
 }
 
-pub type C {
+pub record C {
   C(d: Bool)
 }
 
@@ -342,7 +342,7 @@ fn module_access() {
             "package",
             "hero",
             r#"
-              pub type Hero {
+              pub record Hero {
                 Hero(name: String)
               }
               pub const ironman = Hero("Tony Stark")
@@ -368,7 +368,7 @@ fn module_access_submodule() {
             "package",
             "hero/submodule",
             r#"
-              pub type Hero {
+              pub record Hero {
                 Hero(name: String)
               }
               pub const ironman = Hero("Tony Stark")
@@ -394,7 +394,7 @@ fn module_access_aliased() {
             "package",
             "hero/submodule",
             r#"
-              pub type Hero {
+              pub record Hero {
                 Hero(name: String)
               }
               pub const ironman = Hero("Tony Stark")
@@ -420,10 +420,10 @@ fn module_nested_access() {
             "package",
             "hero",
             r#"
-              pub type Person {
+              pub record Person {
                 Person(name: String)
               }
-              pub type Hero {
+              pub record Hero {
                 Hero(secret_identity: Person)
               }
               const bruce = Person("Bruce Wayne")
@@ -472,7 +472,7 @@ fn not_two() {
 #[test]
 fn custom_type_constructor_imported_and_aliased() {
     assert_js!(
-        ("package", "other_module", "pub type T { A }"),
+        ("package", "other_module", "pub record T { A }"),
         r#"import other_module.{A as B}
 fn func() {
   case B {
@@ -487,8 +487,8 @@ fn func() {
 #[test]
 fn imported_aliased_ok() {
     assert_js!(
-        r#"import gleam.{Ok as Y}
-pub type X {
+        r#"import rakun.{Ok as Y}
+pub record X {
   Ok
 }
 fn func() {
@@ -504,13 +504,13 @@ fn func() {
 #[test]
 fn imported_ok() {
     assert_js!(
-        r#"import gleam
-pub type X {
+        r#"import rakun
+pub record X {
   Ok
 }
 fn func(x) {
-  case gleam.Ok {
-    _ if [] == [ gleam.Ok ] -> True
+  case rakun.Ok {
+    _ if [] == [ rakun.Ok ] -> True
     _ -> False
   }
 }

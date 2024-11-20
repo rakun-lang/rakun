@@ -53,8 +53,8 @@ pub enum Type {
     /// custom type such as `Person`. The type can take other types as
     /// arguments (aka "generics" or "parametric polymorphism").
     ///
-    /// If the type is defined in the Gleam prelude the `module` field will be
-    /// the string "gleam", otherwise it will contain the name of the module
+    /// If the type is defined in the Rakun prelude the `module` field will be
+    /// the string "rakun", otherwise it will contain the name of the module
     /// that defines the type.
     ///
     Named {
@@ -69,8 +69,8 @@ pub enum Type {
         /// such as record updates for multi-constructor types, or field access
         /// for fields not shared between type variants. For example:
         ///
-        /// ```gleam
-        /// type Wibble {
+        /// ```rakun
+        /// record Wibble {
         ///   Wibble(wibble: Int, other, Int)
         ///   Wobble(wobble: Int, something: Int)
         /// }
@@ -613,7 +613,7 @@ impl ValueConstructorVariant {
             ValueConstructorVariant::Record { .. }
             | ValueConstructorVariant::LocalConstant { .. }
             | ValueConstructorVariant::LocalVariable { .. } => Implementations {
-                gleam: true,
+                rakun: true,
                 can_run_on_erlang: true,
                 can_run_on_javascript: true,
                 uses_javascript_externals: false,
@@ -724,7 +724,7 @@ pub struct ModuleInterface {
     pub is_internal: bool,
     /// Warnings emitted during analysis of this module.
     pub warnings: Vec<Warning>,
-    /// The minimum Gleam version needed to use this module.
+    /// The minimum Rakun version needed to use this module.
     pub minimum_required_version: Version,
 }
 
@@ -741,8 +741,8 @@ pub struct TypeVariantConstructors {
     /// constructors belong to.
     /// For example, if we have this type:
     ///
-    /// ```gleam
-    /// pub type Option(a) {
+    /// ```rakun
+    /// pub record Option<a> {
     ///   Some(a)
     ///   None
     /// }
@@ -879,7 +879,7 @@ impl PatternConstructor {
 pub enum TypeVar {
     /// Unbound is an unbound variable. It is one specific type but we don't
     /// know what yet in the inference process. It has a unique id which can be used to
-    /// identify if two unbound variable Rust values are the same Gleam type variable
+    /// identify if two unbound variable Rust values are the same Rakun type variable
     /// instance or not.
     ///
     Unbound { id: u64 },
@@ -892,8 +892,8 @@ pub enum TypeVar {
     ///
     /// # Example
     ///
-    /// ```gleam
-    /// type Cat(a) {
+    /// ```rakun
+    /// record Cat<a> {
     ///   Cat(name: a)
     /// }
     /// // a is TypeVar::Generic

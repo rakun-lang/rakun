@@ -89,15 +89,15 @@ pub fn class() -> Nil
 #[test]
 fn external_type_typescript() {
     assert_ts_def!(
-        r#"pub type Queue(a)
+        r#"pub type Queue<a>
 
 @external(javascript, "queue", "new")
-pub fn new() -> Queue(a)
+pub fn new() -> Queue<a>
 "#,
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1636
+
 #[test]
 fn external_fn_escaping() {
     assert_js!(
@@ -107,7 +107,7 @@ pub fn then(a: a) -> b"#,
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1954
+
 #[test]
 fn pipe_variable_shadow() {
     assert_js!(
@@ -123,7 +123,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2090
+
 #[test]
 fn tf_type_name_usage() {
     assert_ts_def!(

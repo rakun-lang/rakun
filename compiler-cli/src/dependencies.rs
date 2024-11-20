@@ -7,7 +7,9 @@ use camino::{Utf8Path, Utf8PathBuf};
 use ecow::EcoString;
 use flate2::read::GzDecoder;
 use futures::future;
-use gleam_core::{
+use hexpm::version::Version;
+use itertools::Itertools;
+use rakun_core::{
     build::{Mode, Target, Telemetry},
     config::PackageConfig,
     dependency,
@@ -19,8 +21,6 @@ use gleam_core::{
     requirement::Requirement,
     Error, Result,
 };
-use hexpm::version::Version;
-use itertools::Itertools;
 use same_file::is_same_file;
 use strum::IntoEnumIterator;
 
@@ -68,7 +68,7 @@ fn list_manifest_format() {
             ManifestPackage {
                 name: "root".into(),
                 version: Version::parse("1.0.0").unwrap(),
-                build_tools: ["gleam".into()].into(),
+                build_tools: ["rakun".into()].into(),
                 otp_app: None,
                 requirements: vec![],
                 source: ManifestPackageSource::Hex {
@@ -80,7 +80,7 @@ fn list_manifest_format() {
                 version: Version::new(0, 4, 2),
                 build_tools: ["rebar3".into(), "make".into()].into(),
                 otp_app: Some("aaa_app".into()),
-                requirements: vec!["zzz".into(), "gleam_stdlib".into()],
+                requirements: vec!["zzz".into(), "rakun_stdlib".into()],
                 source: ManifestPackageSource::Hex {
                     outer_checksum: Base16Checksum(vec![3, 22]),
                 },
@@ -133,7 +133,7 @@ pub fn update(packages: Vec<String>) -> Result<()> {
     Ok(())
 }
 
-pub fn parse_gleam_add_specifier(package: &str) -> Result<(EcoString, Requirement)> {
+pub fn parse_rakun_add_specifier(package: &str) -> Result<(EcoString, Requirement)> {
     let Some((package, version)) = package.split_once('@') else {
         // Default to the latest version available.
         return Ok((package.into(), Requirement::hex(">= 0.0.0")));
@@ -185,20 +185,20 @@ pub fn parse_gleam_add_specifier(package: &str) -> Result<(EcoString, Requiremen
 }
 
 #[test]
-fn parse_gleam_add_specifier_invalid_semver() {
-    assert!(parse_gleam_add_specifier("some_package@1.2.3.4").is_err());
+fn parse_rakun_add_specifier_invalid_semver() {
+    assert!(parse_rakun_add_specifier("some_package@1.2.3.4").is_err());
 }
 
 #[test]
-fn parse_gleam_add_specifier_non_numeric_version() {
-    assert!(parse_gleam_add_specifier("some_package@not_a_version").is_err());
+fn parse_rakun_add_specifier_non_numeric_version() {
+    assert!(parse_rakun_add_specifier("some_package@not_a_version").is_err());
 }
 
 #[test]
-fn parse_gleam_add_specifier_default() {
+fn parse_rakun_add_specifier_default() {
     let provided = "some_package";
     let expected = ">= 0.0.0";
-    let (package, version) = parse_gleam_add_specifier(provided).unwrap();
+    let (package, version) = parse_rakun_add_specifier(provided).unwrap();
     match &version {
         Requirement::Hex { version: v } => {
             assert!(v.to_pubgrub().is_ok(), "failed pubgrub parse: {v}");
@@ -210,10 +210,10 @@ fn parse_gleam_add_specifier_default() {
 }
 
 #[test]
-fn parse_gleam_add_specifier_major_only() {
+fn parse_rakun_add_specifier_major_only() {
     let provided = "wobble@1";
     let expected = ">= 1.0.0 and < 2.0.0";
-    let (package, version) = parse_gleam_add_specifier(provided).unwrap();
+    let (package, version) = parse_rakun_add_specifier(provided).unwrap();
     match &version {
         Requirement::Hex { version: v } => {
             assert!(v.to_pubgrub().is_ok(), "failed pubgrub parse: {v}");
@@ -225,10 +225,10 @@ fn parse_gleam_add_specifier_major_only() {
 }
 
 #[test]
-fn parse_gleam_add_specifier_major_and_minor() {
+fn parse_rakun_add_specifier_major_and_minor() {
     let provided = "wibble@1.2";
     let expected = ">= 1.2.0 and < 2.0.0";
-    let (package, version) = parse_gleam_add_specifier(provided).unwrap();
+    let (package, version) = parse_rakun_add_specifier(provided).unwrap();
     match &version {
         Requirement::Hex { version: v } => {
             assert!(v.to_pubgrub().is_ok(), "failed pubgrub parse: {v}");
@@ -240,10 +240,10 @@ fn parse_gleam_add_specifier_major_and_minor() {
 }
 
 #[test]
-fn parse_gleam_add_specifier_major_minor_and_patch() {
+fn parse_rakun_add_specifier_major_minor_and_patch() {
     let provided = "bobble@1.2.3";
     let expected = "1.2.3";
-    let (package, version) = parse_gleam_add_specifier(provided).unwrap();
+    let (package, version) = parse_rakun_add_specifier(provided).unwrap();
     match &version {
         Requirement::Hex { version: v } => {
             assert!(v.to_pubgrub().is_ok(), "failed pubgrub parse: {v}");
@@ -270,7 +270,7 @@ pub fn download<Telem: Telemetry>(
     let mode = Mode::Dev;
 
     // We do this before acquiring the build lock so that we don't create the
-    // build directory if there is no gleam.toml
+    // build directory if there is no rakun.toml
     crate::config::ensure_config_exists(paths)?;
 
     let lock = BuildLock::new_packages(paths)?;
@@ -308,7 +308,7 @@ pub fn download<Telem: Telemetry>(
     )?;
     let local = LocalPackages::read_from_disc(paths)?;
 
-    // Remove any packages that are no longer required due to gleam.toml changes
+    // Remove any packages that are no longer required due to rakun.toml changes
     remove_extra_packages(paths, &local, &manifest, &telemetry)?;
 
     // Download them from Hex to the local cache
@@ -503,7 +503,7 @@ fn missing_local_packages() {
             ManifestPackage {
                 name: "root".into(),
                 version: Version::parse("1.0.0").unwrap(),
-                build_tools: ["gleam".into()].into(),
+                build_tools: ["rakun".into()].into(),
                 otp_app: None,
                 requirements: vec![],
                 source: ManifestPackageSource::Hex {
@@ -513,7 +513,7 @@ fn missing_local_packages() {
             ManifestPackage {
                 name: "local1".into(),
                 version: Version::parse("1.0.0").unwrap(),
-                build_tools: ["gleam".into()].into(),
+                build_tools: ["rakun".into()].into(),
                 otp_app: None,
                 requirements: vec![],
                 source: ManifestPackageSource::Hex {
@@ -523,7 +523,7 @@ fn missing_local_packages() {
             ManifestPackage {
                 name: "local2".into(),
                 version: Version::parse("3.0.0").unwrap(),
-                build_tools: ["gleam".into()].into(),
+                build_tools: ["rakun".into()].into(),
                 otp_app: None,
                 requirements: vec![],
                 source: ManifestPackageSource::Hex {
@@ -547,7 +547,7 @@ fn missing_local_packages() {
             &ManifestPackage {
                 name: "local1".into(),
                 version: Version::parse("1.0.0").unwrap(),
-                build_tools: ["gleam".into()].into(),
+                build_tools: ["rakun".into()].into(),
                 otp_app: None,
                 requirements: vec![],
                 source: ManifestPackageSource::Hex {
@@ -557,7 +557,7 @@ fn missing_local_packages() {
             &ManifestPackage {
                 name: "local2".into(),
                 version: Version::parse("3.0.0").unwrap(),
-                build_tools: ["gleam".into()].into(),
+                build_tools: ["rakun".into()].into(),
                 otp_app: None,
                 requirements: vec![],
                 source: ManifestPackageSource::Hex {
@@ -584,7 +584,7 @@ fn extra_local_packages() {
             ManifestPackage {
                 name: "local1".into(),
                 version: Version::parse("1.0.0").unwrap(),
-                build_tools: ["gleam".into()].into(),
+                build_tools: ["rakun".into()].into(),
                 otp_app: None,
                 requirements: vec![],
                 source: ManifestPackageSource::Hex {
@@ -594,7 +594,7 @@ fn extra_local_packages() {
             ManifestPackage {
                 name: "local2".into(),
                 version: Version::parse("3.0.0").unwrap(),
-                build_tools: ["gleam".into()].into(),
+                build_tools: ["rakun".into()].into(),
                 otp_app: None,
                 requirements: vec![],
                 source: ManifestPackageSource::Hex {
@@ -754,7 +754,7 @@ impl ProvidedPackage {
             name: name.into(),
             version: self.version.clone(),
             otp_app: None, // Note, this will probably need to be set to something eventually
-            build_tools: vec!["gleam".into()],
+            build_tools: vec!["rakun".into()],
             requirements: self.requirements.keys().cloned().collect(),
             source: self.source.to_manifest_package_source(),
         };
@@ -922,7 +922,7 @@ fn provide_git_package(
     Err(Error::GitDependencyUnsupported)
 }
 
-/// Adds a gleam project located at a specific path to the list of "provided packages"
+/// Adds a rakun project located at a specific path to the list of "provided packages"
 fn provide_package(
     package_name: EcoString,
     package_path: Utf8PathBuf,
@@ -961,7 +961,7 @@ fn provide_package(
         None => (),
     }
     // Load the package
-    let config = crate::config::read(package_path.join("gleam.toml"))?;
+    let config = crate::config::read(package_path.join("rakun.toml"))?;
     // Check that we are loading the correct project
     if config.name != package_name {
         return Err(Error::WrongDependencyProvided {
@@ -1338,7 +1338,7 @@ fn provided_git_to_hex() {
     let provided_package = ProvidedPackage {
         version: Version::new(1, 0, 0),
         source: ProvidedPackageSource::Git {
-            repo: "https://github.com/gleam-lang/gleam.git".into(),
+            repo: "https://github.com/rakun-lang/rakun.git".into(),
             commit: "bd9fe02f72250e6a136967917bcb1bdccaffa3c8".into(),
         },
         requirements: [
@@ -1416,7 +1416,7 @@ fn provided_local_to_manifest() {
         name: "package".into(),
         version: Version::new(1, 0, 0),
         otp_app: None,
-        build_tools: vec!["gleam".into()],
+        build_tools: vec!["rakun".into()],
         requirements: vec!["req_1".into(), "req_2".into()],
         source: ManifestPackageSource::Local {
             path: "canonical/path/to/package".into(),
@@ -1434,7 +1434,7 @@ fn provided_git_to_manifest() {
     let provided_package = ProvidedPackage {
         version: Version::new(1, 0, 0),
         source: ProvidedPackageSource::Git {
-            repo: "https://github.com/gleam-lang/gleam.git".into(),
+            repo: "https://github.com/rakun-lang/rakun.git".into(),
             commit: "bd9fe02f72250e6a136967917bcb1bdccaffa3c8".into(),
         },
         requirements: [
@@ -1454,10 +1454,10 @@ fn provided_git_to_manifest() {
         name: "package".into(),
         version: Version::new(1, 0, 0),
         otp_app: None,
-        build_tools: vec!["gleam".into()],
+        build_tools: vec!["rakun".into()],
         requirements: vec!["req_1".into(), "req_2".into()],
         source: ManifestPackageSource::Git {
-            repo: "https://github.com/gleam-lang/gleam.git".into(),
+            repo: "https://github.com/rakun-lang/rakun.git".into(),
             commit: "bd9fe02f72250e6a136967917bcb1bdccaffa3c8".into(),
         },
     };
@@ -1512,7 +1512,7 @@ fn create_testable_unlock_manifest(
         .map(|(name, version, requirements)| ManifestPackage {
             name,
             version,
-            build_tools: vec!["gleam".into()],
+            build_tools: vec!["rakun".into()],
             otp_app: None,
             requirements,
             source: ManifestPackageSource::Hex {

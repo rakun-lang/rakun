@@ -281,6 +281,13 @@ pub trait UntypedExprFolder: TypeAstFolder + UntypedConstantFolder + PatternFold
                 fun,
                 arguments,
             } => self.fold_call(location, fun, arguments),
+            UntypedExpr::Html {
+                location,
+                tag,
+                children,
+                attributes,
+            } => self.fold_html(location, tag, children, attributes),
+            UntypedExpr::HtmlText { location, value } => self.fold_html_text(location, value),
 
             UntypedExpr::BinOp {
                 location,
@@ -344,6 +351,7 @@ pub trait UntypedExprFolder: TypeAstFolder + UntypedConstantFolder + PatternFold
             | UntypedExpr::Var { .. }
             | UntypedExpr::Float { .. }
             | UntypedExpr::String { .. }
+            | UntypedExpr::HtmlText { .. }
             | UntypedExpr::NegateInt { .. }
             | UntypedExpr::NegateBool { .. }
             | UntypedExpr::Placeholder { .. } => e,
@@ -409,6 +417,20 @@ pub trait UntypedExprFolder: TypeAstFolder + UntypedConstantFolder + PatternFold
                 }
             }
 
+            UntypedExpr::Html {
+                location,
+                tag,
+                children,
+                attributes,
+            } => {
+                // UntypedExpr::Html
+                UntypedExpr::Html {
+                    location,
+                    tag,
+                    children,
+                    attributes,
+                }
+            }
             UntypedExpr::Call {
                 location,
                 fun,
@@ -659,6 +681,9 @@ pub trait UntypedExprFolder: TypeAstFolder + UntypedConstantFolder + PatternFold
     fn fold_string(&mut self, location: SrcSpan, value: EcoString) -> UntypedExpr {
         UntypedExpr::String { location, value }
     }
+    fn fold_html_text(&mut self, location: SrcSpan, value: EcoString) -> UntypedExpr {
+        UntypedExpr::HtmlText { location, value }
+    }
 
     fn fold_block(&mut self, location: SrcSpan, statements: Vec1<UntypedStatement>) -> UntypedExpr {
         UntypedExpr::Block {
@@ -713,6 +738,21 @@ pub trait UntypedExprFolder: TypeAstFolder + UntypedConstantFolder + PatternFold
             location,
             fun,
             arguments,
+        }
+    }
+
+    fn fold_html(
+        &mut self,
+        location: SrcSpan,
+        tag: Option<Box<UntypedExpr>>,
+        children: Option<Vec<UntypedExpr>>,
+        attributes: Vec<CallArg<UntypedExpr>>,
+    ) -> UntypedExpr {
+        UntypedExpr::Html {
+            location,
+            tag,
+            children,
+            attributes,
         }
     }
 

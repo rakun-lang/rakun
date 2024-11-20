@@ -2,7 +2,7 @@ use std::sync::OnceLock;
 
 use camino::Utf8PathBuf;
 use ecow::EcoString;
-use gleam_core::{
+use rakun_core::{
     analyse::TargetSupport,
     build::{Built, Codegen, Compile, Mode, NullTelemetry, Options, Runtime, Target, Telemetry},
     config::{DenoFlag, PackageConfig},
@@ -33,7 +33,7 @@ pub fn command(
 
     // Validate the module path
     if let Some(mod_path) = &module {
-        if !is_gleam_module(mod_path) {
+        if !is_rakun_module(mod_path) {
             return Err(Error::InvalidModuleName {
                 module: mod_path.to_owned(),
             });
@@ -150,7 +150,7 @@ fn run_erlang(
         args.push(entry.path().join("ebin").into());
     }
 
-    // gleam modules are separated by `/`. Erlang modules are separated by `@`.
+    // rakun modules are separated by `/`. Erlang modules are separated by `@`.
     let module = module.replace('/', "@");
 
     args.push("-eval".into());
@@ -212,7 +212,7 @@ fn write_javascript_entrypoint(
     let path = paths
         .build_directory_for_package(Mode::Dev, Target::JavaScript, package)
         .to_path_buf()
-        .join("gleam.main.mjs");
+        .join("rakun.main.mjs");
     let module = format!(
         r#"import {{ main }} from "./{module}.mjs";
 main();
@@ -309,8 +309,8 @@ fn add_deno_flag(args: &mut Vec<String>, flag: &str, flags: &DenoFlag) {
     }
 }
 
-/// Check if a module name is a valid gleam module name.
-fn is_gleam_module(module: &str) -> bool {
+/// Check if a module name is a valid rakun module name.
+fn is_rakun_module(module: &str) -> bool {
     use regex::Regex;
     static RE: OnceLock<Regex> = OnceLock::new();
 
@@ -320,7 +320,7 @@ fn is_gleam_module(module: &str) -> bool {
             module = "[a-z][_a-z0-9]*",
             slash = "/",
         ))
-        .expect("is_gleam_module() RE regex")
+        .expect("is_rakun_module() RE regex")
     })
     .is_match(module)
 }
@@ -365,13 +365,13 @@ fn invalid_module_names() {
         "mod/",
         "common-invalid-character",
     ] {
-        assert!(!is_gleam_module(mod_name));
+        assert!(!is_rakun_module(mod_name));
     }
 }
 
 #[test]
 fn valid_module_names() {
     for mod_name in ["valid", "valid/name", "valid/mod/name"] {
-        assert!(is_gleam_module(mod_name));
+        assert!(is_rakun_module(mod_name));
     }
 }

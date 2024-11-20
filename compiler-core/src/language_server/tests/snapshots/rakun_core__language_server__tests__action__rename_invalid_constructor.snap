@@ -1,0 +1,11 @@
+---
+source: compiler-core/src/language_server/tests/action.rs
+expression: "record MyType { The_Constructor(Int) }"
+---
+----- BEFORE ACTION
+record MyType { The_Constructor(Int) }
+                 ↑                    
+
+
+----- AFTER ACTION
+record MyType { TheConstructor(Int) }

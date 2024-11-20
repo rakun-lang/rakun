@@ -1,13 +1,13 @@
 use camino::{Utf8Path, Utf8PathBuf};
 
-use gleam_core::{
+use rakun_core::{
     error::{FileIoAction, FileKind},
     Error, Result,
 };
 
 use crate::{
     cli,
-    dependencies::{parse_gleam_add_specifier, UseManifest},
+    dependencies::{parse_rakun_add_specifier, UseManifest},
     fs,
 };
 
@@ -16,7 +16,7 @@ pub fn command(packages_to_add: Vec<String>, dev: bool) -> Result<()> {
 
     let mut new_package_requirements = Vec::with_capacity(packages_to_add.len());
     for specifier in packages_to_add {
-        new_package_requirements.push(parse_gleam_add_specifier(&specifier)?);
+        new_package_requirements.push(parse_rakun_add_specifier(&specifier)?);
     }
 
     // Insert the new packages into the manifest and perform dependency
@@ -29,8 +29,8 @@ pub fn command(packages_to_add: Vec<String>, dev: bool) -> Result<()> {
         UseManifest::Yes,
     )?;
 
-    // Read gleam.toml and manifest.toml so we can insert new deps into it
-    let mut gleam_toml = read_toml_edit("gleam.toml")?;
+    // Read rakun.toml and manifest.toml so we can insert new deps into it
+    let mut rakun_toml = read_toml_edit("rakun.toml")?;
     let mut manifest_toml = read_toml_edit("manifest.toml")?;
 
     // Insert the new deps
@@ -61,9 +61,9 @@ pub fn command(packages_to_add: Vec<String>, dev: bool) -> Result<()> {
         #[allow(clippy::indexing_slicing)]
         {
             if dev {
-                gleam_toml["dev-dependencies"][&added_package] = toml_edit::value(range.clone());
+                rakun_toml["dev-dependencies"][&added_package] = toml_edit::value(range.clone());
             } else {
-                gleam_toml["dependencies"][&added_package] = toml_edit::value(range.clone());
+                rakun_toml["dependencies"][&added_package] = toml_edit::value(range.clone());
             };
             manifest_toml["requirements"][&added_package]
                 .as_inline_table_mut()
@@ -74,7 +74,7 @@ pub fn command(packages_to_add: Vec<String>, dev: bool) -> Result<()> {
     }
 
     // Write the updated config
-    fs::write(Utf8Path::new("gleam.toml"), &gleam_toml.to_string())?;
+    fs::write(Utf8Path::new("rakun.toml"), &rakun_toml.to_string())?;
     fs::write(Utf8Path::new("manifest.toml"), &manifest_toml.to_string())?;
 
     Ok(())
@@ -86,7 +86,7 @@ fn read_toml_edit(name: &str) -> Result<toml_edit::DocumentMut, Error> {
         .map_err(|e| Error::FileIo {
             kind: FileKind::File,
             action: FileIoAction::Parse,
-            path: Utf8PathBuf::from("gleam.toml"),
+            path: Utf8PathBuf::from("rakun.toml"),
             err: Some(e.to_string()),
         })
 }

@@ -7,7 +7,7 @@ fn bug_3629() {
         r#"
 import imported
 
-pub type Exp {
+pub record Exp {
   One(field: imported.Wibble)
   Two(field: imported.Wibble)
 }

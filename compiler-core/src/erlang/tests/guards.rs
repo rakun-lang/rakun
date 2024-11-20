@@ -288,7 +288,7 @@ fn clause_guards28() {
 
     assert_erl!(
         r#"
-    type Test { Test(x: Int, y: Float) }
+    record Test { Test(x: Int, y: Float) }
     pub fn main() {
       let x = Test(1, 3.0)
       case x {
@@ -451,7 +451,7 @@ pub fn main(arg) {
 fn field_access() {
     assert_erl!(
         r#"
-        pub type Person {
+        pub record Person {
           Person(username: String, name: String, age: Int)
         }
         
@@ -472,15 +472,15 @@ fn field_access() {
 fn nested_record_access() {
     assert_erl!(
         r#"
-pub type A {
+pub record A {
   A(b: B)
 }
 
-pub type B {
+pub record B {
   B(c: C)
 }
 
-pub type C {
+pub record C {
   C(d: Bool)
 }
 
@@ -570,7 +570,7 @@ fn module_access() {
             "package",
             "hero",
             r#"
-              pub type Hero {
+              pub record Hero {
                 Hero(name: String)
               }
               pub const ironman = Hero("Tony Stark")
@@ -596,10 +596,10 @@ fn module_nested_access() {
             "package",
             "hero",
             r#"
-              pub type Person {
+              pub record Person {
                 Person(name: String)
               }
-              pub type Hero {
+              pub record Hero {
                 Hero(secret_identity: Person)
               }
               const bruce = Person("Bruce Wayne")

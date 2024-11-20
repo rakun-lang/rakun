@@ -3,7 +3,7 @@ use crate::assert_format;
 #[test]
 fn one() {
     assert_format!(
-        "pub type Counter {
+        "pub record Counter {
   Counter(a: Int, b: Int)
 }
 
@@ -20,7 +20,7 @@ fn main() {
 fn two() {
     // Long record updates are split onto multiple lines
     assert_format!(
-        "pub type Counter {
+        "pub record Counter {
   Counter(loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong: Int)
 }
 
@@ -37,7 +37,7 @@ fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1872
+
 #[test]
 fn comment_before_spread() {
     assert_format!(
@@ -53,7 +53,7 @@ fn comment_before_spread() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1872
+
 #[test]
 fn comment_before_update_label() {
     assert_format!(
@@ -69,7 +69,7 @@ fn comment_before_update_label() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1872
+
 #[test]
 fn multiple_line_custom_type_field_comments() {
     assert_format!(

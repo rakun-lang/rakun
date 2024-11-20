@@ -24,7 +24,7 @@ impl SourceLinker {
             .join(module.name.as_str())
             .strip_prefix(paths.root())
             .expect("path is not in root")
-            .with_extension("gleam");
+            .with_extension("rakun");
 
         let path_in_repo = if let Some(repo_path) = project_config.repository.path() {
             to_url_path(&Utf8PathBuf::from(repo_path).join(path))

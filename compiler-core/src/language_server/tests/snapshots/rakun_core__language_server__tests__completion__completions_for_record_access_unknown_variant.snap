@@ -1,0 +1,39 @@
+---
+source: compiler-core/src/language_server/tests/completion.rs
+expression: "\nrecord Wibble {\n  Wibble(a: Int, b: Int, c: Int, d: Int)\n  Wobble(a: Int, z: Bool)\n}\n\nfn fun(some_wibble: Wibble) {\n  some_wibble.a\n}\n"
+---
+record Wibble {
+  Wibble(a: Int, b: Int, c: Int, d: Int)
+  Wobble(a: Int, z: Bool)
+}
+
+fn fun(some_wibble: Wibble) {
+  some_wibble.a|
+}
+
+
+----- Completion content -----
+Error
+  kind:   Constructor
+  detail: rakun
+  sort:   4_Error
+False
+  kind:   EnumMember
+  detail: rakun
+  sort:   4_False
+Nil
+  kind:   EnumMember
+  detail: rakun
+  sort:   4_Nil
+Ok
+  kind:   Constructor
+  detail: rakun
+  sort:   4_Ok
+True
+  kind:   EnumMember
+  detail: rakun
+  sort:   4_True
+a
+  kind:   Field
+  detail: Int
+  sort:   1_a

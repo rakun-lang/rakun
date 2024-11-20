@@ -1,0 +1,11 @@
+---
+source: compiler-core/src/language_server/tests/action.rs
+expression: "record Boxed_value { Box(Int) }"
+---
+----- BEFORE ACTION
+record Boxed_value { Box(Int) }
+       ▔▔▔▔▔↑                  
+
+
+----- AFTER ACTION
+record BoxedValue { Box(Int) }

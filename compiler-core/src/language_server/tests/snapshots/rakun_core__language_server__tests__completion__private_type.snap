@@ -1,0 +1,38 @@
+---
+source: compiler-core/src/language_server/tests/completion.rs
+expression: "\nrecord Wibble {\n  Wobble\n}\n"
+---
+|
+record Wibble {
+  Wobble
+}
+
+
+----- Completion content -----
+Error
+  kind:   Constructor
+  detail: rakun
+  sort:   4_Error
+False
+  kind:   EnumMember
+  detail: rakun
+  sort:   4_False
+Nil
+  kind:   EnumMember
+  detail: rakun
+  sort:   4_Nil
+Ok
+  kind:   Constructor
+  detail: rakun
+  sort:   4_Ok
+True
+  kind:   EnumMember
+  detail: rakun
+  sort:   4_True
+Wobble
+  kind:   EnumMember
+  detail: Wibble
+  sort:   2_Wobble
+  desc:   app
+  edits:
+    [1:0-1:0]: "Wobble"

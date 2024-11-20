@@ -1,11 +1,11 @@
 use crate::assert_erl;
 
-// https://github.com/gleam-lang/gleam/issues/2163
+
 #[test]
 fn record_constructor() {
     assert_erl!(
         r#"
-pub type X {
+pub record X {
   X(Int)
 }
 
@@ -17,12 +17,12 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2163
+
 #[test]
 fn record_constructor_in_tuple() {
     assert_erl!(
         r#"
-pub type X {
+pub record X {
   X(Int)
 }
 
@@ -34,7 +34,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2179
+
 #[test]
 fn const_type_variable() {
     assert_erl!(
@@ -86,7 +86,7 @@ fn pub_const_equal_to_record_with_private_function_field() {
             a
           }
 
-          pub type Mapper(b) {
+          pub record Mapper<b> {
             Mapper(fn(b) -> b)
           }
 
@@ -103,12 +103,12 @@ fn pub_const_equal_to_record_with_nested_private_function_field() {
             a
           }
 
-          pub type Mapper(b) {
+          pub record Mapper<b> {
             Mapper(fn(b) -> b)
           }
 
-          pub type Funcs(b) {
-            Funcs(mapper: Mapper(b))
+          pub record Funcs<b> {
+            Funcs(mapper: Mapper<b>)
           }
 
           pub const id_mapper = Funcs(Mapper(identity))
@@ -137,7 +137,7 @@ fn use_unqualified_pub_const_equal_to_record_with_private_function_field() {
                 a
               }
 
-              pub type Mapper(b) {
+              pub record Mapper<b> {
                 Mapper(fn(b) -> b)
               }
 
@@ -154,7 +154,7 @@ fn use_qualified_pub_const_equal_to_record_with_private_function_field() {
                 a
               }
 
-              pub type Mapper(b) {
+              pub record Mapper<b> {
                 Mapper(fn(b) -> b)
               }
 
@@ -171,7 +171,7 @@ fn use_private_in_internal() {
                 a
               }
 
-              pub type Mapper(b) {
+              pub record Mapper<b> {
                 Mapper(fn(b) -> b)
               }
 

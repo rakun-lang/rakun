@@ -1,5 +1,5 @@
 use camino::{Utf8Path, Utf8PathBuf};
-use gleam_core::{
+use rakun_core::{
     io::{
         memory::InMemoryFileSystem, BeamCompiler, CommandExecutor, FileSystemReader,
         FileSystemWriter, ReadDir, Stdio, WrappedReader,
@@ -90,14 +90,14 @@ impl FileSystemWriter for WasmFileSystem {
 }
 
 impl FileSystemReader for WasmFileSystem {
-    fn gleam_source_files(&self, dir: &Utf8Path) -> Vec<Utf8PathBuf> {
-        tracing::trace!("gleam_source_files   {:?}", dir);
-        self.imfs.gleam_source_files(dir)
+    fn rakun_source_files(&self, dir: &Utf8Path) -> Vec<Utf8PathBuf> {
+        tracing::trace!("rakun_source_files   {:?}", dir);
+        self.imfs.rakun_source_files(dir)
     }
 
-    fn gleam_cache_files(&self, dir: &Utf8Path) -> Vec<Utf8PathBuf> {
-        tracing::trace!("gleam_metadata_files {:?}", dir);
-        self.imfs.gleam_cache_files(dir)
+    fn rakun_cache_files(&self, dir: &Utf8Path) -> Vec<Utf8PathBuf> {
+        tracing::trace!("rakun_metadata_files {:?}", dir);
+        self.imfs.rakun_cache_files(dir)
     }
 
     fn read(&self, path: &Utf8Path) -> Result<String, Error> {

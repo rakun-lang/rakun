@@ -47,7 +47,7 @@ impl LineNumbers {
 
 #[test]
 fn byte_index() {
-    let src = &r#"import gleam/io
+    let src = &r#"import rakun/io
 
 pub fn main() {
   io.println("Hello, world!")

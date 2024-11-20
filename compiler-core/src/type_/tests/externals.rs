@@ -3,7 +3,7 @@ use crate::{
     assert_module_infer, assert_with_module_error,
 };
 
-// https://github.com/gleam-lang/gleam/issues/2324
+
 #[test]
 fn javascript_only_function_used_by_erlang_module() {
     let module = r#"@external(javascript, "one", "two")

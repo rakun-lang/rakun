@@ -2,7 +2,7 @@
 mod generated_tests;
 
 use camino::Utf8PathBuf;
-use gleam_core::{
+use rakun_core::{
     analyse::TargetSupport,
     build::{Codegen, Compile, Mode, NullTelemetry, Options, ProjectCompiler, Telemetry},
     config::PackageConfig,
@@ -17,7 +17,7 @@ pub fn prepare(path: &str, mode: Mode) -> String {
     let filesystem = test_helpers_rs::to_in_memory_filesystem(&root);
     let initial_files = filesystem.paths();
 
-    let toml = std::fs::read_to_string(root.join("gleam.toml")).unwrap();
+    let toml = std::fs::read_to_string(root.join("rakun.toml")).unwrap();
     let config: PackageConfig = toml::from_str(&toml).unwrap();
     let warnings = VectorWarningEmitterIO::default();
     let telemetry: &'static dyn Telemetry = &NullTelemetry;

@@ -1,15 +1,14 @@
 ---
 source: test-package-compiler/src/generated_tests.rs
-assertion_line: 151
 expression: "./cases/import_shadowed_name_warning"
 ---
-//// /out/lib/the_package/_gleam_artefacts/one.cache
+//// /out/lib/the_package/_rakun_artefacts/one.cache
 <.cache binary>
 
-//// /out/lib/the_package/_gleam_artefacts/one.cache_meta
-<57 byte binary>
+//// /out/lib/the_package/_rakun_artefacts/one.cache_meta
+<53 byte binary>
 
-//// /out/lib/the_package/_gleam_artefacts/one.erl
+//// /out/lib/the_package/_rakun_artefacts/one.erl
 -module(one).
 -compile([no_auto_import, nowarn_unused_vars, nowarn_unused_function, nowarn_nomatch]).
 
@@ -20,13 +19,13 @@ expression: "./cases/import_shadowed_name_warning"
 
 
 
-//// /out/lib/the_package/_gleam_artefacts/two.cache
+//// /out/lib/the_package/_rakun_artefacts/two.cache
 <.cache binary>
 
-//// /out/lib/the_package/_gleam_artefacts/two.cache_meta
+//// /out/lib/the_package/_rakun_artefacts/two.cache_meta
 <120 byte binary>
 
-//// /out/lib/the_package/_gleam_artefacts/two.erl
+//// /out/lib/the_package/_rakun_artefacts/two.erl
 -module(two).
 -compile([no_auto_import, nowarn_unused_vars, nowarn_unused_function, nowarn_nomatch]).
 
@@ -35,7 +34,7 @@ expression: "./cases/import_shadowed_name_warning"
 
 -type shadowing() :: port.
 
--file("src/two.gleam", 14).
+-file("src/two.rakun", 14).
 -spec use_type(one:port_()) -> nil.
 use_type(Port) ->
     wibble:wobble(Port).
@@ -54,7 +53,7 @@ use_type(Port) ->
 
 //// Warning
 warning: Unused private constructor
-  ┌─ src/two.gleam:9:3
+  ┌─ src/two.rakun:9:3
   │
 9 │   Port
   │   ^ This private constructor is never used
@@ -65,9 +64,9 @@ Hint: You can safely remove it.
 
 //// Warning
 warning: Unused private type
-  ┌─ src/two.gleam:7:1
+  ┌─ src/two.rakun:7:1
   │
-7 │ type Shadowing {
+7 │ record Shadowing {
   │ ^ This private type is never used
 
 Hint: You can safely remove it.

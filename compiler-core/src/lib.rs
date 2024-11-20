@@ -97,8 +97,8 @@ pub(crate) mod graph;
 pub use error::{Error, Result};
 pub use warning::Warning;
 
-const GLEAM_CORE_PACKAGE_NAME: &str = "";
-const STDLIB_PACKAGE_NAME: &str = "gleam_stdlib";
+const RAKUN_CORE_PACKAGE_NAME: &str = "";
+const STDLIB_PACKAGE_NAME: &str = "rakun_stdlib";
 
 mod schema_capnp {
     #![allow(dead_code, unused_qualifications)]

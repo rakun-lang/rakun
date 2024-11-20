@@ -101,9 +101,9 @@ where
         let _lock_guard = self.locker.lock_for_build();
 
         // Verify that the build directory was created using the same version of
-        // Gleam as we are running. If it is not then we discard the build
+        // Rakun as we are running. If it is not then we discard the build
         // directory as the cache files may be in a different format.
-        if let Err(e) = self.project_compiler.check_gleam_version() {
+        if let Err(e) = self.project_compiler.check_rakun_version() {
             return e.into();
         }
 
@@ -131,7 +131,7 @@ where
             // It we already have the source for an importable module it means
             // that we already have all the information we are adding here, so
             // we can skip past to to avoid doing extra work for no gain.
-            if self.sources.contains_key(name) || name == "gleam" {
+            if self.sources.contains_key(name) || name == "rakun" {
                 continue;
             }
             // Create the source information
@@ -204,7 +204,7 @@ pub struct ModuleSourceInformation {
     /// The path to the source file from within the project root
     pub path: String,
 
-    /// Useful for converting from Gleam's byte index offsets to the LSP line
+    /// Useful for converting from Rakun's byte index offsets to the LSP line
     /// and column number positions.
     pub line_numbers: LineNumbers,
 }

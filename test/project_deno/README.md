@@ -1,6 +1,6 @@
 # Project
 
-A test Gleam project using the Deno runtime.
+A test Rakun project using the Deno runtime.
 
 It covers these features:
 
@@ -10,6 +10,6 @@ It covers these features:
 ## Quick start
 
 ```sh
-gleam run
-gleam test
+rakun run
+rakun test
 ```

@@ -38,17 +38,17 @@ pub fn implementations(src: &str) -> Vec<(EcoString, Implementations)> {
 }
 
 #[test]
-pub fn pure_gleam_function() {
+pub fn pure_rakun_function() {
     assert_targets!(
         r#"
-pub fn pure_gleam_1() { 1 + 1 }
-pub fn pure_gleam_2() { pure_gleam_1() * 2 }
+pub fn pure_rakun_1() { 1 + 1 }
+pub fn pure_rakun_2() { pure_rakun_1() * 2 }
 "#,
         [
             (
-                "pure_gleam_1",
+                "pure_rakun_1",
                 Implementations {
-                    gleam: true,
+                    rakun: true,
                     uses_erlang_externals: false,
                     uses_javascript_externals: false,
                     can_run_on_erlang: true,
@@ -56,9 +56,9 @@ pub fn pure_gleam_2() { pure_gleam_1() * 2 }
                 }
             ),
             (
-                "pure_gleam_2",
+                "pure_rakun_2",
                 Implementations {
-                    gleam: true,
+                    rakun: true,
                     uses_erlang_externals: false,
                     uses_javascript_externals: false,
                     can_run_on_erlang: true,
@@ -82,7 +82,7 @@ pub fn erlang_only_2() { erlang_only_1() * 2 }
             (
                 "erlang_only_1",
                 Implementations {
-                    gleam: false,
+                    rakun: false,
                     uses_erlang_externals: true,
                     uses_javascript_externals: false,
                     can_run_on_erlang: true,
@@ -92,7 +92,7 @@ pub fn erlang_only_2() { erlang_only_1() * 2 }
             (
                 "erlang_only_2",
                 Implementations {
-                    gleam: false,
+                    rakun: false,
                     uses_erlang_externals: true,
                     uses_javascript_externals: false,
                     can_run_on_erlang: true,
@@ -117,7 +117,7 @@ pub fn all_externals_2() { all_externals_1() * 2 }
             (
                 "all_externals_1",
                 Implementations {
-                    gleam: false,
+                    rakun: false,
                     uses_erlang_externals: true,
                     uses_javascript_externals: true,
                     can_run_on_erlang: true,
@@ -127,7 +127,7 @@ pub fn all_externals_2() { all_externals_1() * 2 }
             (
                 "all_externals_2",
                 Implementations {
-                    gleam: false,
+                    rakun: false,
                     uses_erlang_externals: true,
                     uses_javascript_externals: true,
                     can_run_on_erlang: true,
@@ -139,7 +139,7 @@ pub fn all_externals_2() { all_externals_1() * 2 }
 }
 
 #[test]
-pub fn externals_with_pure_gleam_body() {
+pub fn externals_with_pure_rakun_body() {
     assert_targets!(
         r#"
 @external(javascript, "wibble", "wobble")
@@ -148,7 +148,7 @@ pub fn javascript_external_and_pure_body() -> Int { 1 + 1 }
 @external(erlang, "wibble", "wobble")
 pub fn erlang_external_and_pure_body() -> Int { 1 + 1 }
 
-pub fn pure_gleam() {
+pub fn pure_rakun() {
   javascript_external_and_pure_body() + erlang_external_and_pure_body()
 }
 "#,
@@ -156,7 +156,7 @@ pub fn pure_gleam() {
             (
                 "erlang_external_and_pure_body",
                 Implementations {
-                    gleam: true,
+                    rakun: true,
                     uses_erlang_externals: true,
                     uses_javascript_externals: false,
                     can_run_on_erlang: true,
@@ -166,7 +166,7 @@ pub fn pure_gleam() {
             (
                 "javascript_external_and_pure_body",
                 Implementations {
-                    gleam: true,
+                    rakun: true,
                     uses_erlang_externals: false,
                     uses_javascript_externals: true,
                     can_run_on_erlang: true,
@@ -174,9 +174,9 @@ pub fn pure_gleam() {
                 }
             ),
             (
-                "pure_gleam",
+                "pure_rakun",
                 Implementations {
-                    gleam: true,
+                    rakun: true,
                     uses_erlang_externals: true,
                     uses_javascript_externals: true,
                     can_run_on_erlang: true,
@@ -203,7 +203,7 @@ pub fn all_externals() -> Int { erlang_external_and_javascript_body() }
             (
                 "all_externals",
                 Implementations {
-                    gleam: false,
+                    rakun: false,
                     uses_erlang_externals: true,
                     uses_javascript_externals: true,
                     can_run_on_erlang: true,
@@ -213,7 +213,7 @@ pub fn all_externals() -> Int { erlang_external_and_javascript_body() }
             (
                 "erlang_external_and_javascript_body",
                 Implementations {
-                    gleam: false,
+                    rakun: false,
                     uses_erlang_externals: true,
                     uses_javascript_externals: true,
                     can_run_on_erlang: true,
@@ -223,7 +223,7 @@ pub fn all_externals() -> Int { erlang_external_and_javascript_body() }
             (
                 "javascript_only",
                 Implementations {
-                    gleam: false,
+                    rakun: false,
                     uses_erlang_externals: false,
                     uses_javascript_externals: true,
                     can_run_on_erlang: false,
@@ -250,7 +250,7 @@ pub fn all_externals() -> Int { javascript_external_and_erlang_body() }
             (
                 "all_externals",
                 Implementations {
-                    gleam: false,
+                    rakun: false,
                     uses_erlang_externals: true,
                     uses_javascript_externals: true,
                     can_run_on_erlang: true,
@@ -260,7 +260,7 @@ pub fn all_externals() -> Int { javascript_external_and_erlang_body() }
             (
                 "erlang_only",
                 Implementations {
-                    gleam: false,
+                    rakun: false,
                     uses_erlang_externals: true,
                     uses_javascript_externals: false,
                     can_run_on_erlang: true,
@@ -270,7 +270,7 @@ pub fn all_externals() -> Int { javascript_external_and_erlang_body() }
             (
                 "javascript_external_and_erlang_body",
                 Implementations {
-                    gleam: false,
+                    rakun: false,
                     uses_erlang_externals: true,
                     uses_javascript_externals: true,
                     can_run_on_erlang: true,

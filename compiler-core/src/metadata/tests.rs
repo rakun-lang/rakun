@@ -51,7 +51,7 @@ fn constant_module(constant: TypedConstant) -> ModuleInterface {
                     location: SrcSpan::default(),
                     module: "one/two".into(),
                     implementations: Implementations {
-                        gleam: true,
+                        rakun: true,
                         uses_erlang_externals: false,
                         uses_javascript_externals: false,
                         can_run_on_erlang: true,
@@ -462,7 +462,7 @@ fn module_fn_value() {
                     external_erlang: None,
                     external_javascript: None,
                     implementations: Implementations {
-                        gleam: true,
+                        rakun: true,
                         uses_erlang_externals: false,
                         uses_javascript_externals: false,
                         can_run_on_erlang: true,
@@ -511,7 +511,7 @@ fn deprecated_module_fn_value() {
                     external_erlang: None,
                     external_javascript: None,
                     implementations: Implementations {
-                        gleam: true,
+                        rakun: true,
                         uses_erlang_externals: false,
                         uses_javascript_externals: false,
                         can_run_on_erlang: true,
@@ -558,7 +558,7 @@ fn private_module_fn_value() {
                     external_erlang: None,
                     external_javascript: None,
                     implementations: Implementations {
-                        gleam: true,
+                        rakun: true,
                         uses_erlang_externals: false,
                         uses_javascript_externals: false,
                         can_run_on_erlang: true,
@@ -576,7 +576,6 @@ fn private_module_fn_value() {
     assert_eq!(roundtrip(&module), module);
 }
 
-// https://github.com/gleam-lang/gleam/commit/c8f3bd0ddbf61c27ea35f37297058ecca7515f6c
 #[test]
 fn module_fn_value_regression() {
     let module = ModuleInterface {
@@ -607,7 +606,7 @@ fn module_fn_value_regression() {
                     external_erlang: None,
                     external_javascript: None,
                     implementations: Implementations {
-                        gleam: true,
+                        rakun: true,
                         uses_erlang_externals: false,
                         uses_javascript_externals: false,
                         can_run_on_erlang: true,
@@ -655,7 +654,7 @@ fn module_fn_value_with_field_map() {
                     arity: 5,
                     location: SrcSpan { start: 2, end: 11 },
                     implementations: Implementations {
-                        gleam: true,
+                        rakun: true,
                         uses_erlang_externals: false,
                         uses_javascript_externals: false,
                         can_run_on_erlang: true,
@@ -980,7 +979,7 @@ fn constant_var() {
                 location: SrcSpan::default(),
                 module: "one/two".into(),
                 implementations: Implementations {
-                    gleam: true,
+                    rakun: true,
                     uses_erlang_externals: false,
                     uses_javascript_externals: false,
                     can_run_on_erlang: true,
@@ -1012,7 +1011,7 @@ fn constant_var() {
                         location: SrcSpan::default(),
                         module: "one/two".into(),
                         implementations: Implementations {
-                            gleam: true,
+                            rakun: true,
                             uses_erlang_externals: false,
                             uses_javascript_externals: false,
                             can_run_on_erlang: true,
@@ -1033,7 +1032,7 @@ fn constant_var() {
                         location: SrcSpan::default(),
                         module: "one/two".into(),
                         implementations: Implementations {
-                            gleam: true,
+                            rakun: true,
                             uses_erlang_externals: false,
                             uses_javascript_externals: false,
                             can_run_on_erlang: true,
@@ -1273,7 +1272,7 @@ fn module_fn_value_with_external_implementations() {
                     external_erlang: Some(("wibble".into(), "wobble".into())),
                     external_javascript: Some(("wobble".into(), "wibble".into())),
                     implementations: Implementations {
-                        gleam: false,
+                        rakun: false,
                         uses_erlang_externals: true,
                         uses_javascript_externals: true,
                         can_run_on_erlang: false,
@@ -1323,7 +1322,7 @@ fn internal_module_fn() {
                     external_erlang: Some(("wibble".into(), "wobble".into())),
                     external_javascript: Some(("wobble".into(), "wibble".into())),
                     implementations: Implementations {
-                        gleam: false,
+                        rakun: false,
                         uses_erlang_externals: true,
                         uses_javascript_externals: true,
                         can_run_on_erlang: true,
@@ -1376,7 +1375,7 @@ fn internal_annotated_module_fn() {
                     external_erlang: Some(("wibble".into(), "wobble".into())),
                     external_javascript: Some(("wobble".into(), "wibble".into())),
                     implementations: Implementations {
-                        gleam: false,
+                        rakun: false,
                         uses_erlang_externals: true,
                         uses_javascript_externals: true,
                         can_run_on_erlang: true,
@@ -1394,7 +1393,6 @@ fn internal_annotated_module_fn() {
     assert_eq!(roundtrip(&module), module);
 }
 
-// https://github.com/gleam-lang/gleam/issues/2599
 #[test]
 fn type_variable_ids_in_constructors_are_shared() {
     let module = ModuleInterface {

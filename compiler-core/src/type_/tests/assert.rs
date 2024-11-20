@@ -32,12 +32,12 @@ fn list_spread_discard_comma_after() {
 
 #[test]
 fn in_fn() {
-    assert_infer!("fn(x) { let assert [a] = x a }", "fn(List(a)) -> a");
+    assert_infer!("fn(x) { let assert [a] = x a }", "fn(List<a>) -> a");
 }
 
 #[test]
 fn in_fn_list_int() {
-    assert_infer!("fn(x) { let assert [a] = x a + 1 }", "fn(List(Int)) -> Int");
+    assert_infer!("fn(x) { let assert [a] = x a + 1 }", "fn(List<Int>) -> Int");
 }
 
 #[test]
@@ -67,7 +67,7 @@ fn annotation() {
 
 #[test]
 fn new_syntax() {
-    assert_infer!("let assert Ok(x) = Error(1)", "Result(a, Int)");
+    assert_infer!("let assert Ok(x) = Error(1)", "Result<a, Int>");
 }
 
 #[test]

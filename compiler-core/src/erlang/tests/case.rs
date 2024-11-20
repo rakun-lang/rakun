@@ -1,6 +1,6 @@
 use crate::assert_erl;
 
-// https://github.com/gleam-lang/gleam/issues/1675
+
 #[test]
 fn alternative_pattern_variable_rewriting() {
     assert_erl!(
@@ -18,7 +18,7 @@ pub fn myfun(mt) {
     )
 }
 
-// https://github.com/gleam-lang/gleam/issues/2349
+
 #[test]
 fn positive_zero_pattern() {
     assert_erl!(
@@ -33,7 +33,7 @@ pub fn main(x) {
     )
 }
 
-// https://github.com/gleam-lang/gleam/issues/2349
+
 #[test]
 fn negative_zero_pattern() {
     assert_erl!(
@@ -74,7 +74,7 @@ fn not_two() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2657
+
 #[test]
 fn spread_empty_list() {
     assert_erl!(
@@ -88,7 +88,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2657
+
 #[test]
 fn spread_empty_list_assigning() {
     assert_erl!(

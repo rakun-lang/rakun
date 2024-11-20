@@ -24,6 +24,11 @@ use vec1::Vec1;
 use crate::type_::Deprecation;
 use camino::Utf8Path;
 
+#[derive(Clone, Debug, Copy, PartialEq, Eq)]
+pub enum ArgumentDelimiter {
+    Paren,
+    AngleBracket,
+}
 const INDENT: isize = 2;
 
 pub fn pretty(writer: &mut impl Utf8Writer, src: &EcoString, path: &Utf8Path) -> Result<()> {
@@ -246,10 +251,10 @@ impl<'comments> Formatter<'comments> {
     /// Once we find a comment we know we're done with the current import
     /// group and a new one has started.
     ///
-    /// ```gleam
+    /// ```rakun
     /// // This is an import group.
-    /// import gleam/int
-    /// import gleam/string
+    /// import rakun/int
+    /// import rakun/string
     ///
     /// // This marks the beginning of a new import group that can't
     /// // be mushed together with the previous one!
@@ -386,8 +391,8 @@ impl<'comments> Formatter<'comments> {
                 match (default_module_access_name, as_name) {
                     // If the `as name` is the same as the module name that would be
                     // used anyways we won't render it. For example:
-                    // ```gleam
-                    // import gleam/int as int
+                    // ```rakun
+                    // import rakun/int as int
                     //                  ^^^^^^ this is redundant and removed
                     // ```
                     (Some(module_name), Some((AssignName::Variable(name), _)))
@@ -478,7 +483,7 @@ impl<'comments> Formatter<'comments> {
             } => {
                 let args = args.iter().map(|a| self.constant_call_arg(a)).collect_vec();
                 name.to_doc()
-                    .append(self.wrap_args(args, location.end))
+                    .append(self.wrap_args(args, location.end, ArgumentDelimiter::Paren))
                     .group()
             }
 
@@ -493,7 +498,7 @@ impl<'comments> Formatter<'comments> {
                 m.to_doc()
                     .append(".")
                     .append(name.as_str())
-                    .append(self.wrap_args(args, location.end))
+                    .append(self.wrap_args(args, location.end, ArgumentDelimiter::Paren))
                     .group()
             }
 
@@ -509,7 +514,7 @@ impl<'comments> Formatter<'comments> {
 
             Constant::StringConcatenation { left, right, .. } => self
                 .const_expr(left)
-                .append(break_("", " ").append("<>".to_doc()))
+                .append(break_("", " ").append("++".to_doc()))
                 .nest(INDENT)
                 .append(" ")
                 .append(self.const_expr(right)),
@@ -676,11 +681,10 @@ impl<'comments> Formatter<'comments> {
             .as_ref()
             .map(|(qualifier, _)| qualifier.to_doc().append(".").append(name))
             .unwrap_or_else(|| name.to_doc());
-
         if args.is_empty() {
             head
         } else {
-            head.append(self.type_arguments(args, location))
+            head.append(self.type_arguments(args, location, ArgumentDelimiter::AngleBracket))
         }
     }
 
@@ -701,23 +705,28 @@ impl<'comments> Formatter<'comments> {
                 location,
             }) => "fn"
                 .to_doc()
-                .append(self.type_arguments(args, location))
+                .append(self.type_arguments(args, location, ArgumentDelimiter::Paren))
                 .group()
                 .append(" ->")
                 .append(break_("", " ").append(self.type_ast(retrn)).nest(INDENT)),
 
             TypeAst::Var(TypeAstVar { name, .. }) => name.to_doc(),
 
-            TypeAst::Tuple(TypeAstTuple { elems, location }) => {
-                "#".to_doc().append(self.type_arguments(elems, location))
-            }
+            TypeAst::Tuple(TypeAstTuple { elems, location }) => "#"
+                .to_doc()
+                .append(self.type_arguments(elems, location, ArgumentDelimiter::Paren)),
         }
         .group()
     }
 
-    fn type_arguments<'a>(&mut self, args: &'a [TypeAst], location: &SrcSpan) -> Document<'a> {
+    fn type_arguments<'a>(
+        &mut self,
+        args: &'a [TypeAst],
+        location: &SrcSpan,
+        delimiter: ArgumentDelimiter,
+    ) -> Document<'a> {
         let args = args.iter().map(|t| self.type_ast(t)).collect_vec();
-        self.wrap_args(args, location.end)
+        self.wrap_args(args, location.end, delimiter)
     }
 
     pub fn type_alias<'a>(
@@ -739,7 +748,10 @@ impl<'comments> Formatter<'comments> {
             head
         } else {
             let args = args.iter().map(|(_, e)| e.to_doc()).collect_vec();
-            head.append(self.wrap_args(args, location.end).group())
+            head.append(
+                self.wrap_args(args, location.end, ArgumentDelimiter::AngleBracket)
+                    .group(),
+            )
         };
 
         head.append(" =")
@@ -779,7 +791,7 @@ impl<'comments> Formatter<'comments> {
                     .expect("Function in a statement must be named")
                     .1,
             )
-            .append(self.wrap_args(args, function.location.end));
+            .append(self.wrap_args(args, function.location.end, ArgumentDelimiter::Paren));
 
         // Add return annotation
         let signature = match &function.return_annotation {
@@ -821,14 +833,14 @@ impl<'comments> Formatter<'comments> {
     ) -> Document<'a> {
         let args_docs = args.iter().map(|e| self.fn_arg(e)).collect_vec();
         let args = self
-            .wrap_args(args_docs, *end_of_head_byte_index)
+            .wrap_args(args_docs, *end_of_head_byte_index, ArgumentDelimiter::Paren)
             .group()
             .next_break_fits(NextBreakFitsMode::Disabled);
         //   ^^^ We add this so that when an expression function is passed as
         //       the last argument of a function and it goes over the line
         //       limit with just its arguments we don't get some strange
         //       splitting.
-        //       See https://github.com/gleam-lang/gleam/issues/2571
+        //       See https://github.com/rakun-lang/rakun/issues/2571
         //
         // There's many ways we could be smarter than this. For example:
         //  - still split the arguments like it did in the example shown in the
@@ -987,6 +999,14 @@ impl<'comments> Formatter<'comments> {
                 ..
             } => self.call(fun, args, location),
 
+            UntypedExpr::Html {
+                tag,
+                children,
+                attributes,
+                ..
+            } => self.html(tag.as_deref(), children, attributes),
+
+            UntypedExpr::HtmlText { value, .. } => self.html_text(value),
             UntypedExpr::BinOp {
                 name, left, right, ..
             } => self.bin_op(name, left, right, false),
@@ -1154,7 +1174,7 @@ impl<'comments> Formatter<'comments> {
             name
         } else if spread.is_some() {
             let args = args.iter().map(|a| self.pattern_call_arg(a)).collect_vec();
-            name.append(self.wrap_args_with_spread(args, location.end))
+            name.append(self.wrap_args_with_spread(args, location.end, ArgumentDelimiter::Paren))
         } else {
             match args {
                 [arg] if is_breakable(&arg.value) => name
@@ -1165,7 +1185,8 @@ impl<'comments> Formatter<'comments> {
 
                 _ => {
                     let args = args.iter().map(|a| self.pattern_call_arg(a)).collect_vec();
-                    name.append(self.wrap_args(args, location.end)).group()
+                    name.append(self.wrap_args(args, location.end, ArgumentDelimiter::Paren))
+                        .group()
                 }
             }
         }
@@ -1195,6 +1216,8 @@ impl<'comments> Formatter<'comments> {
             | UntypedExpr::FieldAccess { .. }
             | UntypedExpr::Tuple { .. }
             | UntypedExpr::TupleIndex { .. }
+            | UntypedExpr::Html { .. }
+            | UntypedExpr::HtmlText { .. }
             | UntypedExpr::Todo { .. }
             | UntypedExpr::Panic { .. }
             | UntypedExpr::BitArray { .. }
@@ -1348,7 +1371,7 @@ impl<'comments> Formatter<'comments> {
             .collect_vec();
         let all_arg_docs = once(spread_doc).chain(arg_docs);
         constructor_doc
-            .append(self.wrap_args(all_arg_docs, location.end))
+            .append(self.wrap_args(all_arg_docs, location.end, ArgumentDelimiter::Paren))
             .group()
     }
 
@@ -1512,13 +1535,17 @@ impl<'comments> Formatter<'comments> {
                 .skip(1)
                 .map(|a| self.call_arg(a, arity))
                 .collect_vec();
-            self.expr(fun)
-                .append(self.wrap_args(args, fun.location().end).group())
+            self.expr(fun).append(
+                self.wrap_args(args, fun.location().end, ArgumentDelimiter::Paren)
+                    .group(),
+            )
         } else {
             // x |> fun(1, _, 3)
             let args = args.iter().map(|a| self.call_arg(a, arity)).collect_vec();
-            self.expr(fun)
-                .append(self.wrap_args(args, fun.location().end).group())
+            self.expr(fun).append(
+                self.wrap_args(args, fun.location().end, ArgumentDelimiter::Paren)
+                    .group(),
+            )
         }
     }
 
@@ -1549,8 +1576,10 @@ impl<'comments> Formatter<'comments> {
 
                     _ => {
                         let args = args.iter().map(|a| self.call_arg(a, arity)).collect_vec();
-                        self.expr(fun)
-                            .append(self.wrap_args(args, location.end).group())
+                        self.expr(fun).append(
+                            self.wrap_args(args, location.end, ArgumentDelimiter::Paren)
+                                .group(),
+                        )
                     }
                 }
             }
@@ -1573,7 +1602,11 @@ impl<'comments> Formatter<'comments> {
                     .name
                     .as_str()
                     .to_doc()
-                    .append(self.wrap_args(vec![], constructor.location.end))
+                    .append(self.wrap_args(
+                        vec![],
+                        constructor.location.end,
+                        ArgumentDelimiter::Paren,
+                    ))
                     .group()
             } else {
                 constructor.name.as_str().to_doc()
@@ -1606,7 +1639,7 @@ impl<'comments> Formatter<'comments> {
                 .name
                 .as_str()
                 .to_doc()
-                .append(self.wrap_args(args, constructor.location.end))
+                .append(self.wrap_args(args, constructor.location.end, ArgumentDelimiter::Paren))
                 .group()
         };
 
@@ -1623,7 +1656,15 @@ impl<'comments> Formatter<'comments> {
 
         let doc = attributes
             .append(pub_(ct.publicity))
-            .append(if ct.opaque { "opaque type " } else { "type " })
+            .append(if ct.mode == CustomTypeMode::Record {
+                if ct.opaque {
+                    "opaque record "
+                } else {
+                    "record "
+                }
+            } else {
+                "type "
+            })
             .append(if ct.parameters.is_empty() {
                 ct.name.clone().to_doc()
             } else {
@@ -1631,7 +1672,7 @@ impl<'comments> Formatter<'comments> {
                 ct.name
                     .clone()
                     .to_doc()
-                    .append(self.wrap_args(args, ct.location.end))
+                    .append(self.wrap_args(args, ct.location.end, ArgumentDelimiter::AngleBracket))
                     .group()
             });
 
@@ -1672,12 +1713,16 @@ impl<'comments> Formatter<'comments> {
 
         attributes
             .append(pub_(publicity))
-            .append("opaque type ")
+            .append("opaque record ")
             .append(if args.is_empty() {
                 name.to_doc()
             } else {
                 let args = args.iter().map(|(_, e)| e.to_doc()).collect_vec();
-                name.to_doc().append(self.wrap_args(args, location.end))
+                name.to_doc().append(self.wrap_args(
+                    args,
+                    location.end,
+                    ArgumentDelimiter::AngleBracket,
+                ))
             })
     }
 
@@ -1720,7 +1765,7 @@ impl<'comments> Formatter<'comments> {
                     .group()
             })
             .collect_vec();
-        self.wrap_args(args, location.end)
+        self.wrap_args(args, location.end, ArgumentDelimiter::AngleBracket)
     }
 
     fn docs_fn_arg_name<'a>(&mut self, arg: &'a TypedArg) -> Document<'a> {
@@ -1728,7 +1773,7 @@ impl<'comments> Formatter<'comments> {
             ArgNames::Named { name, .. } => name.to_doc(),
             ArgNames::NamedLabelled { label, name, .. } => docvec![label, " ", name],
             // We remove the underscore from discarded function arguments since we don't want to
-            // expose this kind of detail: https://github.com/gleam-lang/gleam/issues/2561
+            // expose this kind of detail: https://github.com/rakun-lang/rakun/issues/2561
             ArgNames::Discard { name, .. } => name.strip_prefix('_').unwrap_or(name).to_doc(),
             ArgNames::LabelledDiscard { label, name, .. } => {
                 docvec![label, " ", name.strip_prefix('_').unwrap_or(name).to_doc()]
@@ -1871,7 +1916,7 @@ impl<'comments> Formatter<'comments> {
         // its own line to improve legibility.
         //
         // This looks like this:
-        // ```gleam
+        // ```rakun
         // case wibble, wobble {
         //   Wibble(_),  // pretend this goes over the line limit
         //     Wobble(_)
@@ -1940,7 +1985,7 @@ impl<'comments> Formatter<'comments> {
             .map(|(alternative_index, p)| {
                 // Here `p` is a single pattern that can be comprised of
                 // multiple subjects.
-                // ```gleam
+                // ```rakun
                 // case wibble, wobble {
                 //   True, False
                 // //^^^^^^^^^^^ This is a single pattern with multiple subjects
@@ -1955,7 +2000,7 @@ impl<'comments> Formatter<'comments> {
                     // The first ever pattern that appears in a case clause (that is
                     // the first subject of the first alternative) must not be nested
                     // further; otherwise, when broken, it would have 2 extra spaces
-                    // of indentation: https://github.com/gleam-lang/gleam/issues/2940.
+                    // of indentation: https://github.com/rakun-lang/rakun/issues/2940.
                     let is_first_subject = subject_index == 0;
                     let is_first_pattern_of_clause = is_first_subject && is_first_alternative;
                     let subject_doc = self.pattern(subject);
@@ -2123,8 +2168,9 @@ impl<'comments> Formatter<'comments> {
                 elems, location, ..
             } => {
                 let args = elems.iter().map(|e| self.pattern(e)).collect_vec();
+
                 "#".to_doc()
-                    .append(self.wrap_args(args, location.end))
+                    .append(self.wrap_args(args, location.end, ArgumentDelimiter::Paren))
                     .group()
             }
 
@@ -2151,8 +2197,8 @@ impl<'comments> Formatter<'comments> {
                     AssignName::Discard(name) => name.to_doc(),
                 };
                 match left_assign {
-                    Some((name, _)) => docvec![left, " as ", name, " <> ", right],
-                    None => docvec![left, " <> ", right],
+                    Some((name, _)) => docvec![left, " as ", name, " ++ ", right],
+                    None => docvec![left, " ++ ", right],
                 }
             }
 
@@ -2456,6 +2502,8 @@ impl<'comments> Formatter<'comments> {
             | UntypedExpr::Fn { .. }
             | UntypedExpr::List { .. }
             | UntypedExpr::Call { .. }
+            | UntypedExpr::Html { .. }
+            | UntypedExpr::HtmlText { .. }
             | UntypedExpr::PipeLine { .. }
             | UntypedExpr::Case { .. }
             | UntypedExpr::FieldAccess { .. }
@@ -2537,26 +2585,35 @@ impl<'comments> Formatter<'comments> {
         "(".to_doc().append(args_doc).append(closing_parens).group()
     }
 
-    pub fn wrap_args<'a, I>(&mut self, args: I, comments_limit: u32) -> Document<'a>
+    pub fn wrap_args<'a, I>(
+        &mut self,
+        args: I,
+        comments_limit: u32,
+        delimiter: ArgumentDelimiter,
+    ) -> Document<'a>
     where
         I: IntoIterator<Item = Document<'a>>,
     {
+        let (l, r, a) = match delimiter {
+            ArgumentDelimiter::AngleBracket => ("<", ">", ""),
+            ArgumentDelimiter::Paren => ("(", ")", "()"),
+        };
         let mut args = args.into_iter().peekable();
         if args.peek().is_none() {
             let comments = self.pop_comments(comments_limit);
             return match printed_comments(comments, false) {
-                Some(comments) => "("
+                Some(comments) => l
                     .to_doc()
                     .append(break_("", ""))
                     .append(comments)
                     .nest_if_broken(INDENT)
                     .force_break()
                     .append(break_("", ""))
-                    .append(")"),
-                None => "()".to_doc(),
+                    .append(r),
+                None => a.to_doc(),
             };
         }
-        let doc = break_("(", "(").append(join(args, break_(",", ", ")));
+        let doc = break_(l, l).append(join(args, break_(",", ", ")));
 
         // Include trailing comments if there are any
         let comments = self.pop_comments(comments_limit);
@@ -2567,21 +2624,23 @@ impl<'comments> Formatter<'comments> {
                 .nest_if_broken(INDENT)
                 .force_break()
                 .append(break_("", ""))
-                .append(")"),
-            None => doc
-                .nest_if_broken(INDENT)
-                .append(break_(",", ""))
-                .append(")"),
+                .append(r),
+            None => doc.nest_if_broken(INDENT).append(break_(",", "")).append(r),
         }
     }
 
-    pub fn wrap_args_with_spread<'a, I>(&mut self, args: I, comments_limit: u32) -> Document<'a>
+    pub fn wrap_args_with_spread<'a, I>(
+        &mut self,
+        args: I,
+        comments_limit: u32,
+        delimiter: ArgumentDelimiter,
+    ) -> Document<'a>
     where
         I: IntoIterator<Item = Document<'a>>,
     {
         let mut args = args.into_iter().peekable();
         if args.peek().is_none() {
-            return self.wrap_args(args, comments_limit);
+            return self.wrap_args(args, comments_limit, delimiter);
         }
         let doc = break_("(", "(")
             .append(join(args, break_(",", ", ")))
@@ -2609,7 +2668,7 @@ impl<'comments> Formatter<'comments> {
     /// doc comment that might be preceding those.
     /// For example:
     ///
-    /// ```gleam
+    /// ```rakun
     /// /// Doc
     /// // comment
     ///
@@ -2660,6 +2719,83 @@ impl<'comments> Formatter<'comments> {
         }
         let doc = concat(doc);
         Some(doc.force_break())
+    }
+
+    fn html_tag_and_attributes<'a>(
+        &mut self,
+        tag: Option<&'a UntypedExpr>,
+        attributes: &'a Vec<CallArg<UntypedExpr>>,
+        children: &'a Option<Vec<UntypedExpr>>,
+    ) -> Document<'a> {
+        let tag_doc = tag.map_or("".to_doc(), |t| self.expr(t));
+
+        let attributes_doc = if attributes.is_empty() {
+            "".to_doc()
+        } else {
+            " ".to_doc().append(join(
+                attributes.iter().map(|call_expr| {
+                    call_expr
+                        .label
+                        .clone()
+                        .unwrap()
+                        .to_doc()
+                        .append("=")
+                        .append(self.expr(&call_expr.value))
+                }),
+                break_("", " "),
+            ))
+        };
+
+        docvec![
+            "<".to_doc(),
+            tag_doc,
+            attributes_doc,
+            if let Some(..) = children { ">" } else { "/>" }
+        ]
+    }
+
+    fn html_content_and_close<'a>(
+        &mut self,
+        tag: Option<&'a UntypedExpr>,
+        children: &'a Option<Vec<UntypedExpr>>,
+    ) -> Document<'a> {
+        if let Some(children) = children {
+            let content_doc = join(
+                children
+                    .into_iter()
+                    .map(|child| "".to_doc().append(line()).append(self.expr(child))),
+                "".to_doc(),
+            )
+            .nest(INDENT);
+
+            let tag_doc = tag.map_or("".to_doc(), |t| self.expr(t));
+
+            docvec![
+                content_doc,
+                "".to_doc().append(line()).append("</"),
+                tag_doc,
+                ">",
+            ]
+        } else {
+            "".to_doc()
+        }
+    }
+
+    fn html<'a>(
+        &mut self,
+        tag: Option<&'a UntypedExpr>,
+        children: &'a Option<Vec<UntypedExpr>>,
+        attributes: &'a Vec<CallArg<UntypedExpr>>,
+    ) -> Document<'a> {
+        let tag_doc = self.html_tag_and_attributes(tag, attributes, children);
+
+        let children_doc = self.html_content_and_close(tag, children);
+
+        docvec![tag_doc, children_doc].group()
+    }
+
+    fn html_text<'a>(&self, value: &'a EcoString) -> Document<'a> {
+        return value.to_doc();
     }
 }
 
@@ -2725,7 +2861,7 @@ impl<'a> Documentable<'a> for &'a BinOp {
             BinOp::DivInt => "/",
             BinOp::DivFloat => "/.",
             BinOp::RemainderInt => "%",
-            BinOp::Concatenate => "<>",
+            BinOp::Concatenate => "++",
         }
         .to_doc()
     }

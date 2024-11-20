@@ -1,0 +1,21 @@
+---
+source: compiler-core/src/javascript/tests/consts.rs
+expression: "import rakun.{Ok as Y}\n\npub record X {\n  Ok\n}\n\npub const y = Y\n"
+---
+----- SOURCE CODE
+import rakun.{Ok as Y}
+
+pub record X {
+  Ok
+}
+
+pub const y = Y
+
+
+----- COMPILED JAVASCRIPT
+import * as $rakun from "../rakun.mjs";
+import { Ok as Y, CustomType as $CustomType } from "../rakun.mjs";
+
+export class Ok extends $CustomType {}
+
+export const y = (var0) => { return new Y(var0); };

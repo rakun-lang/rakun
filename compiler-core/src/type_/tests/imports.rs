@@ -1,6 +1,6 @@
 use crate::{assert_infer_with_module, assert_module_error, assert_with_module_error};
 
-// https://github.com/gleam-lang/gleam/issues/1760
+
 #[test]
 fn import_value_with_same_name_as_imported_module() {
     assert_infer_with_module!(
@@ -16,7 +16,7 @@ pub const a = other
 #[test]
 fn imported_constant_record() {
     assert_infer_with_module!(
-        ("one/two", "pub type Thing { Thing(Int) }"),
+        ("one/two", "pub record Thing { Thing(Int) }"),
         "
 import one/two
 
@@ -29,7 +29,7 @@ pub const a = two.Thing(1)
 #[test]
 fn using_private_constructo() {
     assert_with_module_error!(
-        ("one", "type Two { Two }"),
+        ("one", "record Two { Two }"),
         "import one
 
 pub fn main() {
@@ -41,7 +41,7 @@ pub fn main() {
 #[test]
 fn using_private_constructor_pattern() {
     assert_with_module_error!(
-        ("one", "type Two { Two }"),
+        ("one", "record Two { Two }"),
         "import one
 
 pub fn main(x) {
@@ -53,7 +53,7 @@ pub fn main(x) {
 #[test]
 fn using_opaque_constructo() {
     assert_with_module_error!(
-        ("one", "pub opaque type Two { Two }"),
+        ("one", "pub opaque record Two { Two }"),
         "import one
 
 pub fn main() {
@@ -125,7 +125,7 @@ pub fn main() {
 #[test]
 fn using_private_custom_type() {
     assert_with_module_error!(
-        ("one", "type X { Y }"),
+        ("one", "record X { Y }"),
         "import one
 
 pub fn main() {
@@ -137,7 +137,7 @@ pub fn main() {
 #[test]
 fn using_private_unqualified_custom_type() {
     assert_with_module_error!(
-        ("one", "type X { Y }"),
+        ("one", "record X { Y }"),
         "import one.{X}
 
 pub fn main() {
@@ -149,7 +149,7 @@ pub fn main() {
 #[test]
 fn unqualified_using_private_constructo() {
     assert_with_module_error!(
-        ("one", "type Two { Two }"),
+        ("one", "record Two { Two }"),
         "import one.{Two}
 
 pub fn main() {
@@ -161,7 +161,7 @@ pub fn main() {
 #[test]
 fn unqualified_using_private_constructor_pattern() {
     assert_with_module_error!(
-        ("one", "type Two { Two }"),
+        ("one", "record Two { Two }"),
         "import one.{Two}
 
 pub fn main(x) {
@@ -173,7 +173,7 @@ pub fn main(x) {
 #[test]
 fn unqualified_using_opaque_constructo() {
     assert_with_module_error!(
-        ("one", "pub opaque type Two { Two }"),
+        ("one", "pub opaque record Two { Two }"),
         "import one.{Two}
 
 pub fn main() {
@@ -246,11 +246,11 @@ pub type X = One
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2379
+
 #[test]
 fn deprecated_type_import_conflict() {
     assert_infer_with_module!(
-        ("one", "pub type X { X }"),
+        ("one", "pub record X { X }"),
         "import one.{X, type X}",
         vec![]
     );
@@ -259,7 +259,7 @@ fn deprecated_type_import_conflict() {
 #[test]
 fn aliased_unqualified_type_and_value() {
     assert_infer_with_module!(
-        ("one", "pub type X { X }"),
+        ("one", "pub record X { X }"),
         "import one.{X as XX, type X as XX}",
         vec![]
     );
@@ -268,8 +268,8 @@ fn aliased_unqualified_type_and_value() {
 #[test]
 fn deprecated_type_import_conflict_two_modules() {
     assert_infer_with_module!(
-        ("one", "pub type X { X }"),
-        ("two", "pub type X { X }"),
+        ("one", "pub record X { X }"),
+        ("two", "pub record X { X }"),
         "
         import one.{type X as Y}
         import two.{X}
@@ -281,7 +281,7 @@ fn deprecated_type_import_conflict_two_modules() {
 #[test]
 fn imported_constructor_instead_of_type() {
     assert_with_module_error!(
-        ("module", "pub type Wibble { Wibble }"),
+        ("module", "pub record Wibble { Wibble }"),
         "import module.{Wibble}
 
 pub fn main(x: Wibble) {
@@ -305,7 +305,7 @@ pub fn main() {
 #[test]
 fn unqualified_import_errors_do_not_block_later_unqualified() {
     assert_module_error!(
-        "import gleam.{Unknown, type Int as Integer}
+        "import rakun.{Unknown, type Int as Integer}
 
 pub fn main() -> Integer {
   Nil

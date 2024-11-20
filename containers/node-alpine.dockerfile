@@ -1,6 +1,6 @@
 FROM node:alpine
 
 ARG TARGETARCH
-COPY gleam-${TARGETARCH} /bin/gleam
+COPY rakun-${TARGETARCH} /bin/rakun
 
-CMD ["gleam"]
+CMD ["rakun"]

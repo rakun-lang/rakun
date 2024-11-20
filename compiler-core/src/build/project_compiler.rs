@@ -96,7 +96,7 @@ impl Built {
 
 #[derive(Debug)]
 pub struct ProjectCompiler<IO> {
-    // The gleam.toml config for the root package of the project
+    // The rakun.toml config for the root package of the project
     pub(crate) config: PackageConfig,
     pub(crate) packages: HashMap<String, ManifestPackage>,
     importable_modules: im::HashMap<EcoString, type_::ModuleInterface>,
@@ -175,9 +175,9 @@ where
         // LSP engine so state could be reused if we don't reset it.
         self.stale_modules.empty();
 
-        // Each package may specify a Gleam version that it supports, so we
+        // Each package may specify a Rakun version that it supports, so we
         // verify that this version is appropriate.
-        self.check_gleam_version()?;
+        self.check_rakun_version()?;
 
         // The JavaScript target requires a prelude module to be written.
         self.write_prelude()?;
@@ -207,19 +207,19 @@ where
 
     pub fn compile_root_package(&mut self) -> Outcome<Package, Error> {
         let config = self.config.clone();
-        self.compile_gleam_package(&config, true, self.paths.root().to_path_buf())
+        self.compile_rakun_package(&config, true, self.paths.root().to_path_buf())
             .map(|modules| Package { config, modules })
     }
 
     /// Checks that version file found in the build directory matches the
-    /// current version of gleam. If not, we will clear the build directory
-    /// before continuing. This will ensure that upgrading gleam will not leave
+    /// current version of rakun. If not, we will clear the build directory
+    /// before continuing. This will ensure that upgrading rakun will not leave
     /// one with confusing or hard to debug states.
-    pub fn check_gleam_version(&self) -> Result<(), Error> {
+    pub fn check_rakun_version(&self) -> Result<(), Error> {
         let build_path = self
             .paths
             .build_directory_for_target(self.mode(), self.target());
-        let version_path = self.paths.build_gleam_version(self.mode(), self.target());
+        let version_path = self.paths.build_rakun_version(self.mode(), self.target());
         if self.io.is_file(&version_path) {
             let version = self.io.read(&version_path)?;
             if version == COMPILER_VERSION {
@@ -228,7 +228,7 @@ where
         }
 
         // Either file is missing our the versions do not match. Time to rebuild
-        tracing::info!("removing_build_state_from_different_gleam_version");
+        tracing::info!("removing_build_state_from_different_rakun_version");
         self.io.delete_directory(&build_path)?;
 
         // Recreate build directory with new updated version file
@@ -288,7 +288,7 @@ where
         // longer need to have the package borrowed from self.packages.
         let package = self.packages.get(name).expect("Missing package").clone();
         let result = match usable_build_tools(&package)?.as_slice() {
-            &[BuildTool::Gleam] => self.compile_gleam_dep_package(&package),
+            &[BuildTool::Rakun] => self.compile_rakun_dep_package(&package),
             &[BuildTool::Rebar3] => self.compile_rebar3_dep_package(&package).map(|_| vec![]),
             &[BuildTool::Mix] => self.compile_mix_dep_package(&package).map(|_| vec![]),
             &[BuildTool::Mix, BuildTool::Rebar3] => self
@@ -487,7 +487,7 @@ where
         }
     }
 
-    fn compile_gleam_dep_package(
+    fn compile_rakun_dep_package(
         &mut self,
         package: &ManifestPackage,
     ) -> Result<Vec<Module>, Error> {
@@ -510,13 +510,13 @@ where
                 self.paths.build_packages_package(&package.name)
             }
         };
-        let config_path = package_root.join("gleam.toml");
+        let config_path = package_root.join("rakun.toml");
         let config = PackageConfig::read(config_path, &self.io)?;
-        self.compile_gleam_package(&config, false, package_root)
+        self.compile_rakun_package(&config, false, package_root)
             .into_result()
     }
 
-    fn compile_gleam_package(
+    fn compile_rakun_package(
         &mut self,
         config: &PackageConfig,
         is_root: bool,
@@ -573,7 +573,7 @@ where
         compiler.target_support = if is_root {
             // When compiling the root package it is context specific as to whether we need to
             // enforce that all functions have an implementation for the current target.
-            // Typically we do, but if we are using `gleam run -m $module` to run a module that
+            // Typically we do, but if we are using `rakun run -m $module` to run a module that
             // belongs to a dependency we don't need to enforce this as we don't want to fail
             // compilation. It's impossible for a dependecy module to call functions from the root
             // package, so it's OK if they could not be compiled.
@@ -634,7 +634,7 @@ fn convert_deps_tree_error(e: dep_tree::Error) -> Error {
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub(crate) enum BuildTool {
-    Gleam,
+    Rakun,
     Rebar3,
     Mix,
 }
@@ -646,7 +646,7 @@ pub(crate) fn usable_build_tools(package: &ManifestPackage) -> Result<Vec<BuildT
 
     for tool in &package.build_tools {
         match tool.as_str() {
-            "gleam" => return Ok(vec![BuildTool::Gleam]),
+            "rakun" => return Ok(vec![BuildTool::Rakun]),
             "rebar" => rebar3_present = true,
             "rebar3" => rebar3_present = true,
             "mix" => mix_present = true,

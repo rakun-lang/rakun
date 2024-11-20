@@ -121,7 +121,7 @@ struct Publicity {
 }
 
 struct Implementations {
-  gleam @0 :Bool;
+  rakun @0 :Bool;
   usesErlangExternals @1 :Bool;
   usesJavascriptExternals @2 :Bool;
   canRunOnErlang @3 :Bool;

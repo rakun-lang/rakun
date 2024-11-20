@@ -1,15 +1,14 @@
 ---
 source: test-package-compiler/src/generated_tests.rs
-assertion_line: 184
 expression: "./cases/imported_record_constructors"
 ---
-//// /out/lib/the_package/_gleam_artefacts/one@one.cache
+//// /out/lib/the_package/_rakun_artefacts/one@one.cache
 <.cache binary>
 
-//// /out/lib/the_package/_gleam_artefacts/one@one.cache_meta
+//// /out/lib/the_package/_rakun_artefacts/one@one.cache_meta
 <89 byte binary>
 
-//// /out/lib/the_package/_gleam_artefacts/one@one.erl
+//// /out/lib/the_package/_rakun_artefacts/one@one.erl
 -module(one@one).
 -compile([no_auto_import, nowarn_unused_vars, nowarn_unused_function, nowarn_nomatch]).
 
@@ -24,105 +23,105 @@ expression: "./cases/imported_record_constructors"
 
 
 
-//// /out/lib/the_package/_gleam_artefacts/two.cache
+//// /out/lib/the_package/_rakun_artefacts/two.cache
 <.cache binary>
 
-//// /out/lib/the_package/_gleam_artefacts/two.cache_meta
+//// /out/lib/the_package/_rakun_artefacts/two.cache_meta
 <491 byte binary>
 
-//// /out/lib/the_package/_gleam_artefacts/two.erl
+//// /out/lib/the_package/_rakun_artefacts/two.erl
 -module(two).
 -compile([no_auto_import, nowarn_unused_vars, nowarn_unused_function, nowarn_nomatch]).
 
 -export([accessors/1, destructure_qualified/1, destructure_qualified_aliased/1, destructure_unqualified/1, destructure_aliased/1, update_qualified/1, update_qualified_aliased/1, update_unqualified/1, update_aliased/1, qualified_fn_a/0, qualified_fn_b/0, qualified_aliased_fn_a/0, qualified_aliased_fn_b/0, unqualified_fn_a/0, unqualified_fn_b/0, aliased_fn_a/0, aliased_fn_b/0]).
 
--file("src/two.gleam", 58).
+-file("src/two.rakun", 58).
 -spec accessors(one@one:user()) -> {binary(), integer()}.
 accessors(User) ->
     Name = erlang:element(2, User),
     Score = erlang:element(3, User),
     {Name, Score}.
 
--file("src/two.gleam", 65).
+-file("src/two.rakun", 65).
 -spec destructure_qualified(one@one:user()) -> {binary(), integer()}.
 destructure_qualified(User) ->
     {user, Name, Score} = User,
     {Name, Score}.
 
--file("src/two.gleam", 70).
+-file("src/two.rakun", 70).
 -spec destructure_qualified_aliased(one@one:user()) -> {binary(), integer()}.
 destructure_qualified_aliased(User) ->
     {user, Name, Score} = User,
     {Name, Score}.
 
--file("src/two.gleam", 75).
+-file("src/two.rakun", 75).
 -spec destructure_unqualified(one@one:user()) -> {binary(), integer()}.
 destructure_unqualified(User) ->
     {user, Name, Score} = User,
     {Name, Score}.
 
--file("src/two.gleam", 80).
+-file("src/two.rakun", 80).
 -spec destructure_aliased(one@one:user()) -> {binary(), integer()}.
 destructure_aliased(User) ->
     {user, Name, Score} = User,
     {Name, Score}.
 
--file("src/two.gleam", 86).
+-file("src/two.rakun", 86).
 -spec update_qualified(one@one:user()) -> one@one:user().
 update_qualified(User) ->
     erlang:setelement(2, User, <<"wibble"/utf8>>).
 
--file("src/two.gleam", 90).
+-file("src/two.rakun", 90).
 -spec update_qualified_aliased(one@one:user()) -> one@one:user().
 update_qualified_aliased(User) ->
     erlang:setelement(2, User, <<"wibble"/utf8>>).
 
--file("src/two.gleam", 94).
+-file("src/two.rakun", 94).
 -spec update_unqualified(one@one:user()) -> one@one:user().
 update_unqualified(User) ->
     erlang:setelement(2, User, <<"wibble"/utf8>>).
 
--file("src/two.gleam", 98).
+-file("src/two.rakun", 98).
 -spec update_aliased(one@one:user()) -> one@one:user().
 update_aliased(User) ->
     erlang:setelement(2, User, <<"wibble"/utf8>>).
 
--file("src/two.gleam", 7).
+-file("src/two.rakun", 7).
 -spec qualified_fn_a() -> one@one:a().
 qualified_fn_a() ->
     a.
 
--file("src/two.gleam", 13).
+-file("src/two.rakun", 13).
 -spec qualified_fn_b() -> one@one:b().
 qualified_fn_b() ->
     {b, a, a}.
 
--file("src/two.gleam", 19).
+-file("src/two.rakun", 19).
 -spec qualified_aliased_fn_a() -> one@one:a().
 qualified_aliased_fn_a() ->
     a.
 
--file("src/two.gleam", 25).
+-file("src/two.rakun", 25).
 -spec qualified_aliased_fn_b() -> one@one:b().
 qualified_aliased_fn_b() ->
     {b, a, a}.
 
--file("src/two.gleam", 32).
+-file("src/two.rakun", 32).
 -spec unqualified_fn_a() -> one@one:a().
 unqualified_fn_a() ->
     a.
 
--file("src/two.gleam", 38).
+-file("src/two.rakun", 38).
 -spec unqualified_fn_b() -> one@one:b().
 unqualified_fn_b() ->
     {b, a, a}.
 
--file("src/two.gleam", 46).
+-file("src/two.rakun", 46).
 -spec aliased_fn_a() -> one@one:a().
 aliased_fn_a() ->
     a.
 
--file("src/two.gleam", 52).
+-file("src/two.rakun", 52).
 -spec aliased_fn_b() -> one@one:b().
 aliased_fn_b() ->
     {b, a, a}.

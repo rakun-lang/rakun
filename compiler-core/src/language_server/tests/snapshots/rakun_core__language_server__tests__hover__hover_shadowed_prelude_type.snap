@@ -1,0 +1,15 @@
+---
+source: compiler-core/src/language_server/tests/hover.rs
+expression: "\nrecord Int { Int }\nconst number = 100\n"
+---
+record Int { Int }
+const number = 100
+▔▔▔▔▔▔▔▔▔↑▔▔      
+
+
+----- Hover content -----
+Scalar(
+    String(
+        "```rakun\nrakun.Int\n```\n",
+    ),
+)

@@ -1,0 +1,150 @@
+---
+source: compiler-core/src/erlang/tests/html.rs
+expression: "\nimport rakun/rkx\n    \npub record DivProps {\n    DivProps(class: String, children: List<rkx.Element>)\n}\n\npub record HeaderProps {\n    HeaderProps(class: String, children: List<rkx.Element>)\n}\n\npub record ParagraphProps {\n    ParagraphProps(class: String, children: List<rkx.Element>)\n}\n\npub record H1Props {\n    H1Props(class: String, children: List<rkx.Element>)\n}\n\npub fn div(props: DivProps) {\n     rkx.Element\n}\n\npub fn header(props: HeaderProps) {\n     rkx.Element\n}\n\npub fn p(props: ParagraphProps) {\n     rkx.Element\n}\n\npub fn h1(props: H1Props) {\n     rkx.Element\n}\n\npub fn h2(props: H1Props) {\n    rkx.Element\n}\n    \n\npub fn main() {\n    <div class=\"container\">\n        <h1 class=\"title\">Título do Conteúdo</h1>\n        <p class=\"description\">Descrição breve sobre o conteúdo apresentado.</p>\n        <div class=\"nested-container\">\n            <h2 class=\"subtitle\">Subtítulo</h2>\n            <p class=\"nested-content\">Informação adicional sobre o conteúdo.</p>\n        </div>\n    </div>\n}\n"
+---
+----- SOURCE CODE
+
+import rakun/rkx
+    
+pub record DivProps {
+    DivProps(class: String, children: List<rkx.Element>)
+}
+
+pub record HeaderProps {
+    HeaderProps(class: String, children: List<rkx.Element>)
+}
+
+pub record ParagraphProps {
+    ParagraphProps(class: String, children: List<rkx.Element>)
+}
+
+pub record H1Props {
+    H1Props(class: String, children: List<rkx.Element>)
+}
+
+pub fn div(props: DivProps) {
+     rkx.Element
+}
+
+pub fn header(props: HeaderProps) {
+     rkx.Element
+}
+
+pub fn p(props: ParagraphProps) {
+     rkx.Element
+}
+
+pub fn h1(props: H1Props) {
+     rkx.Element
+}
+
+pub fn h2(props: H1Props) {
+    rkx.Element
+}
+    
+
+pub fn main() {
+    <div class="container">
+        <h1 class="title">Título do Conteúdo</h1>
+        <p class="description">Descrição breve sobre o conteúdo apresentado.</p>
+        <div class="nested-container">
+            <h2 class="subtitle">Subtítulo</h2>
+            <p class="nested-content">Informação adicional sobre o conteúdo.</p>
+        </div>
+    </div>
+}
+
+
+----- COMPILED ERLANG
+-module(my@mod).
+-compile([no_auto_import, nowarn_unused_vars, nowarn_unused_function, nowarn_nomatch]).
+
+-export(['div'/1, header/1, p/1, h1/1, h2/1, main/0]).
+-export_type([div_props/0, header_props/0, paragraph_props/0, h1_props/0]).
+
+-type div_props() :: {div_props, binary(), list(rakun@rkx:element())}.
+
+-type header_props() :: {header_props, binary(), list(rakun@rkx:element())}.
+
+-type paragraph_props() :: {paragraph_props,
+        binary(),
+        list(rakun@rkx:element())}.
+
+-type h1_props() :: {h1_props, binary(), list(rakun@rkx:element())}.
+
+-file("/root/project/test/my/mod.rakun", 20).
+-spec 'div'(div_props()) -> rakun@rkx:element().
+'div'(Props) ->
+    element.
+
+-file("/root/project/test/my/mod.rakun", 24).
+-spec header(header_props()) -> rakun@rkx:element().
+header(Props) ->
+    element.
+
+-file("/root/project/test/my/mod.rakun", 28).
+-spec p(paragraph_props()) -> rakun@rkx:element().
+p(Props) ->
+    element.
+
+-file("/root/project/test/my/mod.rakun", 32).
+-spec h1(h1_props()) -> rakun@rkx:element().
+h1(Props) ->
+    element.
+
+-file("/root/project/test/my/mod.rakun", 36).
+-spec h2(h1_props()) -> rakun@rkx:element().
+h2(Props) ->
+    element.
+
+-file("/root/project/test/my/mod.rakun", 41).
+-spec main() -> rakun@rkx:element().
+main() ->
+    rakun@rkx:component_init(
+        'div'(
+            {div_props,
+                <<"container"/utf8>>,
+                [rakun@rkx:component_init(
+                        h1(
+                            {h1_props,
+                                <<"title"/utf8>>,
+                                [rakun@rkx:html_text(
+                                        <<"Título do Conteúdo"/utf8>>
+                                    )]}
+                        )
+                    ),
+                    rakun@rkx:component_init(
+                        p(
+                            {paragraph_props,
+                                <<"description"/utf8>>,
+                                [rakun@rkx:html_text(
+                                        <<"Descrição breve sobre o conteúdo apresentado."/utf8>>
+                                    )]}
+                        )
+                    ),
+                    rakun@rkx:component_init(
+                        'div'(
+                            {div_props,
+                                <<"nested-container"/utf8>>,
+                                [rakun@rkx:component_init(
+                                        h2(
+                                            {h1_props,
+                                                <<"subtitle"/utf8>>,
+                                                [rakun@rkx:html_text(
+                                                        <<"Subtítulo"/utf8>>
+                                                    )]}
+                                        )
+                                    ),
+                                    rakun@rkx:component_init(
+                                        p(
+                                            {paragraph_props,
+                                                <<"nested-content"/utf8>>,
+                                                [rakun@rkx:html_text(
+                                                        <<"Informação adicional sobre o conteúdo."/utf8>>
+                                                    )]}
+                                        )
+                                    )]}
+                        )
+                    )]}
+        )
+    ).

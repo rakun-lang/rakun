@@ -4,7 +4,7 @@ use crate::assert_ts_def;
 fn type_alias() {
     assert_ts_def!(
         r#"
-pub type Headers = List(#(String, String))
+pub type Headers = List<#(String, String)>
 "#,
     );
 }
@@ -13,11 +13,11 @@ pub type Headers = List(#(String, String))
 fn private_type_in_opaque_type() {
     assert_ts_def!(
         r#"
-type PrivateType {
+record PrivateType {
   PrivateType
 }
 
-pub opaque type OpaqueType {
+pub opaque record OpaqueType {
   OpaqueType(PrivateType)
 }
 "#,
@@ -31,7 +31,7 @@ fn import_indirect_type_alias() {
             "wibble",
             "wibble",
             r#"
-pub type Wibble {
+pub record Wibble {
   Wibble(Int)
 }
 "#

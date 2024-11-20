@@ -1,6 +1,6 @@
 use std::{rc::Rc, time::Instant};
 
-use gleam_core::{
+use rakun_core::{
     build::{Built, Codegen, NullTelemetry, Options, ProjectCompiler, Telemetry},
     manifest::Manifest,
     paths::ProjectPaths,

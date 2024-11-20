@@ -1,0 +1,28 @@
+---
+source: compiler-core/src/type_/tests/warnings.rs
+expression: "\npub record Wibble { Wibble(wibble: Int) }\n\npub fn main(wibble) {\n  case wibble {\n    Wibble(wibble:) -> wibble\n  }\n}\n"
+---
+----- SOURCE CODE
+
+pub record Wibble { Wibble(wibble: Int) }
+
+pub fn main(wibble) {
+  case wibble {
+    Wibble(wibble:) -> wibble
+  }
+}
+
+
+----- WARNING
+warning: Incompatible rakun version range
+  ┌─ /src/warning/wrn.rakun:6:12
+  │
+6 │     Wibble(wibble:) -> wibble
+  │            ^^^^^^^ This requires a Rakun version >= 1.4.0
+
+The label shorthand syntax was introduced in version v1.4.0. But the Rakun
+version range specified in your `rakun.toml` would allow this code to run
+on an earlier version like v1.0.0, resulting in compilation errors!
+Hint: Remove the version constraint from your `rakun.toml` or update it to be:
+
+    rakun = ">= 1.4.0"

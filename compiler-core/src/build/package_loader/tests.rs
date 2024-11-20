@@ -58,7 +58,7 @@ fn write_cache(
         accessors: Default::default(),
         line_numbers: line_numbers.clone(),
         is_internal: false,
-        src_path: Utf8PathBuf::from(format!("/src/{}.gleam", name)),
+        src_path: Utf8PathBuf::from(format!("/src/{}.rakun", name)),
         warnings: vec![],
         minimum_required_version: Version::new(0, 1, 0),
     };
@@ -116,7 +116,7 @@ fn one_src_module() {
     let root = Utf8Path::new("/");
     let artefact = Utf8Path::new("/artefact");
 
-    write_src(&fs, "/src/main.gleam", 0, "const x = 1");
+    write_src(&fs, "/src/main.rakun", 0, "const x = 1");
 
     let loaded = run_loader(fs, root, artefact);
     assert_eq!(loaded.to_compile, vec![EcoString::from("main")]);
@@ -129,7 +129,7 @@ fn one_test_module() {
     let root = Utf8Path::new("/");
     let artefact = Utf8Path::new("/artefact");
 
-    write_src(&fs, "/test/main.gleam", 0, "const x = 1");
+    write_src(&fs, "/test/main.rakun", 0, "const x = 1");
 
     let loaded = run_loader(fs, root, artefact);
     assert_eq!(loaded.to_compile, vec![EcoString::from("main")]);
@@ -142,9 +142,9 @@ fn importing() {
     let root = Utf8Path::new("/");
     let artefact = Utf8Path::new("/artefact");
 
-    write_src(&fs, "/src/three.gleam", 0, "import two");
-    write_src(&fs, "/src/one.gleam", 0, "");
-    write_src(&fs, "/src/two.gleam", 0, "import one");
+    write_src(&fs, "/src/three.rakun", 0, "import two");
+    write_src(&fs, "/src/one.rakun", 0, "");
+    write_src(&fs, "/src/two.rakun", 0, "import one");
 
     let loaded = run_loader(fs, root, artefact);
     assert_eq!(
@@ -164,7 +164,7 @@ fn reading_cache() {
     let root = Utf8Path::new("/");
     let artefact = Utf8Path::new("/artefact");
 
-    write_src(&fs, "/src/one.gleam", 0, TEST_SOURCE_1);
+    write_src(&fs, "/src/one.rakun", 0, TEST_SOURCE_1);
     write_cache(&fs, "one", 0, vec![], TEST_SOURCE_1);
 
     let loaded = run_loader(fs, root, artefact);
@@ -178,7 +178,7 @@ fn module_is_stale_if_cache_older() {
     let root = Utf8Path::new("/");
     let artefact = Utf8Path::new("/artefact");
 
-    write_src(&fs, "/src/one.gleam", 1, TEST_SOURCE_2);
+    write_src(&fs, "/src/one.rakun", 1, TEST_SOURCE_2);
     write_cache(&fs, "one", 0, vec![], TEST_SOURCE_1);
 
     let loaded = run_loader(fs, root, artefact);
@@ -193,11 +193,11 @@ fn module_is_stale_if_deps_are_stale() {
     let artefact = Utf8Path::new("/artefact");
 
     // Cache is stale
-    write_src(&fs, "/src/one.gleam", 1, TEST_SOURCE_2);
+    write_src(&fs, "/src/one.rakun", 1, TEST_SOURCE_2);
     write_cache(&fs, "one", 0, vec![], TEST_SOURCE_1);
 
     // Cache is fresh but dep is stale
-    write_src(&fs, "/src/two.gleam", 1, "import one");
+    write_src(&fs, "/src/two.rakun", 1, "import one");
     write_cache(
         &fs,
         "two",
@@ -207,7 +207,7 @@ fn module_is_stale_if_deps_are_stale() {
     );
 
     // Cache is fresh
-    write_src(&fs, "/src/three.gleam", 1, TEST_SOURCE_1);
+    write_src(&fs, "/src/three.rakun", 1, TEST_SOURCE_1);
     write_cache(&fs, "three", 2, vec![], TEST_SOURCE_1);
 
     let loaded = run_loader(fs, root, artefact);
@@ -225,11 +225,11 @@ fn module_continues_to_be_stale_if_deps_get_updated() {
     let artefact = Utf8Path::new("/artefact");
 
     // Cache is stale
-    write_src(&fs, "/src/one.gleam", 1, TEST_SOURCE_2);
+    write_src(&fs, "/src/one.rakun", 1, TEST_SOURCE_2);
     write_cache(&fs, "one", 0, vec![], TEST_SOURCE_1);
 
     // Cache is fresh but dep is stale
-    write_src(&fs, "/src/two.gleam", 1, "import one");
+    write_src(&fs, "/src/two.rakun", 1, "import one");
     write_cache(
         &fs,
         "two",
@@ -239,7 +239,7 @@ fn module_continues_to_be_stale_if_deps_get_updated() {
     );
 
     // Cache is fresh
-    write_src(&fs, "/src/three.gleam", 1, TEST_SOURCE_1);
+    write_src(&fs, "/src/three.rakun", 1, TEST_SOURCE_1);
     write_cache(&fs, "three", 2, vec![], TEST_SOURCE_1);
 
     let _loaded1 = run_loader(fs.clone(), root, artefact);
@@ -262,7 +262,7 @@ fn invalid_module_name() {
     let artefact = Utf8Path::new("/artefact");
 
     // Cache is stale
-    write_src(&fs, "/src/One.gleam", 1, TEST_SOURCE_2);
+    write_src(&fs, "/src/One.rakun", 1, TEST_SOURCE_2);
 
     let loaded = run_loader(fs, root, artefact);
     assert!(loaded.to_compile.is_empty());
@@ -270,7 +270,7 @@ fn invalid_module_name() {
     assert_eq!(
         loaded.warnings,
         vec![Warning::InvalidSource {
-            path: Utf8PathBuf::from("/src/One.gleam"),
+            path: Utf8PathBuf::from("/src/One.rakun"),
         }],
     );
 }
@@ -282,7 +282,7 @@ fn invalid_nested_module_name() {
     let artefact = Utf8Path::new("/artefact");
 
     // Cache is stale
-    write_src(&fs, "/src/1/one.gleam", 1, TEST_SOURCE_2);
+    write_src(&fs, "/src/1/one.rakun", 1, TEST_SOURCE_2);
 
     let loaded = run_loader(fs, root, artefact);
     assert!(loaded.to_compile.is_empty());
@@ -290,7 +290,7 @@ fn invalid_nested_module_name() {
     assert_eq!(
         loaded.warnings,
         vec![Warning::InvalidSource {
-            path: Utf8PathBuf::from("/src/1/one.gleam"),
+            path: Utf8PathBuf::from("/src/1/one.rakun"),
         }],
     );
 }
@@ -302,7 +302,7 @@ fn invalid_module_name_in_test() {
     let artefact = Utf8Path::new("/artefact");
 
     // Cache is stale
-    write_src(&fs, "/test/One.gleam", 1, TEST_SOURCE_2);
+    write_src(&fs, "/test/One.rakun", 1, TEST_SOURCE_2);
 
     let loaded = run_loader(fs, root, artefact);
     assert!(loaded.to_compile.is_empty());
@@ -310,7 +310,7 @@ fn invalid_module_name_in_test() {
     assert_eq!(
         loaded.warnings,
         vec![Warning::InvalidSource {
-            path: Utf8PathBuf::from("/test/One.gleam"),
+            path: Utf8PathBuf::from("/test/One.rakun"),
         }],
     );
 }
@@ -322,7 +322,7 @@ fn invalid_nested_module_name_in_test() {
     let artefact = Utf8Path::new("/artefact");
 
     // Cache is stale
-    write_src(&fs, "/test/1/one.gleam", 1, TEST_SOURCE_2);
+    write_src(&fs, "/test/1/one.rakun", 1, TEST_SOURCE_2);
 
     let loaded = run_loader(fs, root, artefact);
     assert!(loaded.to_compile.is_empty());
@@ -330,7 +330,7 @@ fn invalid_nested_module_name_in_test() {
     assert_eq!(
         loaded.warnings,
         vec![Warning::InvalidSource {
-            path: Utf8PathBuf::from("/test/1/one.gleam"),
+            path: Utf8PathBuf::from("/test/1/one.rakun"),
         }],
     );
 }

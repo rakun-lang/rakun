@@ -1,5 +1,5 @@
 use camino::Utf8PathBuf;
-use gleam_core::{
+use rakun_core::{
     build::{Mode, Target, Telemetry},
     error::{FileIoAction, FileKind},
     paths::ProjectPaths,
@@ -35,7 +35,7 @@ impl BuildLock {
 
         crate::fs::mkdir(&self.directory)?;
 
-        let lock_path = self.directory.join("gleam.lock");
+        let lock_path = self.directory.join("rakun.lock");
 
         let mut file = fslock::LockFile::open(lock_path.as_str()).map_err(|e| Error::FileIo {
             kind: FileKind::File,
@@ -79,7 +79,7 @@ pub(crate) struct Guard(
 fn locking_global() {
     let paths = crate::project_paths_at_current_directory_without_toml();
     let lock = BuildLock::new_packages(&paths).expect("make lock");
-    let _guard1 = lock.lock(&gleam_core::build::NullTelemetry);
+    let _guard1 = lock.lock(&rakun_core::build::NullTelemetry);
     println!("Locked!")
 }
 
@@ -87,7 +87,7 @@ fn locking_global() {
 fn locking_dev_erlang() {
     let paths = crate::project_paths_at_current_directory_without_toml();
     let lock = BuildLock::new_target(&paths, Mode::Dev, Target::Erlang).expect("make lock");
-    let _guard1 = lock.lock(&gleam_core::build::NullTelemetry);
+    let _guard1 = lock.lock(&rakun_core::build::NullTelemetry);
     println!("Locked!")
 }
 
@@ -95,7 +95,7 @@ fn locking_dev_erlang() {
 fn locking_prod_erlang() {
     let paths = crate::project_paths_at_current_directory_without_toml();
     let lock = BuildLock::new_target(&paths, Mode::Prod, Target::Erlang).expect("make lock");
-    let _guard1 = lock.lock(&gleam_core::build::NullTelemetry);
+    let _guard1 = lock.lock(&rakun_core::build::NullTelemetry);
     println!("Locked!")
 }
 
@@ -103,7 +103,7 @@ fn locking_prod_erlang() {
 fn locking_lsp_erlang() {
     let paths = crate::project_paths_at_current_directory_without_toml();
     let lock = BuildLock::new_target(&paths, Mode::Lsp, Target::Erlang).expect("make lock");
-    let _guard1 = lock.lock(&gleam_core::build::NullTelemetry);
+    let _guard1 = lock.lock(&rakun_core::build::NullTelemetry);
     println!("Locked!")
 }
 
@@ -111,7 +111,7 @@ fn locking_lsp_erlang() {
 fn locking_dev_javascript() {
     let paths = crate::project_paths_at_current_directory_without_toml();
     let lock = BuildLock::new_target(&paths, Mode::Dev, Target::JavaScript).expect("make lock");
-    let _guard1 = lock.lock(&gleam_core::build::NullTelemetry);
+    let _guard1 = lock.lock(&rakun_core::build::NullTelemetry);
     println!("Locked!")
 }
 
@@ -119,7 +119,7 @@ fn locking_dev_javascript() {
 fn locking_prod_javascript() {
     let paths = crate::project_paths_at_current_directory_without_toml();
     let lock = BuildLock::new_target(&paths, Mode::Prod, Target::JavaScript).expect("make lock");
-    let _guard1 = lock.lock(&gleam_core::build::NullTelemetry);
+    let _guard1 = lock.lock(&rakun_core::build::NullTelemetry);
     println!("Locked!")
 }
 
@@ -127,6 +127,6 @@ fn locking_prod_javascript() {
 fn locking_lsp_javascript() {
     let paths = crate::project_paths_at_current_directory_without_toml();
     let lock = BuildLock::new_target(&paths, Mode::Lsp, Target::JavaScript).expect("make lock");
-    let _guard1 = lock.lock(&gleam_core::build::NullTelemetry);
+    let _guard1 = lock.lock(&rakun_core::build::NullTelemetry);
     println!("Locked!")
 }

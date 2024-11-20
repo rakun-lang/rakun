@@ -1,15 +1,15 @@
-ifndef GLEAM_NO_COMPILE
-GLEAM_INSTALLED := $(shell command -v gleam)
+ifndef RAKUN_NO_COMPILE
+RAKUN_INSTALLED := $(shell command -v rakun)
 endif
 
 ERLANG_FILES = $(wildcard {src,build}/*.erl)
-GLEAM_FILES = $(wildcard {src,build}/**/*.gleam)
+RAKUN_FILES = $(wildcard {src,build}/**/*.rakun)
 
 .PHONY: ebin check
 
-ifdef GLEAM_INSTALLED
-ebin: check $(GLEAM_FILES) $(ERLANG_FILES)
-	gleam compile-package --target erlang
+ifdef RAKUN_INSTALLED
+ebin: check $(RAKUN_FILES) $(ERLANG_FILES)
+	rakun compile-package --target erlang
 else
 ebin: check $(ERLANG_FILES)
 	@mkdir -p ./ebin

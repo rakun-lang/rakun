@@ -1,0 +1,33 @@
+---
+source: compiler-core/src/type_/tests/warnings.rs
+expression: "\n            import rakun/wibble.{one} as wobble\n            const one = one\n        "
+---
+----- SOURCE CODE
+-- rakun/wibble.rakun
+pub const one = 1
+
+-- main.rakun
+
+            import rakun/wibble.{one} as wobble
+            const one = one
+        
+
+----- WARNING
+warning: Unused imported module alias
+  ┌─ /src/warning/wrn.rakun:2:39
+  │
+2 │             import rakun/wibble.{one} as wobble
+  │                                       ^^^^^^^^^ This alias is never used
+
+Hint: You can safely remove it.
+
+    import rakun/wibble as _
+
+
+warning: Unused private constant
+  ┌─ /src/warning/wrn.rakun:3:13
+  │
+3 │             const one = one
+  │             ^^^^^^^^^ This private constant is never used
+
+Hint: You can safely remove it.

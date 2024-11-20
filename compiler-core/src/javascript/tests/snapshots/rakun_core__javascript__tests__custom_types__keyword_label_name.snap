@@ -1,0 +1,20 @@
+---
+source: compiler-core/src/javascript/tests/custom_types.rs
+expression: "pub record Thing {\n  Thing(in: Int, class: Nil)\n}\n"
+---
+----- SOURCE CODE
+pub record Thing {
+  Thing(in: Int, class: Nil)
+}
+
+
+----- COMPILED JAVASCRIPT
+import { CustomType as $CustomType } from "../rakun.mjs";
+
+export class Thing extends $CustomType {
+  constructor(in$, class$) {
+    super();
+    this.in = in$;
+    this.class = class$;
+  }
+}

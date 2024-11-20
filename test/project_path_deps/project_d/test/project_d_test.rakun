@@ -1,0 +1,5 @@
+import rakun/bitwise
+
+pub fn main() {
+  bitwise.and(1, 2)
+}

@@ -1,0 +1,30 @@
+---
+source: compiler-core/src/type_/tests/errors.rs
+expression: "\nimport rakun\n\nrecord Bool {\n  True\n  False\n}\n\nconst list_of_bools = [True, False, rakun.False]\n"
+---
+----- SOURCE CODE
+
+import rakun
+
+record Bool {
+  True
+  False
+}
+
+const list_of_bools = [True, False, rakun.False]
+
+
+----- ERROR
+error: Type mismatch
+  ┌─ /src/one/two.rakun:9:37
+  │
+9 │ const list_of_bools = [True, False, rakun.False]
+  │                                     ^^^^^^^^^^^
+
+Expected type:
+
+    Bool
+
+Found type:
+
+    rakun.Bool

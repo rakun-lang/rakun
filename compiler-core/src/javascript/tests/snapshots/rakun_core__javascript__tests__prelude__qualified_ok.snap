@@ -1,0 +1,15 @@
+---
+source: compiler-core/src/javascript/tests/prelude.rs
+expression: "import rakun\npub fn go() { rakun.Ok(1) }\n"
+---
+----- SOURCE CODE
+import rakun
+pub fn go() { rakun.Ok(1) }
+
+
+----- COMPILED JAVASCRIPT
+import * as $rakun from "../rakun.mjs";
+
+export function go() {
+  return new $rakun.Ok(1);
+}

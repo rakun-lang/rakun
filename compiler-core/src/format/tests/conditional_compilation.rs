@@ -6,12 +6,12 @@ fn multiple() {
         "type X
 
 @target(erlang)
-type Y {
+record Y {
   Y
 }
 
 @target(javascript)
-type Z {
+record Z {
   Z
 }
 "

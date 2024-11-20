@@ -1,6 +1,6 @@
 use camino::{Utf8Path, Utf8PathBuf};
 
-use gleam_core::{
+use rakun_core::{
     error::{FileIoAction, FileKind},
     Error, Result,
 };
@@ -8,13 +8,13 @@ use gleam_core::{
 use crate::{cli, fs, UseManifest};
 
 pub fn command(packages: Vec<String>) -> Result<()> {
-    // Read gleam.toml so we can remove deps from it
-    let mut toml = fs::read("gleam.toml")?
+    // Read rakun.toml so we can remove deps from it
+    let mut toml = fs::read("rakun.toml")?
         .parse::<toml_edit::DocumentMut>()
         .map_err(|e| Error::FileIo {
             kind: FileKind::File,
             action: FileIoAction::Parse,
-            path: Utf8PathBuf::from("gleam.toml"),
+            path: Utf8PathBuf::from("rakun.toml"),
             err: Some(e.to_string()),
         })?;
 
@@ -43,7 +43,7 @@ pub fn command(packages: Vec<String>) -> Result<()> {
     }
 
     // Write the updated config
-    fs::write(Utf8Path::new("gleam.toml"), &toml.to_string())?;
+    fs::write(Utf8Path::new("rakun.toml"), &toml.to_string())?;
     let paths = crate::find_project_paths()?;
     _ = crate::dependencies::download(
         &paths,

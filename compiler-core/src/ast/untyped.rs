@@ -14,6 +14,10 @@ pub enum UntypedExpr {
         location: SrcSpan,
         value: EcoString,
     },
+    HtmlText {
+        location: SrcSpan,
+        value: EcoString,
+    },
 
     String {
         location: SrcSpan,
@@ -54,7 +58,12 @@ pub enum UntypedExpr {
         fun: Box<Self>,
         arguments: Vec<CallArg<Self>>,
     },
-
+    Html {
+        location: SrcSpan,
+        tag: Option<Box<Self>>,
+        children: Option<Vec<Self>>,
+        attributes: Vec<CallArg<Self>>,
+    },
     BinOp {
         location: SrcSpan,
         name: BinOp,
@@ -155,6 +164,8 @@ impl UntypedExpr {
             | Self::Float { location, .. }
             | Self::Block { location, .. }
             | Self::BinOp { location, .. }
+            | Self::HtmlText { location, .. }
+            | Self::Html { location, .. }
             | Self::Tuple { location, .. }
             | Self::Panic { location, .. }
             | Self::String { location, .. }
@@ -259,7 +270,7 @@ pub struct Use {
     /// keyword and ending with the function call on the right hand side of
     /// `<-`.
     ///
-    /// ```gleam
+    /// ```rakun
     /// use a <- reult.try(result)
     /// ^^^^^^^^^^^^^^^^^^^^^^^^^^
     /// ```
@@ -269,7 +280,7 @@ pub struct Use {
     /// This is the SrcSpan of the patterns you find on the left hand side of
     /// `<-` in a use expression.
     ///
-    /// ```gleam
+    /// ```rakun
     /// use pattern1, pattern2 <- todo
     ///     ^^^^^^^^^^^^^^^^^^
     /// ```

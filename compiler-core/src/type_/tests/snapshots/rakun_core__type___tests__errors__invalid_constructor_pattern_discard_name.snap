@@ -1,0 +1,16 @@
+---
+source: compiler-core/src/type_/tests/errors.rs
+expression: "pub record Box { Box(Int) } pub fn main() { let Box(_ignoredInner) = Box(203)}"
+---
+----- SOURCE CODE
+pub record Box { Box(Int) } pub fn main() { let Box(_ignoredInner) = Box(203)}
+
+----- ERROR
+error: Invalid discard name
+  ┌─ /src/one/two.rakun:1:53
+  │
+1 │ pub record Box { Box(Int) } pub fn main() { let Box(_ignoredInner) = Box(203)}
+  │                                                     ^^^^^^^^^^^^^ This is not a valid discard name
+
+Hint: Discard names start with _ and contain a-z, 0-9, or _.
+Try: _ignored_inner

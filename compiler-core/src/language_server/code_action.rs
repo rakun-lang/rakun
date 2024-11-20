@@ -87,7 +87,7 @@ impl CodeActionBuilder {
 ///
 /// The following case expression:
 ///
-/// ```gleam
+/// ```rakun
 /// case #(1, 2) {
 ///     #(a, b) -> 0
 /// }
@@ -95,7 +95,7 @@ impl CodeActionBuilder {
 ///
 /// Becomes:
 ///
-/// ```gleam
+/// ```rakun
 /// case 1, 2 {
 ///     a, b -> 0
 /// }
@@ -105,7 +105,7 @@ impl CodeActionBuilder {
 ///
 /// The following case expression does not produce any code action
 ///
-/// ```gleam
+/// ```rakun
 /// case #(1, 2) {
 ///     a -> 0 // <- the pattern is not a tuple
 /// }
@@ -801,7 +801,7 @@ pub fn code_action_add_missing_patterns(
         // Find the start of the line. We can't just use the start of the case
         // expression for cases like:
         //
-        //```gleam
+        //```rakun
         // let value = case a {}
         //```
         //
@@ -848,18 +848,18 @@ pub fn code_action_add_missing_patterns(
         // Add a newline + indent after the last pattern if there are no clauses
         //
         // This improves the generated code for this case:
-        // ```gleam
+        // ```rakun
         // case True {}
         // ```
         // This produces:
-        // ```gleam
+        // ```rakun
         // case True {
         //   True -> todo
         //   False -> todo
         // }
         // ```
         // Instead of:
-        // ```gleam
+        // ```rakun
         // case True {
         //   True -> todo
         //   False -> todo}

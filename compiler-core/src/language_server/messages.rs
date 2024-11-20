@@ -69,11 +69,11 @@ impl Request {
 
 #[derive(Debug)]
 pub enum Notification {
-    /// A Gleam file has been modified in memory, and the new text is provided.
+    /// A Rakun file has been modified in memory, and the new text is provided.
     SourceFileChangedInMemory { path: Utf8PathBuf, text: String },
-    /// A Gleam file has been saved or closed in the editor.
+    /// A Rakun file has been saved or closed in the editor.
     SourceFileMatchesDisc { path: Utf8PathBuf },
-    /// gleam.toml has changed.
+    /// rakun.toml has changed.
     ConfigFileChanged { path: Utf8PathBuf },
     /// It's time to compile all open projects.
     CompilePlease,

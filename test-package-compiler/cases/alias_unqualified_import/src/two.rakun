@@ -1,0 +1,6 @@
+
+import one.{Empty as E, id as i}
+
+pub fn make() {
+  i(E)
+}

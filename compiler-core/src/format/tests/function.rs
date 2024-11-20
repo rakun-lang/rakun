@@ -192,7 +192,7 @@ fn nested_breakable_tuples_in_function_calls() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2435
+
 #[test]
 fn only_last_argument_can_be_broken() {
     assert_format!(
@@ -200,8 +200,8 @@ fn only_last_argument_can_be_broken() {
   tbd.workbook(for: "my_project")
   |> task(
     doc: "Run the project tests",
-    tags: list.concat([["test", "ci"], gleam, typescript]),
-    action: fn(_, _) { tbd.command(run: "gleam", with: ["test"]) },
+    tags: list.concat([["test", "ci"], rakun, typescript]),
+    action: fn(_, _) { tbd.command(run: "rakun", with: ["test"]) },
   )
   |> run
 }
@@ -237,14 +237,14 @@ fn function_that_is_a_little_over_the_limit() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2571
+
 #[test]
 fn expr_function_as_last_argument() {
     assert_format!(
         r#"pub fn main() {
   Builder(
     accumulator: "",
-    update: fn(accum, val) { accum <> val },
+    update: fn(accum, val) { accum ++ val },
     final: fn(accum) { accum },
   )
 }

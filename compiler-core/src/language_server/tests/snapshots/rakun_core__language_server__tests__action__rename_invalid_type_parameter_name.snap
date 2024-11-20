@@ -1,0 +1,11 @@
+---
+source: compiler-core/src/language_server/tests/action.rs
+expression: "record Wrapper<innerType> {}"
+---
+----- BEFORE ACTION
+record Wrapper<innerType> {}
+               ▔▔▔▔▔▔▔▔▔↑   
+
+
+----- AFTER ACTION
+record Wrapper<inner_type> {}

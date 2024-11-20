@@ -18,7 +18,7 @@ pub struct Names {
     ///
     /// # Example 1
     ///
-    /// ```gleam
+    /// ```rakun
     /// type Wibble = wobble.Woo
     /// ```
     /// would result in
@@ -27,7 +27,7 @@ pub struct Names {
     ///
     /// # Example 2
     ///
-    /// ```gleam
+    /// ```rakun
     /// import some/module.{type Wibble}
     /// ```
     /// would result in
@@ -36,7 +36,7 @@ pub struct Names {
     ///
     /// # Example 3
     ///
-    /// ```gleam
+    /// ```rakun
     /// import some/module.{type Wibble as Wobble}
     /// ```
     /// would result in
@@ -52,7 +52,7 @@ pub struct Names {
     ///
     /// # Example 1
     ///
-    /// ```gleam
+    /// ```rakun
     /// import mod1 as my_mod
     /// ```
     /// would result in:
@@ -61,7 +61,7 @@ pub struct Names {
     ///
     /// # Example 2
     ///
-    /// ```gleam
+    /// ```rakun
     /// import mod1
     /// ```
     /// would result in:
@@ -78,7 +78,7 @@ pub struct Names {
     ///
     /// # Example 1
     ///
-    /// ```gleam
+    /// ```rakun
     /// fn equal(x: something, y: something) -> Bool {
     ///   arg1 == arg2
     /// }
@@ -97,7 +97,7 @@ pub struct Names {
     ///
     /// # Example 1
     ///
-    /// ```gleam
+    /// ```rakun
     /// import wibble.{Wobble}
     /// ```
     /// would result in
@@ -106,7 +106,7 @@ pub struct Names {
     ///
     /// # Example 2
     ///
-    /// ```gleam
+    /// ```rakun
     /// import wibble.{Wobble as Woo}
     /// ```
     /// would result in
@@ -266,15 +266,15 @@ pub enum PrintMode {
     /// Useful for providing more detail to the user.
     ///
     /// For example, with this code:
-    /// ```gleam
+    /// ```rakun
     /// type A = Int
     /// ```
-    /// If the type `gleam.Int` were printed using the `Normal` mode,
+    /// If the type `rakun.Int` were printed using the `Normal` mode,
     /// we would print `A`, since that is the local alias for the `Int` type.
     ///
     /// However, if the user were hovering over the type `A` itself, it wouldn't be
     /// particularly helpful to print `A`.
-    /// So with `ExpandAliases`, it would print `gleam.Int`,
+    /// So with `ExpandAliases`, it would print `rakun.Int`,
     /// which tells the user exactly what type `A` represents.
     ///
     ExpandAliases,
@@ -452,13 +452,13 @@ fn test_local_type() {
 #[test]
 fn test_prelude_type() {
     let mut names = Names::new();
-    names.named_type_in_scope("gleam".into(), "Int".into(), "Int".into());
+    names.named_type_in_scope("rakun".into(), "Int".into(), "Int".into());
     let mut printer = Printer::new(&names);
 
     let type_ = Type::Named {
         name: "Int".into(),
         args: vec![],
-        module: "gleam".into(),
+        module: "rakun".into(),
         publicity: crate::ast::Publicity::Public,
         package: "".into(),
         inferred_variant: None,
@@ -471,7 +471,7 @@ fn test_prelude_type() {
 fn test_shadowed_prelude_type() {
     let mut names = Names::new();
 
-    names.named_type_in_scope("gleam".into(), "Int".into(), "Int".into());
+    names.named_type_in_scope("rakun".into(), "Int".into(), "Int".into());
     names.named_type_in_scope("mod".into(), "Int".into(), "Int".into());
 
     let mut printer = Printer::new(&names);
@@ -479,13 +479,13 @@ fn test_shadowed_prelude_type() {
     let type_ = Type::Named {
         name: "Int".into(),
         args: vec![],
-        module: "gleam".into(),
+        module: "rakun".into(),
         publicity: crate::ast::Publicity::Public,
         package: "".into(),
         inferred_variant: None,
     };
 
-    assert_eq!(printer.print_type(&type_), "gleam.Int");
+    assert_eq!(printer.print_type(&type_), "rakun.Int");
 }
 
 #[test]
@@ -528,7 +528,7 @@ fn test_tuple_type() {
             Arc::new(Type::Named {
                 name: "Int".into(),
                 args: vec![],
-                module: "gleam".into(),
+                module: "rakun".into(),
                 publicity: crate::ast::Publicity::Public,
                 package: "".into(),
                 inferred_variant: None,
@@ -536,7 +536,7 @@ fn test_tuple_type() {
             Arc::new(Type::Named {
                 name: "String".into(),
                 args: vec![],
-                module: "gleam".into(),
+                module: "rakun".into(),
                 publicity: crate::ast::Publicity::Public,
                 package: "".into(),
                 inferred_variant: None,
@@ -544,14 +544,14 @@ fn test_tuple_type() {
         ],
     };
 
-    assert_eq!(printer.print_type(&type_), "#(gleam.Int, gleam.String)");
+    assert_eq!(printer.print_type(&type_), "#(rakun.Int, rakun.String)");
 }
 
 #[test]
 fn test_fn_type() {
     let mut names = Names::new();
-    names.named_type_in_scope("gleam".into(), "Int".into(), "Int".into());
-    names.named_type_in_scope("gleam".into(), "Bool".into(), "Bool".into());
+    names.named_type_in_scope("rakun".into(), "Int".into(), "Int".into());
+    names.named_type_in_scope("rakun".into(), "Bool".into(), "Bool".into());
     let mut printer = Printer::new(&names);
 
     let type_ = Type::Fn {
@@ -559,7 +559,7 @@ fn test_fn_type() {
             Arc::new(Type::Named {
                 name: "Int".into(),
                 args: vec![],
-                module: "gleam".into(),
+                module: "rakun".into(),
                 publicity: crate::ast::Publicity::Public,
                 package: "".into(),
                 inferred_variant: None,
@@ -567,7 +567,7 @@ fn test_fn_type() {
             Arc::new(Type::Named {
                 name: "String".into(),
                 args: vec![],
-                module: "gleam".into(),
+                module: "rakun".into(),
                 publicity: crate::ast::Publicity::Public,
                 package: "".into(),
                 inferred_variant: None,
@@ -576,14 +576,14 @@ fn test_fn_type() {
         retrn: Arc::new(Type::Named {
             name: "Bool".into(),
             args: vec![],
-            module: "gleam".into(),
+            module: "rakun".into(),
             publicity: crate::ast::Publicity::Public,
             package: "".into(),
             inferred_variant: None,
         }),
     };
 
-    assert_eq!(printer.print_type(&type_), "fn(Int, gleam.String) -> Bool");
+    assert_eq!(printer.print_type(&type_), "fn(Int, rakun.String) -> Bool");
 }
 
 #[test]

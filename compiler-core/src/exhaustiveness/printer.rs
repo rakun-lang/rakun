@@ -297,7 +297,7 @@ mod tests {
         let mut names = Names::new();
 
         names.named_constructor_in_scope("regex".into(), "Regex".into(), "Reg".into());
-        names.named_constructor_in_scope("gleam".into(), "None".into(), "None".into());
+        names.named_constructor_in_scope("rakun".into(), "None".into(), "None".into());
 
         let printer = Printer::new(&names);
 
@@ -316,7 +316,7 @@ mod tests {
             Term::Variant {
                 variable: arg,
                 name: "None".into(),
-                module: "gleam".into(),
+                module: "rakun".into(),
                 arguments: vec![],
             },
         ];
@@ -371,8 +371,8 @@ mod tests {
     fn test_multi_pattern() {
         let mut names = Names::new();
 
-        names.named_constructor_in_scope("gleam".into(), "Ok".into(), "Ok".into());
-        names.named_constructor_in_scope("gleam".into(), "False".into(), "False".into());
+        names.named_constructor_in_scope("rakun".into(), "Ok".into(), "Ok".into());
+        names.named_constructor_in_scope("rakun".into(), "False".into(), "False".into());
 
         let printer = Printer::new(&names);
 
@@ -382,13 +382,13 @@ mod tests {
             Term::Variant {
                 variable: subjects[0].clone(),
                 name: "Ok".into(),
-                module: "gleam".into(),
+                module: "rakun".into(),
                 arguments: vec![make_variable(3)],
             },
             Term::Variant {
                 variable: subjects[2].clone(),
                 name: "False".into(),
-                module: "gleam".into(),
+                module: "rakun".into(),
                 arguments: Vec::new(),
             },
         ];

@@ -75,11 +75,11 @@ pub struct PackageConfig {
     pub version: Version,
     #[serde(
         default,
-        rename = "gleam",
+        rename = "rakun",
         serialize_with = "serialise_range",
         deserialize_with = "deserialise_range"
     )]
-    pub gleam_version: Option<pubgrub::range::Range<Version>>,
+    pub rakun_version: Option<pubgrub::range::Range<Version>>,
     #[serde(default, alias = "licenses")]
     pub licences: Vec<SpdxLicense>,
     #[serde(default)]
@@ -191,7 +191,7 @@ impl PackageConfig {
 
     /// Determines whether the given module should be hidden in the docs or not
     ///
-    /// The developer can specify a list of glob patterns in the gleam.toml file
+    /// The developer can specify a list of glob patterns in the rakun.toml file
     /// to determine modules that should not be shown in the package's documentation
     pub fn is_internal_module(&self, module: &str) -> bool {
         let package = &self.name;
@@ -214,10 +214,10 @@ impl PackageConfig {
         .is_match(module)
     }
 
-    // Checks to see if the gleam version specified in the config is compatible
+    // Checks to see if the rakun version specified in the config is compatible
     // with the current compiler version
-    pub fn check_gleam_compatibility(&self) -> Result<(), Error> {
-        if let Some(range) = &self.gleam_version {
+    pub fn check_rakun_compatibility(&self) -> Result<(), Error> {
+        if let Some(range) = &self.rakun_version {
             let compiler_version =
                 Version::parse(COMPILER_VERSION).expect("Parse compiler semantic version");
 
@@ -229,7 +229,7 @@ impl PackageConfig {
                 return Err(Error::IncompatibleCompilerVersion {
                     package: self.name.to_string(),
                     required_version: range.to_string(),
-                    gleam_version: COMPILER_VERSION.to_string(),
+                    rakun_version: COMPILER_VERSION.to_string(),
                 });
             }
         }
@@ -475,7 +475,6 @@ fn locked_nested_are_removed_too() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1754
 #[test]
 fn locked_unlock_new() {
     let mut config = PackageConfig::default();
@@ -634,7 +633,7 @@ impl Default for PackageConfig {
         Self {
             name: Default::default(),
             version: default_version(),
-            gleam_version: Default::default(),
+            rakun_version: Default::default(),
             description: Default::default(),
             documentation: Default::default(),
             dependencies: Default::default(),

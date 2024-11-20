@@ -1,6 +1,6 @@
 # Project
 
-A test Gleam project.
+A test Rakun project.
 
 It covers these features:
 
@@ -8,10 +8,10 @@ It covers these features:
   - Specified in config.dependencies
 - Importing packages
   - Specified in config.dependencies
-- Compilation of Gleam code
+- Compilation of Rakun code
   - in src
   - in test
-- Importing Gleam src code into test
+- Importing Rakun src code into test
 
 These features are not tested yet
 
@@ -22,11 +22,11 @@ These features are not tested yet
 - Compilation of locally defined JavaScript modules
   - in src
   - in test
-- Importing Gleam src code into test
+- Importing Rakun src code into test
 
 ## Quick start
 
 ```sh
-gleam run
-gleam test
+rakun run
+rakun test
 ```

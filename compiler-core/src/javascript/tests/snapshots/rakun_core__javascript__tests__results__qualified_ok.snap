@@ -1,0 +1,14 @@
+---
+source: compiler-core/src/javascript/tests/results.rs
+expression: "import rakun\npub fn main() { rakun.Ok(1) }"
+---
+----- SOURCE CODE
+import rakun
+pub fn main() { rakun.Ok(1) }
+
+----- COMPILED JAVASCRIPT
+import * as $rakun from "../rakun.mjs";
+
+export function main() {
+  return new $rakun.Ok(1);
+}

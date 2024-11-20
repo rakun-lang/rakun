@@ -1,0 +1,26 @@
+---
+source: compiler-core/src/language_server/tests/definition.rs
+expression: output
+---
+----- Jumping from `src/app.rakun`
+
+import example_module
+fn make_var() -> example_module.Wabble<example_module.Wibble<example_module.Wobble>> {
+                                                                             ↑        
+  example_module.Wabble(example_module.Wibble(example_module.Wobble(1)))
+}
+
+----- Jumped to `build/packages/hex/src/example_module.rakun`
+
+pub record Wobble {
+↑▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔  
+  Wobble(Int)
+}
+
+pub record Wibble<a> {
+  Wibble(a)
+}
+
+pub record Wabble<a> {
+  Wabble(a)
+}

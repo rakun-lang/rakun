@@ -94,7 +94,7 @@ const x = 1
 
 #[test]
 fn target_does_not_need_to_be_the_first_attribute() {
-    // In previous versions of Gleam the `@target` attribute had to be the
+    // In previous versions of Rakun the `@target` attribute had to be the
     // first attribute.
     assert_module_infer!(
         r#"

@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use camino::Utf8PathBuf;
-use gleam_core::Error;
+use rakun_core::Error;
 
 #[test]
 fn new() {
@@ -16,7 +16,7 @@ fn new() {
             skip_git: false,
             skip_github: false,
         },
-        "1.0.0-gleam",
+        "1.0.0-rakun",
     )
     .unwrap();
 
@@ -24,12 +24,12 @@ fn new() {
 
     assert!(path.join(".git").exists());
     assert!(path.join("README.md").exists());
-    assert!(path.join("gleam.toml").exists());
-    assert!(path.join("src/my_project.gleam").exists());
-    assert!(path.join("test/my_project_test.gleam").exists());
+    assert!(path.join("rakun.toml").exists());
+    assert!(path.join("src/my_project.rakun").exists());
+    assert!(path.join("test/my_project_test.rakun").exists());
     assert!(path.join(".github/workflows/test.yml").exists());
 
-    let toml = crate::fs::read(path.join("gleam.toml")).unwrap();
+    let toml = crate::fs::read(path.join("rakun.toml")).unwrap();
     assert!(toml.contains("name = \"my_project\""));
 }
 
@@ -46,7 +46,7 @@ fn new_with_default_template() {
             skip_git: false,
             skip_github: true,
         },
-        "1.0.0-gleam",
+        "1.0.0-rakun",
     )
     .unwrap();
     creator.run().unwrap();
@@ -74,7 +74,7 @@ fn new_with_javascript_template() {
             skip_git: false,
             skip_github: true,
         },
-        "1.0.0-gleam",
+        "1.0.0-rakun",
     )
     .unwrap();
     creator.run().unwrap();
@@ -102,7 +102,7 @@ fn new_with_skip_git() {
             skip_git: true,
             skip_github: false,
         },
-        "1.0.0-gleam",
+        "1.0.0-rakun",
     )
     .unwrap();
     creator.run().unwrap();
@@ -123,7 +123,7 @@ fn new_with_skip_github() {
             skip_git: false,
             skip_github: true,
         },
-        "1.0.0-gleam",
+        "1.0.0-rakun",
     )
     .unwrap();
     creator.run().unwrap();
@@ -147,7 +147,7 @@ fn new_with_skip_git_and_github() {
             skip_git: true,
             skip_github: true,
         },
-        "1.0.0-gleam",
+        "1.0.0-rakun",
     )
     .unwrap();
     creator.run().unwrap();
@@ -171,7 +171,7 @@ fn invalid_path() {
             skip_git: false,
             skip_github: false,
         },
-        "1.0.0-gleam",
+        "1.0.0-rakun",
     )
     .is_err());
 }
@@ -189,7 +189,7 @@ fn invalid_name() {
             skip_git: false,
             skip_github: false,
         },
-        "1.0.0-gleam",
+        "1.0.0-rakun",
     )
     .is_err());
 }
@@ -209,7 +209,7 @@ fn existing_directory_no_files() {
             skip_git: true,
             skip_github: true,
         },
-        "1.0.0-gleam",
+        "1.0.0-rakun",
     )
     .unwrap();
 
@@ -226,7 +226,7 @@ fn existing_directory_with_one_existing_file() {
     crate::fs::mkdir(&path).unwrap();
 
     let _ = std::fs::File::create(PathBuf::from(&path).join("README.md")).unwrap();
-    let _ = std::fs::File::create(PathBuf::from(&path).join("my_project.gleam")).unwrap();
+    let _ = std::fs::File::create(PathBuf::from(&path).join("my_project.rakun")).unwrap();
 
     assert!(super::Creator::new(
         super::NewOptions {
@@ -236,7 +236,7 @@ fn existing_directory_with_one_existing_file() {
             skip_git: true,
             skip_github: true,
         },
-        "1.0.0-gleam",
+        "1.0.0-rakun",
     )
     .is_err());
 }
@@ -259,7 +259,7 @@ fn existing_directory_with_non_generated_file() {
             skip_git: true,
             skip_github: true,
         },
-        "1.0.0-gleam",
+        "1.0.0-rakun",
     )
     .unwrap();
 
@@ -289,7 +289,7 @@ fn conflict_with_existing_files() {
                 skip_git: true,
                 skip_github: true,
             },
-            "1.0.0-gleam",
+            "1.0.0-rakun",
         )
         .err(),
         Some(Error::OutputFilesAlreadyExist {
@@ -316,7 +316,7 @@ fn skip_existing_git_files_when_skip_git_is_true() {
             skip_git: true,
             skip_github: true,
         },
-        "1.0.0-gleam",
+        "1.0.0-rakun",
     )
     .unwrap();
 

@@ -240,7 +240,7 @@ pub fn main() {
 #[test]
 fn local_public_enum() {
     let code = "
-pub type Direction {
+pub record Direction {
   Left
   Right
 }
@@ -252,7 +252,7 @@ pub type Direction {
 #[test]
 fn local_public_record() {
     let code = "
-pub type Box {
+pub record Box {
 /// Hello
   Box(Int, Int, Float)
 }
@@ -264,7 +264,7 @@ pub type Box {
 #[test]
 fn local_public_enum_with_documentation() {
     let code = "
-pub type Direction {
+pub record Direction {
   /// Hello
   Left
   /// Goodbye
@@ -278,7 +278,7 @@ pub type Direction {
 #[test]
 fn local_public_record_with_documentation() {
     let code = "
-pub type Box {
+pub record Box {
   Box(Int, Int, Float)
 }
 ";
@@ -402,7 +402,7 @@ fn imported_public_enum() {
 import dep
 ";
     let dep = "
-pub type Direction {
+pub record Direction {
   Left
   Right
 }
@@ -417,7 +417,7 @@ fn imported_public_record() {
 import dep
 ";
     let dep = "
-pub type Box {
+pub record Box {
   Box(Int)
 }
 ";
@@ -445,7 +445,7 @@ fn imported_unqualified_public_enum() {
 import dep.{Left}
 ";
     let dep = "
-pub type Direction {
+pub record Direction {
   Left
   Right
 }
@@ -460,7 +460,7 @@ fn imported_unqualified_public_record() {
 import dep.{Box}
 ";
     let dep = "
-pub type Box {
+pub record Box {
   Box(Int)
 }
 ";
@@ -483,7 +483,7 @@ fn private() {
 #[test]
 fn private_type() {
     let code = "
-type Wibble {
+record Wibble {
   Wobble
 }
 ";
@@ -495,7 +495,7 @@ type Wibble {
 #[test]
 fn opaque_type() {
     let code = "
-pub opaque type Wibble {
+pub opaque record Wibble {
   Wobble
 }
 ";
@@ -520,7 +520,7 @@ fn private() {
 fn private_type_in_dep() {
     let code = "import dep";
     let dep = "
-type Wibble {
+record Wibble {
   Wobble
 }
 ";
@@ -532,7 +532,7 @@ type Wibble {
 fn in_custom_type_definition() {
     let code = "import dep";
     let dep = "
-type Wibble {
+record Wibble {
   Wobble
 }
 ";
@@ -543,7 +543,7 @@ type Wibble {
 #[test]
 fn for_custom_type_definition() {
     let code = "
-pub type Wibble {
+pub record Wibble {
   Wobble
 }";
 
@@ -553,10 +553,10 @@ pub type Wibble {
 #[test]
 fn for_type_alias() {
     let code = "
-pub type Wibble = Result(
+pub type Wibble = Result<
   String,
   String
-)
+>
 ";
 
     assert_completion!(TestProject::for_source(code), Position::new(2, 0));
@@ -578,8 +578,8 @@ pub fn wibble(
 #[test]
 fn imported_type() {
     let dep = "
-pub type Zoo = List(String)
-type Private = List(String)
+pub type Zoo = List<String>
+type Private = List<String>
 ";
     let code = "import dep
 
@@ -599,8 +599,8 @@ pub fn wibble(
 #[test]
 fn imported_type_cursor_after_dot() {
     let dep = "
-pub type Zoo = List(String)
-type Private = List(String)
+pub type Zoo = List<String>
+type Private = List<String>
 ";
     let code = "import dep
 
@@ -620,12 +620,12 @@ pub fn wibble(
 #[test]
 fn imported_type_cursor_after_dot_other_matching_modules() {
     let dep = "
-pub type Zoo = List(String)
-type Private = List(String)
+pub type Zoo = List<String>
+type Private = List<String>
 ";
     let dep2 = "
-pub type Zoo = List(String)
-type Private = List(String)
+pub type Zoo = List<String>
+type Private = List<String>
 ";
     let code = "import dep
 import dep2
@@ -648,12 +648,12 @@ pub fn wibble(
 #[test]
 fn imported_type_cursor_after_dot_other_modules() {
     let dep = "
-pub type Zoo = List(String)
-type Private = List(String)
+pub type Zoo = List<String>
+type Private = List<String>
 ";
     let other = "
-pub type Zoo = List(String)
-type Private = List(String)
+pub type Zoo = List<String>
+type Private = List<String>
 ";
     let code = "import dep
 
@@ -675,12 +675,12 @@ pub fn wibble(
 #[test]
 fn imported_type_cursor_mid_phrase_other_modules() {
     let dep = "
-pub type Zoo = List(String)
-type Private = List(String)
+pub type Zoo = List<String>
+type Private = List<String>
 ";
     let other = "
-pub type Zoo = List(String)
-type Private = List(String)
+pub type Zoo = List<String>
+type Private = List<String>
 ";
     let code = "import dep
 
@@ -702,8 +702,8 @@ pub fn wibble(
 #[test]
 fn importable_type() {
     let dep = "
-pub type Zoo = List(String)
-type Private = List(String)
+pub type Zoo = List<String>
+type Private = List<String>
 ";
     let code = "
 
@@ -723,12 +723,12 @@ pub fn wibble(
 #[test]
 fn importable_type_with_existing_imports_at_top() {
     let dep = "
-pub type Zoo = List(String)
-type Private = List(String)
+pub type Zoo = List<String>
+type Private = List<String>
 ";
     let dep2 = "
-pub type Zoo = List(String)
-type Private = List(String)
+pub type Zoo = List<String>
+type Private = List<String>
 ";
     let code = "import dep2
 
@@ -750,12 +750,12 @@ pub fn wibble(
 #[test]
 fn importable_type_with_existing_imports() {
     let dep = "
-pub type Zoo = List(String)
-type Private = List(String)
+pub type Zoo = List<String>
+type Private = List<String>
 ";
     let dep2 = "
-pub type Zoo = List(String)
-type Private = List(String)
+pub type Zoo = List<String>
+type Private = List<String>
 ";
     let code = "
 //// Some module comments
@@ -781,8 +781,8 @@ pub fn wibble(
 #[test]
 fn importable_type_from_deep_module() {
     let dep = "
-pub type Zoo = List(String)
-type Private = List(String)
+pub type Zoo = List<String>
+type Private = List<String>
 ";
     let code = "
 
@@ -802,8 +802,8 @@ pub fn wibble(
 #[test]
 fn unqualified_imported_type() {
     let dep = "
-pub type Zoo = List(String)
-type Private = List(String)
+pub type Zoo = List<String>
+type Private = List<String>
 ";
     let code = "import dep.{type Zoo}
 
@@ -938,7 +938,7 @@ pub fn main() {
 #[test]
 fn local_variable_inside_nested_exprs() {
     let code = r#"
-type Foo { Bar(List(#(Bool))) }
+record Foo { Bar(List(#(Bool))) }
 fn wibble() {
   Bar([#(!{
     let foo = True
@@ -1066,7 +1066,7 @@ fn internal_values_from_root_package_are_in_the_completions() {
 @external(erlang, "rand", "uniform")
 @internal pub fn random_float() -> Float
 @internal pub fn main() { 0 }
-@internal pub type Wibble { Wobble }
+@internal pub record Wibble { Wobble }
 @internal pub const wibble = 1
 "#;
 
@@ -1085,7 +1085,7 @@ pub fn wibble(
 
     let dep = r#"
 @internal pub type Alias = Int
-@internal pub type AnotherType { Constructor }
+@internal pub record AnotherType { Constructor }
 "#;
     assert_completion!(
         TestProject::for_source(code).add_module("dep", dep),
@@ -1099,7 +1099,7 @@ fn internal_values_from_the_same_module_are_in_the_completions() {
 @external(erlang, "rand", "uniform")
 @internal pub fn random_float() -> Float
 @internal pub fn main() { 0 }
-@internal pub type Wibble { Wobble }
+@internal pub record Wibble { Wobble }
 @internal pub const wibble = 1
 "#;
 
@@ -1109,8 +1109,8 @@ fn internal_values_from_the_same_module_are_in_the_completions() {
 #[test]
 fn internal_types_from_the_same_module_are_in_the_completions() {
     let code = "
-@internal pub type Alias = Result(Int, String)
-@internal pub type AnotherType {
+@internal pub type Alias = Result<Int, String>
+@internal pub record AnotherType {
   Wibble
 }
 ";
@@ -1130,7 +1130,7 @@ pub fn wibble(
 
     let dep = r#"
 @internal pub type Alias = Int
-@internal pub type AnotherType { Constructor }
+@internal pub record AnotherType { Constructor }
 "#;
 
     assert_completion!(
@@ -1145,7 +1145,7 @@ fn internal_values_from_a_dependency_are_ignored() {
 @external(erlang, "rand", "uniform")
 @internal pub fn random_float() -> Float
 @internal pub fn main() { 0 }
-@internal pub type Wibble { Wobble }
+@internal pub record Wibble { Wobble }
 @internal pub const wibble = 1
 "#;
 
@@ -1169,13 +1169,13 @@ pub fn main() {
 
 #[test]
 fn completions_for_an_import_no_test() {
-    let code = "import gleam
+    let code = "import rakun
 
 pub fn main() {
   0
 }";
     let test = "
-import gleam
+import rakun
 
 pub fn main() {
   0
@@ -1190,13 +1190,13 @@ pub fn main() {
 
 #[test]
 fn completions_for_an_import_while_in_test() {
-    let code = "import gleam
+    let code = "import rakun
 
 pub fn main() {
   0
 }";
     let test = "
-import gleam
+import rakun
 
 pub fn main() {
   0
@@ -1223,7 +1223,7 @@ pub fn test_helper() {
 
 #[test]
 fn completions_for_an_import_with_docs() {
-    let code = "import gleam
+    let code = "import rakun
 
 pub fn main() {
   0
@@ -1242,7 +1242,7 @@ pub fn main() { 1 }
 
 #[test]
 fn completions_for_an_import_from_dependency() {
-    let code = "import gleam
+    let code = "import rakun
 
 pub fn main() {
   0
@@ -1257,7 +1257,7 @@ pub fn main() {
 
 #[test]
 fn completions_for_an_import_not_from_indirect_dependency() {
-    let code = "import gleam
+    let code = "import rakun
 
 pub fn main() {
   0
@@ -1274,7 +1274,7 @@ pub fn main() {
 
 #[test]
 fn completions_for_an_import_not_from_dev_dependency() {
-    let code = "import gleam
+    let code = "import rakun
 
 pub fn main() {
   0
@@ -1291,12 +1291,12 @@ pub fn main() {
 
 #[test]
 fn completions_for_an_import_not_from_dev_dependency_in_test() {
-    let code = "import gleam
+    let code = "import rakun
 
 pub fn main() {
   0
 }";
-    let test = "import gleam
+    let test = "import rakun
 
 pub fn main() {
   0
@@ -1323,7 +1323,7 @@ fn completions_for_an_import_from_dependency_with_docs() {
     let code = "//// Main package
 //// documentation!
 
-import gleam
+import rakun
 
 pub fn main() {
   0
@@ -1342,7 +1342,7 @@ pub fn main() { 1 }
 
 #[test]
 fn completions_for_an_import_start() {
-    let code = "import gleam
+    let code = "import rakun
 
 pub fn main() {
   0
@@ -1357,7 +1357,7 @@ pub fn main() {
 
 #[test]
 fn completions_for_an_import_preceeding_whitespace() {
-    let code = " import gleam
+    let code = " import rakun
 
 pub fn main() {
   0
@@ -1372,7 +1372,7 @@ pub fn main() {
 
 #[test]
 fn internal_modules_from_same_package_are_included() {
-    let code = "import gleam
+    let code = "import rakun
 
 pub fn main() {
   0
@@ -1609,7 +1609,7 @@ pub fn main() {
 #[test]
 fn completions_for_record_access() {
     let code = "
-pub type Wibble {
+pub record Wibble {
   Wibble(wibble: Int, wobble: Int)
   Wobble(wabble: Int, wobble: Int)
 }
@@ -1626,7 +1626,7 @@ fn fun() {
 #[test]
 fn completions_for_private_record_access() {
     let code = "
-type Wibble {
+record Wibble {
   Wibble(wibble: Int, wobble: Int)
   Wobble(wabble: Int, wobble: Int)
 }
@@ -1643,7 +1643,7 @@ fn fun() {
 #[test]
 fn completions_for_record_access_known_variant() {
     let code = "
-type Wibble {
+record Wibble {
   Wibble(a: Int, b: Int, c: Int, d: Int)
   Wobble(z: Bool)
 }
@@ -1662,7 +1662,7 @@ fn fun(some_wibble: Wibble) {
 #[test]
 fn completions_for_record_access_unknown_variant() {
     let code = "
-type Wibble {
+record Wibble {
   Wibble(a: Int, b: Int, c: Int, d: Int)
   Wobble(a: Int, z: Bool)
 }
@@ -1678,7 +1678,7 @@ fn fun(some_wibble: Wibble) {
 #[test]
 fn completions_for_record_labels() {
     let code = "
-pub type Wibble {
+pub record Wibble {
   Wibble(wibble: String, wobble: Int)
 }
 
@@ -1700,7 +1700,7 @@ fn fun() { // completion inside parens below includes labels
 }
 ";
     let dep = "
-pub type Wibble {
+pub record Wibble {
   Wibble(wibble: String, wobble: Int)
 }
 ";
@@ -1715,7 +1715,7 @@ pub type Wibble {
 fn completions_for_function_labels() {
     let code = "
 fn wibble(wibble arg1: String, wobble arg2: String) {
-  arg1 <> arg2
+  arg1 ++ arg2
 }
 
 fn fun() { // completion inside parens below includes labels
@@ -1737,7 +1737,7 @@ fn fun() { // completion inside parens below includes labels
 ";
     let dep = "
 pub fn wibble(wibble arg1: String, wobble arg2: String) {
-  arg1 <> arg2
+  arg1 ++ arg2
 }
 ";
 
@@ -1816,7 +1816,7 @@ pub fn main(x: Int) {
     assert_completion!(TestProject::for_source(code), Position::new(3, 0));
 }
 
-// https://github.com/gleam-lang/gleam/issues/3833
+
 #[test]
 fn autocomplete_doesnt_delete_the_piece_of_code_that_comes_after() {
     let code = "

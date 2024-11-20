@@ -1,0 +1,31 @@
+---
+source: compiler-core/src/javascript/tests/case_clause_guards.rs
+expression: "import rakun\npub record X {\n  Ok\n}\nfn func(x) {\n  case rakun.Ok {\n    _ if [] == [ rakun.Ok ] -> True\n    _ -> False\n  }\n}\n"
+---
+----- SOURCE CODE
+import rakun
+pub record X {
+  Ok
+}
+fn func(x) {
+  case rakun.Ok {
+    _ if [] == [ rakun.Ok ] -> True
+    _ -> False
+  }
+}
+
+
+----- COMPILED JAVASCRIPT
+import * as $rakun from "../rakun.mjs";
+import { Ok, toList, CustomType as $CustomType, isEqual } from "../rakun.mjs";
+
+export class Ok extends $CustomType {}
+
+function func(x) {
+  let $ = (var0) => { return new $rakun.Ok(var0); };
+  if (isEqual(toList([]), toList([(var0) => { return new Ok(var0); }]))) {
+    return true;
+  } else {
+    return false;
+  }
+}

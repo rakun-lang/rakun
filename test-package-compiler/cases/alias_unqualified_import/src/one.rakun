@@ -1,0 +1,8 @@
+
+pub fn id(x) {
+  x
+}
+
+pub record Empty {
+  Empty
+}

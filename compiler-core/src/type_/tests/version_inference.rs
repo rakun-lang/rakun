@@ -205,7 +205,7 @@ pub fn main() {
 fn label_shorthand_in_constand_requires_v1_4() {
     let version = infer_version(
         "
-pub type Wibble { Wibble(wibble: Int) }
+pub record Wibble { Wibble(wibble: Int) }
 
 pub const wibble = 1
 pub const wobble = Wibble(wibble:)
@@ -218,7 +218,7 @@ pub const wobble = Wibble(wibble:)
 fn label_shorthand_in_call_requires_v1_4() {
     let version = infer_version(
         "
-pub type Wibble { Wibble(wibble: Int) }
+pub record Wibble { Wibble(wibble: Int) }
 
 pub fn main() {
   let wibble = 1
@@ -233,7 +233,7 @@ pub fn main() {
 fn label_shorthand_in_pattern_requires_v1_4() {
     let version = infer_version(
         "
-pub type Wibble { Wibble(wibble: Int) }
+pub record Wibble { Wibble(wibble: Int) }
 
 pub fn main() {
   case Wibble(1) {
@@ -249,7 +249,7 @@ pub fn main() {
 fn label_shorthand_in_record_update_requires_v1_4() {
     let version = infer_version(
         "
-pub type Vec2 { Vec2(x: Int, y: Int) }
+pub record Vec2 { Vec2(x: Int, y: Int) }
 
 pub fn main() {
   let x = 1
@@ -262,7 +262,7 @@ pub fn main() {
 
 #[test]
 fn constant_string_concatenation_requires_v1_4() {
-    let version = infer_version("pub const string = \"wibble\" <> \"wobble\"");
+    let version = infer_version("pub const string = \"wibble\" ++ \"wobble\"");
     assert_eq!(version, Version::new(1, 4, 0));
 }
 

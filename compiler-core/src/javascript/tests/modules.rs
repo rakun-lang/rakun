@@ -198,7 +198,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3004
+
 #[test]
 fn constant_module_access_with_keyword() {
     assert_js!(

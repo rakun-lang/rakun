@@ -19,6 +19,7 @@ mod custom_types;
 mod externals;
 mod functions;
 mod generics;
+mod html;
 mod lists;
 mod modules;
 mod numbers;
@@ -42,9 +43,9 @@ macro_rules! assert_js_with_multiple_imports {
             $crate::javascript::tests::compile_js($src, vec![$((CURRENT_PACKAGE, $name, $module_src)),*]).expect("compilation failed");
             let mut output = String::from("----- SOURCE CODE\n");
             for (name, src) in [$(($name, $module_src)),*] {
-                output.push_str(&format!("-- {name}.gleam\n{src}\n\n"));
+                output.push_str(&format!("-- {name}.rakun\n{src}\n\n"));
             }
-            output.push_str(&format!("-- main.gleam\n{}\n\n----- COMPILED JAVASCRIPT\n{compiled}", $src));
+            output.push_str(&format!("-- main.rakun\n{}\n\n----- COMPILED JAVASCRIPT\n{compiled}", $src));
         insta::assert_snapshot!(insta::internals::AutoName, output, $src);
     };
 }
@@ -226,7 +227,7 @@ pub fn expect_js_error(src: &str, deps: Vec<(&str, &str, &str)>) -> String {
             error: inner_error, ..
         } => crate::Error::JavaScript {
             src: src.into(),
-            path: Utf8PathBuf::from("/src/javascript/error.gleam"),
+            path: Utf8PathBuf::from("/src/javascript/error.rakun"),
             error: inner_error,
         },
         _ => panic!("expected js error, got {error:#?}"),

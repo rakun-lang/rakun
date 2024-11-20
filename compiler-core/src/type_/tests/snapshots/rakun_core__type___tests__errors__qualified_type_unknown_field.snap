@@ -1,0 +1,28 @@
+---
+source: compiler-core/src/type_/tests/errors.rs
+expression: "\nimport rakun\nrecord Int {\n  Int(bit_size: rakun.Int, bits: BitArray)\n}\n\npub fn main(not_a_record: rakun.Int) {\n  not_a_record.bits\n}\n"
+---
+----- SOURCE CODE
+
+import rakun
+record Int {
+  Int(bit_size: rakun.Int, bits: BitArray)
+}
+
+pub fn main(not_a_record: rakun.Int) {
+  not_a_record.bits
+}
+
+
+----- ERROR
+error: Unknown record field
+  ┌─ /src/one/two.rakun:8:15
+  │
+8 │   not_a_record.bits
+  │               ^^^^^ This field does not exist
+
+The value being accessed has this type:
+
+    rakun.Int
+
+It does not have any fields.

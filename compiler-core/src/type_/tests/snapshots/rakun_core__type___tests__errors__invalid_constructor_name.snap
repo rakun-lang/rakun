@@ -1,0 +1,17 @@
+---
+source: compiler-core/src/type_/tests/errors.rs
+expression: "record MyType { Int_Value(Int) }"
+---
+----- SOURCE CODE
+record MyType { Int_Value(Int) }
+
+----- ERROR
+error: Invalid type variant name
+  ┌─ /src/one/two.rakun:1:17
+  │
+1 │ record MyType { Int_Value(Int) }
+  │                 ^^^^^^^^^ This is not a valid type variant name
+
+Hint: Type Variant names start with an uppercase letter and contain only
+lowercase letters, numbers, and uppercase letters.
+Try: IntValue

@@ -1,0 +1,172 @@
+---
+source: compiler-core/src/parse/tests.rs
+expression: "\npub fn main() {\n   let id = \"unique-id\"\n\n   <div id={ id } class=\"container\">\n    Content here\n   </div>\n}\n"
+---
+Parsed {
+    module: Module {
+        name: "",
+        documentation: [],
+        type_info: (),
+        definitions: [
+            TargetedDefinition {
+                definition: Function(
+                    Function {
+                        location: SrcSpan {
+                            start: 1,
+                            end: 14,
+                        },
+                        end_position: 107,
+                        name: Some(
+                            (
+                                SrcSpan {
+                                    start: 8,
+                                    end: 12,
+                                },
+                                "main",
+                            ),
+                        ),
+                        arguments: [],
+                        body: [
+                            Assignment(
+                                Assignment {
+                                    location: SrcSpan {
+                                        start: 20,
+                                        end: 40,
+                                    },
+                                    value: String {
+                                        location: SrcSpan {
+                                            start: 29,
+                                            end: 40,
+                                        },
+                                        value: "unique-id",
+                                    },
+                                    pattern: Variable {
+                                        location: SrcSpan {
+                                            start: 24,
+                                            end: 26,
+                                        },
+                                        name: "id",
+                                        type_: (),
+                                    },
+                                    kind: Let,
+                                    annotation: None,
+                                },
+                            ),
+                            Expression(
+                                Html {
+                                    location: SrcSpan {
+                                        start: 45,
+                                        end: 105,
+                                    },
+                                    tag: Some(
+                                        Var {
+                                            location: SrcSpan {
+                                                start: 46,
+                                                end: 49,
+                                            },
+                                            name: "div",
+                                        },
+                                    ),
+                                    children: Some(
+                                        [
+                                            HtmlText {
+                                                location: SrcSpan {
+                                                    start: 78,
+                                                    end: 99,
+                                                },
+                                                value: "Content here",
+                                            },
+                                        ],
+                                    ),
+                                    attributes: [
+                                        CallArg {
+                                            label: Some(
+                                                "id",
+                                            ),
+                                            location: SrcSpan {
+                                                start: 50,
+                                                end: 54,
+                                            },
+                                            value: Block {
+                                                location: SrcSpan {
+                                                    start: 53,
+                                                    end: 59,
+                                                },
+                                                statements: [
+                                                    Expression(
+                                                        Var {
+                                                            location: SrcSpan {
+                                                                start: 55,
+                                                                end: 57,
+                                                            },
+                                                            name: "id",
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                            implicit: None,
+                                        },
+                                        CallArg {
+                                            label: Some(
+                                                "class",
+                                            ),
+                                            location: SrcSpan {
+                                                start: 60,
+                                                end: 77,
+                                            },
+                                            value: String {
+                                                location: SrcSpan {
+                                                    start: 66,
+                                                    end: 77,
+                                                },
+                                                value: "container",
+                                            },
+                                            implicit: None,
+                                        },
+                                    ],
+                                },
+                            ),
+                        ],
+                        publicity: Public,
+                        deprecation: NotDeprecated,
+                        return_annotation: None,
+                        return_type: (),
+                        documentation: None,
+                        external_erlang: None,
+                        external_javascript: None,
+                        implementations: Implementations {
+                            rakun: true,
+                            can_run_on_erlang: true,
+                            can_run_on_javascript: true,
+                            uses_erlang_externals: false,
+                            uses_javascript_externals: false,
+                        },
+                    },
+                ),
+                target: None,
+            },
+        ],
+        names: Names {
+            local_types: {},
+            imported_modules: {},
+            type_variables: {},
+            local_value_constructors: {},
+        },
+    },
+    extra: ModuleExtra {
+        module_comments: [],
+        doc_comments: [],
+        comments: [],
+        empty_lines: [
+            41,
+        ],
+        new_lines: [
+            0,
+            16,
+            40,
+            41,
+            105,
+            107,
+        ],
+    },
+}

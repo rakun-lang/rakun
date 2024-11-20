@@ -1,0 +1,21 @@
+---
+source: compiler-core/src/type_/tests/errors.rs
+expression: "!\"Hello Rakun\""
+---
+----- SOURCE CODE
+!"Hello Rakun"
+
+----- ERROR
+error: Type mismatch
+  ┌─ /src/one/two.rakun:1:2
+  │
+1 │ !"Hello Rakun"
+  │  ^^^^^^^^^^^^^
+
+Expected type:
+
+    Bool
+
+Found type:
+
+    String

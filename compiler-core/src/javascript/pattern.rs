@@ -511,7 +511,7 @@ impl<'module_ctx, 'expression_gen, 'a> Generator<'module_ctx, 'expression_gen, '
                     self.pop();
                 }
                 if let Some((left, _)) = left_side_assignment {
-                    // "wibble" as prefix <> rest
+                    // "wibble" as prefix ++ rest
                     //          ^^^^^^^^^ In case the left prefix of the pattern matching is given an
                     //                    alias we bind it to a local variable so that it can be
                     //                    correctly referenced inside the case branch.

@@ -1,0 +1,15 @@
+---
+source: compiler-core/src/language_server/tests/completion.rs
+expression: "\nrecord Foo { Bar(List(#(Bool))) }\nfn wibble() {\n  Bar([#(!{\n    let foo = True\n    foo\n  })])\n  todo\n}\n"
+---
+record Foo { Bar(List(#(Bool))) }
+fn wibble() {
+  Bar([#(!{
+    let foo = True
+    foo|
+  })])
+  todo
+}
+
+
+----- Completion content -----

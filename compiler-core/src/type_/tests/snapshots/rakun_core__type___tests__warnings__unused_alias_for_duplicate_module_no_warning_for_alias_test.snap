@@ -1,0 +1,34 @@
+---
+source: compiler-core/src/type_/tests/warnings.rs
+expression: "\n            import a/wibble\n            import b/wibble as wobble\n            const one = wibble.one\n        "
+---
+----- SOURCE CODE
+-- a/wibble.rakun
+pub const one = 1
+
+-- b/wibble.rakun
+pub const two = 2
+
+-- main.rakun
+
+            import a/wibble
+            import b/wibble as wobble
+            const one = wibble.one
+        
+
+----- WARNING
+warning: Unused imported module
+  ┌─ /src/warning/wrn.rakun:3:13
+  │
+3 │             import b/wibble as wobble
+  │             ^^^^^^^^^^^^^^^^^^^^^^^^^ This imported module is never used
+
+Hint: You can safely remove it.
+
+warning: Unused private constant
+  ┌─ /src/warning/wrn.rakun:4:13
+  │
+4 │             const one = wibble.one
+  │             ^^^^^^^^^ This private constant is never used
+
+Hint: You can safely remove it.

@@ -79,7 +79,7 @@ pub struct LanguageServerEngine<IO, Reporter> {
 
 impl<'a, IO, Reporter> LanguageServerEngine<IO, Reporter>
 where
-    // IO to be supplied from outside of gleam-core
+    // IO to be supplied from outside of rakun-core
     IO: FileSystemReader
         + FileSystemWriter
         + BeamCompiler
@@ -87,7 +87,7 @@ where
         + DownloadDependencies
         + MakeLocker
         + Clone,
-    // IO to be supplied from inside of gleam-core
+    // IO to be supplied from inside of rakun-core
     Reporter: ProgressReporter + Clone + 'a,
 {
     pub fn new(
@@ -652,7 +652,7 @@ Unused labelled fields:
             .map(|c| c.as_os_str().to_string_lossy());
         let module_name: EcoString = Itertools::intersperse(components, "/".into())
             .collect::<String>()
-            .strip_suffix(".gleam")?
+            .strip_suffix(".rakun")?
             .into();
 
         self.compiler.modules.get(&module_name)
@@ -782,7 +782,7 @@ fn hover_for_pattern(pattern: &TypedPattern, line_numbers: LineNumbers, module: 
     // Show the type of the hovered node to the user
     let type_ = Printer::new(&module.ast.names).print_type(pattern.type_().as_ref());
     let contents = format!(
-        "```gleam
+        "```rakun
 {type_}
 ```
 {documentation}"
@@ -814,7 +814,7 @@ fn hover_for_function_head(
     let function_type = get_function_type(fun);
     let formatted_type = Printer::new(&module.ast.names).print_type(&function_type);
     let contents = format!(
-        "```gleam
+        "```rakun
 {formatted_type}
 ```
 {documentation}"
@@ -831,7 +831,7 @@ fn hover_for_function_argument(
     module: &Module,
 ) -> Hover {
     let type_ = Printer::new(&module.ast.names).print_type(&argument.type_);
-    let contents = format!("```gleam\n{type_}\n```");
+    let contents = format!("```rakun\n{type_}\n```");
     Hover {
         contents: HoverContents::Scalar(MarkedString::String(contents)),
         range: Some(src_span_to_lsp_range(argument.location, &line_numbers)),
@@ -855,7 +855,7 @@ fn hover_for_annotation(
     // which is probably more helpful.
     let type_ = Printer::new(&module.ast.names).print_type_without_aliases(annotation_type);
     let contents = format!(
-        "```gleam
+        "```rakun
 {type_}
 ```
 {documentation}"
@@ -878,7 +878,7 @@ fn hover_for_module_constant(
         .as_ref()
         .map(|(_, doc)| doc)
         .unwrap_or(&empty_str);
-    let contents = format!("```gleam\n{type_}\n```\n{documentation}");
+    let contents = format!("```rakun\n{type_}\n```\n{documentation}");
     Hover {
         contents: HoverContents::Scalar(MarkedString::String(contents)),
         range: Some(src_span_to_lsp_range(constant.location, &line_numbers)),
@@ -902,7 +902,7 @@ fn hover_for_expression(
     // Show the type of the hovered node to the user
     let type_ = Printer::new(&module.ast.names).print_type(expression.type_().as_ref());
     let contents = format!(
-        "```gleam
+        "```rakun
 {type_}
 ```
 {documentation}{link_section}"
@@ -930,7 +930,7 @@ fn hover_for_imported_value(
     // Show the type of the hovered node to the user
     let type_ = Printer::new(&module.ast.names).print_type(value.type_.as_ref());
     let contents = format!(
-        "```gleam
+        "```rakun
 {type_}
 ```
 {documentation}{link_section}"

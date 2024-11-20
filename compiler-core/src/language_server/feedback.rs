@@ -47,9 +47,9 @@ impl Feedback {
 
 /// When an operation succeeds or fails we want to send diagnostics and
 /// messages to the client for displaying to the user. This object converts
-/// Gleam warnings, errors, etc to these feedback items.
+/// Rakun warnings, errors, etc to these feedback items.
 ///
-/// Gleam has incremental compilation so we cannot erase all previous
+/// Rakun has incremental compilation so we cannot erase all previous
 /// diagnostics and replace each time new diagnostics are available; if a file
 /// has not been recompiled then any diagnostics it had previously are still
 /// valid and must not be erased.
@@ -167,9 +167,9 @@ mod tests {
     #[test]
     fn feedback() {
         let mut book_keeper = FeedbackBookKeeper::default();
-        let file1 = Utf8PathBuf::from("src/file1.gleam");
-        let file2 = Utf8PathBuf::from("src/file2.gleam");
-        let file3 = Utf8PathBuf::from("src/file3.gleam");
+        let file1 = Utf8PathBuf::from("src/file1.rakun");
+        let file2 = Utf8PathBuf::from("src/file2.rakun");
+        let file3 = Utf8PathBuf::from("src/file3.rakun");
 
         let warning1 = Warning::Type {
             path: file1.clone(),
@@ -230,7 +230,7 @@ mod tests {
         // location.
 
         let mut book_keeper = FeedbackBookKeeper::default();
-        let file1 = Utf8PathBuf::from("src/file1.gleam");
+        let file1 = Utf8PathBuf::from("src/file1.rakun");
 
         let warning1 = Warning::Type {
             path: file1.clone(),
@@ -263,8 +263,8 @@ mod tests {
         // location.
 
         let mut book_keeper = FeedbackBookKeeper::default();
-        let file1 = Utf8PathBuf::from("src/file1.gleam");
-        let file3 = Utf8PathBuf::from("src/file2.gleam");
+        let file1 = Utf8PathBuf::from("src/file1.rakun");
+        let file3 = Utf8PathBuf::from("src/file2.rakun");
 
         let warning1 = Warning::Type {
             path: file1.clone(),
@@ -312,7 +312,7 @@ mod tests {
         );
     }
 
-    // https://github.com/gleam-lang/gleam/issues/2093
+    
     #[test]
     fn successful_compilation_removes_error_diagnostic() {
         // It is possible for a compile error to be fixed but the module that
@@ -330,8 +330,8 @@ mod tests {
         // when a successful compilation occurs.
 
         let mut book_keeper = FeedbackBookKeeper::default();
-        let file1 = Utf8PathBuf::from("src/file1.gleam");
-        let file2 = Utf8PathBuf::from("src/file2.gleam");
+        let file1 = Utf8PathBuf::from("src/file1.rakun");
+        let file2 = Utf8PathBuf::from("src/file2.rakun");
 
         let error = Error::Parse {
             path: file1.clone(),
@@ -367,12 +367,12 @@ mod tests {
         );
     }
 
-    // https://github.com/gleam-lang/gleam/issues/2122
+    
     #[test]
     fn second_failure_unsets_previous_error() {
         let mut book_keeper = FeedbackBookKeeper::default();
-        let file1 = Utf8PathBuf::from("src/file1.gleam");
-        let file2 = Utf8PathBuf::from("src/file2.gleam");
+        let file1 = Utf8PathBuf::from("src/file1.rakun");
+        let file2 = Utf8PathBuf::from("src/file2.rakun");
 
         let error = |file: &camino::Utf8Path| Error::Parse {
             path: file.to_path_buf(),
@@ -411,11 +411,11 @@ mod tests {
         );
     }
 
-    // https://github.com/gleam-lang/gleam/issues/2105
+    
     #[test]
     fn successful_non_compilation_does_not_remove_error_diagnostic() {
         let mut book_keeper = FeedbackBookKeeper::default();
-        let file1 = Utf8PathBuf::from("src/file1.gleam");
+        let file1 = Utf8PathBuf::from("src/file1.rakun");
 
         let error = Error::Parse {
             path: file1.clone(),
@@ -455,7 +455,7 @@ mod tests {
     fn append_feedback_new_file() {
         let mut feedback = Feedback {
             diagnostics: HashMap::from([(
-                Utf8PathBuf::from("src/file1.gleam"),
+                Utf8PathBuf::from("src/file1.rakun"),
                 vec![Diagnostic {
                     location: None,
                     hint: None,
@@ -474,7 +474,7 @@ mod tests {
         };
         feedback.append_feedback(Feedback {
             diagnostics: HashMap::from([(
-                Utf8PathBuf::from("src/file2.gleam"),
+                Utf8PathBuf::from("src/file2.rakun"),
                 vec![Diagnostic {
                     location: None,
                     hint: None,
@@ -490,7 +490,7 @@ mod tests {
             Feedback {
                 diagnostics: HashMap::from([
                     (
-                        Utf8PathBuf::from("src/file1.gleam"),
+                        Utf8PathBuf::from("src/file1.rakun"),
                         vec![Diagnostic {
                             location: None,
                             hint: None,
@@ -500,7 +500,7 @@ mod tests {
                         }],
                     ),
                     (
-                        Utf8PathBuf::from("src/file2.gleam"),
+                        Utf8PathBuf::from("src/file2.rakun"),
                         vec![Diagnostic {
                             location: None,
                             hint: None,
@@ -525,7 +525,7 @@ mod tests {
     fn append_feedback_same_file() {
         let mut feedback = Feedback {
             diagnostics: HashMap::from([(
-                Utf8PathBuf::from("src/file1.gleam"),
+                Utf8PathBuf::from("src/file1.rakun"),
                 vec![Diagnostic {
                     location: None,
                     hint: None,
@@ -544,7 +544,7 @@ mod tests {
         };
         feedback.append_feedback(Feedback {
             diagnostics: HashMap::from([(
-                Utf8PathBuf::from("src/file1.gleam"),
+                Utf8PathBuf::from("src/file1.rakun"),
                 vec![Diagnostic {
                     location: None,
                     hint: None,
@@ -559,7 +559,7 @@ mod tests {
             feedback,
             Feedback {
                 diagnostics: HashMap::from([(
-                    Utf8PathBuf::from("src/file1.gleam"),
+                    Utf8PathBuf::from("src/file1.rakun"),
                     vec![Diagnostic {
                         location: None,
                         hint: None,
@@ -583,7 +583,7 @@ mod tests {
     fn append_feedback_new_message() {
         let mut feedback = Feedback {
             diagnostics: HashMap::from([(
-                Utf8PathBuf::from("src/file1.gleam"),
+                Utf8PathBuf::from("src/file1.rakun"),
                 vec![Diagnostic {
                     location: None,
                     hint: None,
@@ -614,7 +614,7 @@ mod tests {
             feedback,
             Feedback {
                 diagnostics: HashMap::from([(
-                    Utf8PathBuf::from("src/file1.gleam"),
+                    Utf8PathBuf::from("src/file1.rakun"),
                     vec![Diagnostic {
                         location: None,
                         hint: None,
@@ -647,7 +647,7 @@ mod tests {
     fn append_feedback_new_file_blank() {
         let mut feedback = Feedback {
             diagnostics: HashMap::from([(
-                Utf8PathBuf::from("src/file1.gleam"),
+                Utf8PathBuf::from("src/file1.rakun"),
                 vec![Diagnostic {
                     location: None,
                     hint: None,
@@ -665,7 +665,7 @@ mod tests {
             }],
         };
         feedback.append_feedback(Feedback {
-            diagnostics: HashMap::from([(Utf8PathBuf::from("src/file2.gleam"), vec![])]),
+            diagnostics: HashMap::from([(Utf8PathBuf::from("src/file2.rakun"), vec![])]),
             messages: vec![],
         });
         assert_eq!(
@@ -673,7 +673,7 @@ mod tests {
             Feedback {
                 diagnostics: HashMap::from([
                     (
-                        Utf8PathBuf::from("src/file1.gleam"),
+                        Utf8PathBuf::from("src/file1.rakun"),
                         vec![Diagnostic {
                             location: None,
                             hint: None,
@@ -682,7 +682,7 @@ mod tests {
                             level: Level::Error,
                         },],
                     ),
-                    (Utf8PathBuf::from("src/file2.gleam"), vec![],),
+                    (Utf8PathBuf::from("src/file2.rakun"), vec![],),
                 ]),
                 messages: vec![Diagnostic {
                     location: None,
@@ -699,7 +699,7 @@ mod tests {
     fn append_feedback_existing_file_blank() {
         let mut feedback = Feedback {
             diagnostics: HashMap::from([(
-                Utf8PathBuf::from("src/file1.gleam"),
+                Utf8PathBuf::from("src/file1.rakun"),
                 vec![Diagnostic {
                     location: None,
                     hint: None,
@@ -717,13 +717,13 @@ mod tests {
             }],
         };
         feedback.append_feedback(Feedback {
-            diagnostics: HashMap::from([(Utf8PathBuf::from("src/file1.gleam"), vec![])]),
+            diagnostics: HashMap::from([(Utf8PathBuf::from("src/file1.rakun"), vec![])]),
             messages: vec![],
         });
         assert_eq!(
             feedback,
             Feedback {
-                diagnostics: HashMap::from([(Utf8PathBuf::from("src/file1.gleam"), vec![],),]),
+                diagnostics: HashMap::from([(Utf8PathBuf::from("src/file1.rakun"), vec![],),]),
                 messages: vec![Diagnostic {
                     location: None,
                     hint: None,

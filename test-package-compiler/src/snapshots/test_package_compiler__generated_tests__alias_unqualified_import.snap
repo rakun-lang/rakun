@@ -1,15 +1,14 @@
 ---
 source: test-package-compiler/src/generated_tests.rs
-assertion_line: 8
 expression: "./cases/alias_unqualified_import"
 ---
-//// /out/lib/the_package/_gleam_artefacts/one.cache
+//// /out/lib/the_package/_rakun_artefacts/one.cache
 <.cache binary>
 
-//// /out/lib/the_package/_gleam_artefacts/one.cache_meta
+//// /out/lib/the_package/_rakun_artefacts/one.cache_meta
 <77 byte binary>
 
-//// /out/lib/the_package/_gleam_artefacts/one.erl
+//// /out/lib/the_package/_rakun_artefacts/one.erl
 -module(one).
 -compile([no_auto_import, nowarn_unused_vars, nowarn_unused_function, nowarn_nomatch]).
 
@@ -18,25 +17,25 @@ expression: "./cases/alias_unqualified_import"
 
 -type empty() :: empty.
 
--file("src/one.gleam", 2).
+-file("src/one.rakun", 2).
 -spec id(I) -> I.
 id(X) ->
     X.
 
 
-//// /out/lib/the_package/_gleam_artefacts/two.cache
+//// /out/lib/the_package/_rakun_artefacts/two.cache
 <.cache binary>
 
-//// /out/lib/the_package/_gleam_artefacts/two.cache_meta
+//// /out/lib/the_package/_rakun_artefacts/two.cache_meta
 <88 byte binary>
 
-//// /out/lib/the_package/_gleam_artefacts/two.erl
+//// /out/lib/the_package/_rakun_artefacts/two.erl
 -module(two).
 -compile([no_auto_import, nowarn_unused_vars, nowarn_unused_function, nowarn_nomatch]).
 
 -export([make/0]).
 
--file("src/two.gleam", 4).
+-file("src/two.rakun", 4).
 -spec make() -> one:empty().
 make() ->
     one:id(empty).

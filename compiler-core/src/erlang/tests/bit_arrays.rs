@@ -91,7 +91,7 @@ pub fn main() {
 
 #[test]
 fn bit_array_discard() {
-    // https://github.com/gleam-lang/gleam/issues/704
+    
 
     assert_erl!(
         r#"
@@ -140,7 +140,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/3050
+
 #[test]
 fn unicode_bit_array_1() {
     assert_erl!(

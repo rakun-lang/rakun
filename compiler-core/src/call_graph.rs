@@ -1,4 +1,4 @@
-//! Graphs that represent the relationships between entities in a Gleam module,
+//! Graphs that represent the relationships between entities in a Rakun module,
 //! such as module functions or constants.
 
 #[cfg(test)]
@@ -165,6 +165,7 @@ impl<'a> CallGraphBuilder<'a> {
             UntypedExpr::Int { .. }
             | UntypedExpr::Float { .. }
             | UntypedExpr::String { .. }
+            | UntypedExpr::HtmlText { .. }
             | UntypedExpr::Placeholder { .. } => (),
 
             UntypedExpr::Todo { message, .. } => {
@@ -189,6 +190,9 @@ impl<'a> CallGraphBuilder<'a> {
                 for argument in arguments {
                     self.expression(&argument.value);
                 }
+            }
+            UntypedExpr::Html { .. } => {
+                // UntypedExpr::Html
             }
 
             UntypedExpr::PipeLine { expressions } => {

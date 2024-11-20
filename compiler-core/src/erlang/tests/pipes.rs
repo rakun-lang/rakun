@@ -20,7 +20,7 @@ pub fn apply(f: fn(a, Int) -> b, a: a) { a |> f(1) }
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/952
+
 #[test]
 fn block_expr_into_pipe() {
     assert_erl!(
@@ -68,11 +68,11 @@ fn pipe_in_case_subject() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1379
+
 #[test]
 fn pipe_in_record_update() {
     assert_erl!(
-        "pub type X {
+        "pub record X {
   X(a: Int, b: Int)
 }
 
@@ -86,7 +86,7 @@ pub fn main(x) {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1385
+
 #[test]
 fn pipe_in_eq() {
     assert_erl!(
@@ -100,7 +100,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1863
+
 #[test]
 fn call_pipeline_result() {
     assert_erl!(
@@ -116,7 +116,7 @@ pub fn add(x) {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1931
+
 #[test]
 fn pipe_in_call() {
     assert_erl!(

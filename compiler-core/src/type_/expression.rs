@@ -22,22 +22,22 @@ use vec1::Vec1;
 
 #[derive(Clone, Copy, Debug, Eq, PartialOrd, Ord, PartialEq, Serialize)]
 pub struct Implementations {
-    /// Wether the function has a pure-gleam implementation.
+    /// Wether the function has a pure-rakun implementation.
     ///
     /// It's important to notice that, even if all individual targets are
-    /// supported, it would not be the same as being pure Gleam.
+    /// supported, it would not be the same as being pure Rakun.
     /// Imagine this scenario:
     ///
-    /// ```gleam
+    /// ```rakun
     /// @external(javascript, "wibble", "wobble")
     /// @external(erlang, "wibble", "wobble")
     /// pub fn func() -> Int
     /// ```
     ///
-    /// `func` supports all _current_ Gleam targets; however, if a new target
+    /// `func` supports all _current_ Rakun targets; however, if a new target
     /// is added - say a WASM target - `func` wouldn't support it! On the other
-    /// hand, a pure Gleam function will support all future targets.
-    pub gleam: bool,
+    /// hand, a pure Rakun function will support all future targets.
+    pub rakun: bool,
     pub can_run_on_erlang: bool,
     pub can_run_on_javascript: bool,
     /// Wether the function has an implementation that uses external erlang
@@ -51,7 +51,7 @@ pub struct Implementations {
 impl Implementations {
     pub fn supporting_all() -> Self {
         Self {
-            gleam: true,
+            rakun: true,
             can_run_on_erlang: true,
             can_run_on_javascript: true,
             uses_javascript_externals: false,
@@ -95,7 +95,7 @@ impl Implementations {
         // With this pattern matching we won't forget to deal with new targets
         // when those are added :)
         let Implementations {
-            gleam,
+            rakun,
             uses_erlang_externals: other_uses_erlang_externals,
             uses_javascript_externals: other_uses_javascript_externals,
             can_run_on_erlang: other_can_run_on_erlang,
@@ -107,34 +107,34 @@ impl Implementations {
             has_javascript_external,
         } = current_function_definition;
 
-        // If a pure-Gleam function uses a function that doesn't have a pure
-        // Gleam implementation, then it's no longer pure-Gleam.
-        self.gleam = self.gleam && *gleam;
+        // If a pure-Rakun function uses a function that doesn't have a pure
+        // Rakun implementation, then it's no longer pure-Rakun.
+        self.rakun = self.rakun && *rakun;
 
         // A function can run on a target if the code that it uses can run on on
         // the same target,
         self.can_run_on_erlang = *has_erlang_external
-            || (self.can_run_on_erlang && (*gleam || *other_can_run_on_erlang));
+            || (self.can_run_on_erlang && (*rakun || *other_can_run_on_erlang));
         self.can_run_on_javascript = *has_javascript_external
-            || (self.can_run_on_javascript && (*gleam || *other_can_run_on_javascript));
+            || (self.can_run_on_javascript && (*rakun || *other_can_run_on_javascript));
 
         // If a function uses a function that relies on external code (be it
         // javascript or erlang) then it's considered as using external code as
         // well.
         //
         // For example:
-        // ```gleam
+        // ```rakun
         // @external(erlang, "wibble", "wobble")
-        // pub fn erlang_only_with_pure_gleam_default() -> Int {
+        // pub fn erlang_only_with_pure_rakun_default() -> Int {
         //   1 + 1
         // }
         //
-        // pub fn main() { erlang_only_with_pure_gleam_default() }
+        // pub fn main() { erlang_only_with_pure_rakun_default() }
         // ```
         // Both functions will end up using external erlang code and have the
         // following implementations:
-        // `Implementations { gleam: true, uses_erlang_externals: true, uses_javascript_externals: false}`.
-        // They have a pure gleam implementation and an erlang specific external
+        // `Implementations { rakun: true, uses_erlang_externals: true, uses_javascript_externals: false}`.
+        // They have a pure rakun implementation and an erlang specific external
         // implementation.
         self.uses_erlang_externals = self.uses_erlang_externals || *other_uses_erlang_externals;
         self.uses_javascript_externals =
@@ -143,10 +143,10 @@ impl Implementations {
 
     /// Returns true if the current target is supported by the given
     /// implementations.
-    /// If something has a pure gleam implementation then it supports all
+    /// If something has a pure rakun implementation then it supports all
     /// targets automatically.
     pub fn supports(&self, target: Target) -> bool {
-        self.gleam
+        self.rakun
             || match target {
                 Target::Erlang => self.can_run_on_erlang,
                 Target::JavaScript => self.can_run_on_javascript,
@@ -196,7 +196,7 @@ pub enum ArgumentKind {
 pub(crate) struct ExprTyper<'a, 'b> {
     pub(crate) environment: &'a mut Environment<'b>,
 
-    /// The minimum Gleam version required to compile the typed expression.
+    /// The minimum Rakun version required to compile the typed expression.
     pub minimum_required_version: Version,
 
     // This is set to true if the previous expression that has been typed is
@@ -230,10 +230,10 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
         let mut hydrator = Hydrator::new();
 
         let implementations = Implementations {
-            // We start assuming the function is pure Gleam and narrow it down
+            // We start assuming the function is pure Rakun and narrow it down
             // if we run into functions/constants that have only external
             // implementations for some of the targets.
-            gleam: definition.has_body,
+            rakun: definition.has_body,
             can_run_on_erlang: definition.has_body || definition.has_erlang_external,
             can_run_on_javascript: definition.has_body || definition.has_javascript_external,
             uses_erlang_externals: definition.has_erlang_external,
@@ -371,6 +371,18 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
                 arguments: args,
                 ..
             } => Ok(self.infer_call(*fun, args, location, CallKind::Function)),
+
+            UntypedExpr::HtmlText {
+                location, value, ..
+            } => Ok(self.infer_html_text(value, location)?),
+
+            UntypedExpr::Html {
+                location,
+                tag,
+                children,
+                attributes,
+                ..
+            } => Ok(self.infer_html(tag, children, attributes, location)?),
 
             UntypedExpr::BinOp {
                 location,
@@ -671,7 +683,7 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
             label: None,
             location: SrcSpan::new(first.start, sequence_location.end),
             value: callback,
-            // This argument is implicitly given by Gleam's use syntax so we
+            // This argument is implicitly given by Rakun's use syntax so we
             // mark it as such.
             implicit: Some(ImplicitCallArgOrigin::Use),
         });
@@ -1262,8 +1274,8 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
             _ => return,
         };
 
-        // Check if we have a `list.length` call from `gleam/list`.
-        if module_name != "gleam/list" || label != "length" {
+        // Check if we have a `list.length` call from `rakun/list`.
+        if module_name != "rakun/list" || label != "length" {
             return;
         }
 
@@ -1437,7 +1449,7 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
 
         // We track if the case expression is used like an if: that is all its
         // patterns are discarded and there's at least a guard. For example:
-        // ```gleam
+        // ```rakun
         // case True {
         //   _ if condition -> todo
         //   _ if other_condition -> todo
@@ -2631,7 +2643,7 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
 
     fn report_name_error(&mut self, name: &EcoString, location: &SrcSpan) -> Error {
         // First try to see if this is a module alias:
-        // `import gleam/io`
+        // `import rakun/io`
         // `io.debug(io)`
         // Show nice error message for this case.
         let module = self.environment.imported_modules.get(name);
@@ -3431,10 +3443,10 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
         body: Vec1<UntypedStatement>,
         return_type: Option<Arc<Type>>,
     ) -> Result<(Vec<TypedArg>, Vec1<TypedStatement>), Error> {
-        // If a function has an empty body then it doesn't have a pure gleam
+        // If a function has an empty body then it doesn't have a pure rakun
         // implementation.
         if body.first().is_placeholder() {
-            self.implementations.gleam = false;
+            self.implementations.rakun = false;
         }
         self.in_new_scope(|body_typer| {
             // Used to track if any argument names are used more than once
@@ -3630,15 +3642,15 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
 
         // Then if the required version is not in the specified version for the
         // range we emit a warning highlighting the usage of the feature.
-        if let Some(gleam_version) = &self.environment.gleam_version {
-            if let Some(lowest_allowed_version) = gleam_version.lowest_version() {
+        if let Some(rakun_version) = &self.environment.rakun_version {
+            if let Some(lowest_allowed_version) = rakun_version.lowest_version() {
                 // There is a version in the specified range that is lower than
                 // the one required by this feature! This means that the
                 // specified range is wrong and would allow someone to run a
                 // compiler that is too old to know of this feature.
                 if minimum_required_version > lowest_allowed_version {
                     self.problems
-                        .warning(Warning::FeatureRequiresHigherGleamVersion {
+                        .warning(Warning::FeatureRequiresHigherRakunVersion {
                             location,
                             feature_kind,
                             minimum_required_version: minimum_required_version.clone(),
@@ -3650,6 +3662,235 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
 
         if minimum_required_version > self.minimum_required_version {
             self.minimum_required_version = minimum_required_version;
+        }
+    }
+
+    fn infer_html_text(&mut self, value: EcoString, location: SrcSpan) -> Result<TypedExpr, Error> {
+        Ok(self.infer_call(
+            UntypedExpr::FieldAccess {
+                location: location,
+                label_location: location,
+                label: EcoString::from("html_text"),
+                container: Box::new(UntypedExpr::Var {
+                    location: location,
+                    name: EcoString::from("rkx"),
+                }),
+            },
+            vec![CallArg {
+                label: None,
+                location: location,
+                implicit: None,
+                value: UntypedExpr::String {
+                    location: location,
+                    value: value,
+                },
+            }],
+            location,
+            CallKind::Function,
+        ))
+    }
+    fn infer_html(
+        &mut self,
+        tag: Option<Box<UntypedExpr>>,
+        children: Option<Vec<UntypedExpr>>,
+        attributes: Vec<crate::ast::CallArg<UntypedExpr>>,
+        location: SrcSpan,
+    ) -> Result<TypedExpr, Error> {
+        match tag {
+            Some(expr) => {
+                let _fn = *expr.to_owned();
+                let record_props = self.infer_html_record_props(_fn)?.unwrap();
+
+                let mut new_attributes = Vec::new();
+
+                new_attributes.extend(attributes);
+                if let Some(children) = children {
+                    new_attributes.push(crate::ast::CallArg {
+                        label: Some(EcoString::from("children")),
+                        location,
+                        implicit: None,
+                        value: UntypedExpr::List {
+                            location,
+                            elements: children
+                                .into_iter()
+                                .map(|child| {
+                                    if let UntypedExpr::Block { .. } = child {
+                                        UntypedExpr::Call {
+                                            location: location,
+                                            fun: Box::new(UntypedExpr::FieldAccess {
+                                                location: location,
+                                                label_location: location,
+                                                label: EcoString::from("html_interpolation"),
+                                                container: Box::new(UntypedExpr::Var {
+                                                    location: location,
+                                                    name: EcoString::from("rkx"),
+                                                }),
+                                            }),
+                                            arguments: vec![CallArg {
+                                                label: None,
+                                                location: location,
+                                                implicit: None,
+                                                value: child,
+                                            }],
+                                        }
+                                    } else {
+                                        child
+                                    }
+                                })
+                                .collect(),
+                            tail: None,
+                        },
+                    });
+                }
+
+                Ok(self.infer_call(
+                    UntypedExpr::FieldAccess {
+                        location: location,
+                        label_location: location,
+                        label: EcoString::from("component_init"),
+                        container: Box::new(UntypedExpr::Var {
+                            location: location,
+                            name: EcoString::from("rkx"),
+                        }),
+                    },
+                    vec![CallArg {
+                        label: None,
+                        location: location,
+                        implicit: None,
+                        value: UntypedExpr::Call {
+                            location: location,
+                            fun: Box::new(*expr.to_owned()),
+                            arguments: vec![CallArg {
+                                label: None,
+                                location: location,
+                                implicit: None,
+                                value: UntypedExpr::Call {
+                                    location: location,
+                                    fun: Box::new(record_props),
+                                    arguments: new_attributes,
+                                },
+                            }],
+                        },
+                    }],
+                    location,
+                    CallKind::Function,
+                ))
+            }
+            None => {
+                todo!()
+            }
+        }
+    }
+    fn infer_html_record_props(&mut self, expr: UntypedExpr) -> Result<Option<UntypedExpr>, Error> {
+        match expr {
+            UntypedExpr::FieldAccess {
+                location,
+                label_location,
+                label,
+                container,
+                ..
+            } => self.infer_html_handle_field_access(
+                location,
+                label_location,
+                label,
+                container.as_ref(),
+            ),
+            UntypedExpr::Var { location, name, .. } => {
+                self.infer_html_handle_variable(location, name)
+            }
+            _ => Ok(None),
+        }
+    }
+
+    fn infer_html_handle_field_access(
+        &mut self,
+        location: SrcSpan,
+        label_location: SrcSpan,
+        label: EcoString,
+        container: &UntypedExpr,
+    ) -> Result<Option<UntypedExpr>, Error> {
+        match container {
+            UntypedExpr::Var {
+                location: module_location,
+                name: module_alias,
+                ..
+            } => {
+                let (_, module) = self
+                    .environment
+                    .imported_modules
+                    .get(module_alias)
+                    .ok_or_else(|| Error::UnknownModule {
+                        name: module_alias.clone(),
+                        location: label_location,
+                        suggestions: self
+                            .environment
+                            .suggest_modules(&module_alias, Imported::Value(label.clone())),
+                    })?;
+
+                let constructor =
+                    module
+                        .get_public_value(&label)
+                        .ok_or_else(|| Error::UnknownModuleValue {
+                            name: label.clone(),
+                            location: SrcSpan {
+                                start: module_location.end,
+                                end: label_location.end,
+                            },
+                            module_name: module.name.clone(),
+                            value_constructors: module.public_value_names(),
+                            type_with_same_name: false,
+                        })?;
+                if let Some(arg_type) = self.infer_html_get_first_argument_type(&constructor.type_)
+                {
+                    if let Some(name) = self.infer_html_extract_name_from_type(arg_type) {
+                        return Ok(Some(UntypedExpr::FieldAccess {
+                            location: location,
+                            label_location: location,
+                            label: name,
+                            container: Box::new(UntypedExpr::Var {
+                                location,
+                                name: module_alias.clone(),
+                            }),
+                        }));
+                    }
+                }
+                Ok(None)
+            }
+            _ => Ok(None),
+        }
+    }
+
+    fn infer_html_handle_variable(
+        &mut self,
+        location: SrcSpan,
+        name: EcoString,
+    ) -> Result<Option<UntypedExpr>, Error> {
+        let constructor = self
+            .environment
+            .get_variable(&name)
+            .cloned()
+            .ok_or_else(|| self.report_name_error(&name, &location))?;
+
+        self.environment.increment_usage(&name);
+        if let Some(arg_type) = self.infer_html_get_first_argument_type(&constructor.type_) {
+            if let Some(name) = self.infer_html_extract_name_from_type(arg_type) {
+                return Ok(Some(UntypedExpr::Var { location, name }));
+            }
+        }
+        Ok(None)
+    }
+
+    fn infer_html_get_first_argument_type(&self, type_: &Type) -> Option<Type> {
+        match type_ {
+            Type::Fn { args, .. } => args.get(0).map(|arg| arg.as_ref().clone()),
+            _ => None,
+        }
+    }
+
+    fn infer_html_extract_name_from_type(&self, type_: Type) -> Option<EcoString> {
+        match type_ {
+            Type::Named { name, .. } => Some(name),
+            _ => None,
         }
     }
 }
@@ -3683,7 +3924,7 @@ fn check_subject_for_redundant_match(
 
         // We make sure to not emit warnings if the case is being used like an
         // if expression:
-        // ```gleam
+        // ```rakun
         // case True {
         //   _ if condition -> todo
         //   _ if other_condition -> todo
@@ -3773,22 +4014,22 @@ fn get_use_expression_call(call: UntypedExpr) -> UseCall {
 #[derive(Debug, Default)]
 struct UseAssignments {
     /// With sugar
-    /// ```gleam
+    /// ```rakun
     /// use Box(x) = ...
     /// ```
     /// Without sugar
-    /// ```gleam
+    /// ```rakun
     /// fn(_use1) { let Box(x) = _use1 }
     /// // ^^^^^ The function arguments
     /// ```
     function_arguments: Vec<UntypedArg>,
 
     /// With sugar
-    /// ```gleam
+    /// ```rakun
     /// use Box(x) = ...
     /// ```
     /// Without sugar
-    /// ```gleam
+    /// ```rakun
     /// fn(_use1) { let Box(x) = _use1 }
     /// //          ^^^^^^^^^^^^^^^^^^ The body assignments
     /// ```

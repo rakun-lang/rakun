@@ -60,13 +60,13 @@ fn go(x, y) {
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/1112
+
 // differentiate between prelude constructors and custom type constructors
 #[test]
 fn shadowed_bools_and_nil() {
     assert_js!(
         r#"
-pub type True { True False Nil }
+pub record True { True False Nil }
 fn go(x, y) {
   let assert True = x
   let assert False = x
@@ -80,7 +80,7 @@ fn go(x, y) {
 fn shadowed_bools_and_nil_typescript() {
     assert_ts_def!(
         r#"
-pub type True { True False Nil }
+pub record True { True False Nil }
 pub fn go(x, y) {
   let assert True = x
   let assert False = x

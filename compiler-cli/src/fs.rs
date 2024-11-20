@@ -1,4 +1,4 @@
-use gleam_core::{
+use rakun_core::{
     build::{NullTelemetry, Target},
     error::{Error, FileIoAction, FileKind},
     io::{
@@ -39,10 +39,10 @@ pub fn get_current_directory() -> Result<Utf8PathBuf, Error> {
     Utf8PathBuf::from_path_buf(curr_dir.clone()).map_err(|_| Error::NonUtf8Path { path: curr_dir })
 }
 
-// Return the first directory with a gleam.toml as a UTF-8 Path
+// Return the first directory with a rakun.toml as a UTF-8 Path
 pub fn get_project_root(path: Utf8PathBuf) -> Result<Utf8PathBuf, Error> {
     fn walk(dir: Utf8PathBuf) -> Option<Utf8PathBuf> {
-        match dir.join("gleam.toml").is_file() {
+        match dir.join("rakun.toml").is_file() {
             true => Some(dir),
             false => match dir.parent() {
                 Some(p) => walk(p.into()),
@@ -74,7 +74,7 @@ impl ProjectIO {
 }
 
 impl FileSystemReader for ProjectIO {
-    fn gleam_source_files(&self, dir: &Utf8Path) -> Vec<Utf8PathBuf> {
+    fn rakun_source_files(&self, dir: &Utf8Path) -> Vec<Utf8PathBuf> {
         if !dir.is_dir() {
             return vec![];
         }
@@ -85,12 +85,12 @@ impl FileSystemReader for ProjectIO {
             .filter_map(Result::ok)
             .filter(|e| e.file_type().is_file())
             .map(|d| d.into_path())
-            .filter(move |d| d.extension() == Some(OsStr::new("gleam")))
+            .filter(move |d| d.extension() == Some(OsStr::new("rakun")))
             .map(|pb| Utf8PathBuf::from_path_buf(pb).expect("Non Utf-8 Path"))
             .collect()
     }
 
-    fn gleam_cache_files(&self, dir: &Utf8Path) -> Vec<Utf8PathBuf> {
+    fn rakun_cache_files(&self, dir: &Utf8Path) -> Vec<Utf8PathBuf> {
         if !dir.is_dir() {
             return vec![];
         }
@@ -363,27 +363,27 @@ pub fn write_bytes(path: &Utf8Path, bytes: &[u8]) -> Result<(), Error> {
     Ok(())
 }
 
-fn is_gleam_path(path: &Utf8Path, dir: impl AsRef<Utf8Path>) -> bool {
+fn is_rakun_path(path: &Utf8Path, dir: impl AsRef<Utf8Path>) -> bool {
     use regex::Regex;
 
     static RE: OnceLock<Regex> = OnceLock::new();
 
     RE.get_or_init(|| {
         Regex::new(&format!(
-            "^({module}{slash})*{module}\\.gleam$",
+            "^({module}{slash})*{module}\\.rakun$",
             module = "[a-z][_a-z0-9]*",
             slash = "(/|\\\\)",
         ))
-        .expect("is_gleam_path() RE regex")
+        .expect("is_rakun_path() RE regex")
     })
     .is_match(
         path.strip_prefix(dir.as_ref())
-            .expect("is_gleam_path(): strip_prefix")
+            .expect("is_rakun_path(): strip_prefix")
             .as_str(),
     )
 }
 
-fn is_gleam_build_dir(e: &ignore::DirEntry) -> bool {
+fn is_rakun_build_dir(e: &ignore::DirEntry) -> bool {
     if !e.path().is_dir() || !e.path().ends_with("build") {
         return false;
     }
@@ -392,20 +392,20 @@ fn is_gleam_build_dir(e: &ignore::DirEntry) -> bool {
         return false;
     };
 
-    parent_path.join("gleam.toml").exists()
+    parent_path.join("rakun.toml").exists()
 }
 
-pub fn gleam_files_excluding_gitignore(dir: &Utf8Path) -> impl Iterator<Item = Utf8PathBuf> + '_ {
+pub fn rakun_files_excluding_gitignore(dir: &Utf8Path) -> impl Iterator<Item = Utf8PathBuf> + '_ {
     ignore::WalkBuilder::new(dir)
         .follow_links(true)
         .require_git(false)
-        .filter_entry(|e| !is_gleam_build_dir(e))
+        .filter_entry(|e| !is_rakun_build_dir(e))
         .build()
         .filter_map(Result::ok)
         .filter(|e| e.file_type().map(|t| t.is_file()).unwrap_or(false))
         .map(ignore::DirEntry::into_path)
         .map(|pb| Utf8PathBuf::from_path_buf(pb).expect("Non Utf-8 Path"))
-        .filter(move |d| is_gleam_path(d, dir))
+        .filter(move |d| is_rakun_path(d, dir))
 }
 
 pub fn native_files(dir: &Utf8Path) -> Result<impl Iterator<Item = Utf8PathBuf> + '_> {

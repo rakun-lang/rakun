@@ -586,7 +586,7 @@ pub fn main() {
 fn find_node_statement_import() {
     let module = compile_module(
         r#"
-import gleam
+import rakun
 "#,
     );
 

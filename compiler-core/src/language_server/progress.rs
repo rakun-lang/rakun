@@ -63,7 +63,7 @@ impl<'a> ProgressReporter for ConnectionProgressReporter<'a> {
     }
 
     fn dependency_downloading_started(&self) {
-        let title = "Downloading Gleam dependencies";
+        let title = "Downloading Rakun dependencies";
         self.send_notification(DOWNLOADING_TOKEN, begin_message(title));
     }
 

@@ -112,13 +112,13 @@ pub fn main() {
 
 #[test]
 fn labelled_argument_ordering() {
-    // https://github.com/gleam-lang/gleam/issues/3671
+    
     assert_erl!(
         "
-type A { A }
-type B { B }
-type C { C }
-type D { D }
+record A { A }
+record B { B }
+record C { C }
+record D { D }
 
 fn wibble(a a: A, b b: B, c c: C, d d: D) {
   Nil

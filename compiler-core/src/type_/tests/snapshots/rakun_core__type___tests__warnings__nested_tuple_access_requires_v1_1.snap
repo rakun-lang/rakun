@@ -1,0 +1,26 @@
+---
+source: compiler-core/src/type_/tests/warnings.rs
+expression: "\npub fn main() {\n  let tuple = #(1, #(1, 1))\n  tuple.1.0\n}\n"
+---
+----- SOURCE CODE
+
+pub fn main() {
+  let tuple = #(1, #(1, 1))
+  tuple.1.0
+}
+
+
+----- WARNING
+warning: Incompatible rakun version range
+  ┌─ /src/warning/wrn.rakun:4:3
+  │
+4 │   tuple.1.0
+  │   ^^^^^^^^^ This requires a Rakun version >= 1.1.0
+
+The ability to access nested tuple fields was introduced in version v1.1.0.
+But the Rakun version range specified in your `rakun.toml` would allow this
+code to run on an earlier version like v1.0.0, resulting in compilation
+errors!
+Hint: Remove the version constraint from your `rakun.toml` or update it to be:
+
+    rakun = ">= 1.1.0"

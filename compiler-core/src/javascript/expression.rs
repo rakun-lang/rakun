@@ -162,6 +162,7 @@ impl<'module> Generator<'module> {
             } => self.case(subjects, clauses),
 
             TypedExpr::Call { fun, args, .. } => self.call(fun, args),
+            TypedExpr::Html { fun, args, .. } => self.call(fun, args),
             TypedExpr::Fn { args, body, .. } => self.fn_(args, body),
 
             TypedExpr::RecordAccess { record, label, .. } => self.record_access(record, label),
@@ -1653,6 +1654,7 @@ impl TypedExpr {
         match self {
             TypedExpr::Todo { .. }
             | TypedExpr::Call { .. }
+            | TypedExpr::Html { .. }
             | TypedExpr::Case { .. }
             | TypedExpr::Panic { .. }
             | TypedExpr::Block { .. }
@@ -1719,6 +1721,7 @@ fn requires_semicolon(statement: &TypedStatement) -> bool {
             | TypedExpr::Var { .. }
             | TypedExpr::List { .. }
             | TypedExpr::Call { .. }
+            | TypedExpr::Html { .. }
             | TypedExpr::Float { .. }
             | TypedExpr::String { .. }
             | TypedExpr::BinOp { .. }

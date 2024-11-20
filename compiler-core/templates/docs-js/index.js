@@ -1,6 +1,6 @@
 "use strict";
 
-window.Gleam = (function () {
+window.Rakun = (function () {
   /* Global Object */
   const self = {};
 
@@ -13,10 +13,10 @@ window.Gleam = (function () {
   self.getProperty = function (property) {
     let value;
     try {
-      value = localStorage.getItem(`Gleam.${property}`);
-    } catch (_error) {}
+      value = localStorage.getItem(`Rakun.${property}`);
+    } catch (_error) { }
     if (-1 < [null, undefined].indexOf(value)) {
-      return gleamConfig[property].values[0].value;
+      return rakunConfig[property].values[0].value;
     }
     return value;
   };
@@ -73,7 +73,7 @@ window.Gleam = (function () {
   /* Private Methods */
 
   const initProperty = function (property) {
-    const config = gleamConfig[property];
+    const config = rakunConfig[property];
 
     displayControls.insertAdjacentHTML(
       "beforeend",
@@ -102,7 +102,7 @@ window.Gleam = (function () {
           class="control control-${property} toggle toggle-0">
         `
       ) +
-        `
+      `
         </button>
       `
     );
@@ -116,17 +116,17 @@ window.Gleam = (function () {
     const previousValue = self.getProperty(property);
 
     const update =
-      2 < arguments.length ? arguments[2] : gleamConfig[property].update;
+      2 < arguments.length ? arguments[2] : rakunConfig[property].update;
     const value = update();
 
     try {
-      localStorage.setItem("Gleam." + property, value);
-    } catch (_error) {}
+      localStorage.setItem("Rakun." + property, value);
+    } catch (_error) { }
 
     bodyClasses.remove(`${property}-${previousValue}`);
     bodyClasses.add(`${property}-${value}`);
 
-    const isDefault = value === gleamConfig[property].values[0].value;
+    const isDefault = value === rakunConfig[property].values[0].value;
     const toggleClasses = document.querySelector(
       `#${property}-toggle`
     ).classList;
@@ -134,8 +134,8 @@ window.Gleam = (function () {
     toggleClasses.add(`toggle-${isDefault ? 0 : 1}`);
 
     try {
-      gleamConfig[property].callback(value);
-    } catch (_error) {}
+      rakunConfig[property].callback(value);
+    } catch (_error) { }
 
     return value;
   };
@@ -278,7 +278,7 @@ window.Gleam = (function () {
         }, batchMillis);
       }
 
-      function addResult(resultsList, result) {
+      function addResult<resultsList, result> {
         const doc = docs[result.ref];
         const resultsListItem = document.createElement("li");
         resultsListItem.classList.add("search-results-list-item");
@@ -567,7 +567,7 @@ window.Gleam = (function () {
   };
 
   const init = function () {
-    for (let property in gleamConfig) {
+    for (let property in rakunConfig) {
       initProperty(property);
       const toggle = document.querySelector(`#${property}-toggle`);
       toggle.addEventListener("click", function (event) {

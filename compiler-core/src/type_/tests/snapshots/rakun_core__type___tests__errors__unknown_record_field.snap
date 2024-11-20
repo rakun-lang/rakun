@@ -1,0 +1,24 @@
+---
+source: compiler-core/src/type_/tests/errors.rs
+expression: "\npub record Box<a> { Box(inner: a) }\npub fn main(box: Box<Int>) { box.unknown }\n"
+---
+----- SOURCE CODE
+
+pub record Box<a> { Box(inner: a) }
+pub fn main(box: Box<Int>) { box.unknown }
+
+
+----- ERROR
+error: Unknown record field
+  ┌─ /src/one/two.rakun:3:33
+  │
+3 │ pub fn main(box: Box<Int>) { box.unknown }
+  │                                 ^^^^^^^^ Did you mean `inner`?
+
+The value being accessed has this type:
+
+    Box(Int)
+
+It has these accessible fields:
+
+    .inner

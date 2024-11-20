@@ -1,0 +1,11 @@
+pub record A {
+  A
+}
+
+pub record B {
+  B(A, A)
+}
+
+pub record User {
+  User(name: String, score: Int)
+}

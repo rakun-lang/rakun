@@ -41,10 +41,10 @@ fn usable_build_tool_only_rebar3() {
 }
 
 #[test]
-fn usable_build_tool_only_gleam() {
+fn usable_build_tool_only_rakun() {
     assert_eq!(
-        usable_build_tools(&ManifestPackage::default().with_build_tools(&["gleam"])),
-        Ok(vec![BuildTool::Gleam])
+        usable_build_tools(&ManifestPackage::default().with_build_tools(&["rakun"])),
+        Ok(vec![BuildTool::Rakun])
     )
 }
 

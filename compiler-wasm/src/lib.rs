@@ -4,7 +4,9 @@ mod tests;
 mod wasm_filesystem;
 
 use camino::Utf8PathBuf;
-use gleam_core::{
+use hexpm::version::Version;
+use im::HashMap;
+use rakun_core::{
     analyse::TargetSupport,
     build::{
         Mode, NullTelemetry, PackageCompiler, StaleTracker, Target, TargetCodegenConfiguration,
@@ -15,8 +17,6 @@ use gleam_core::{
     warning::{VectorWarningEmitterIO, WarningEmitter},
     Error,
 };
-use hexpm::version::Version;
-use im::HashMap;
 use std::{cell::RefCell, collections::HashSet, rc::Rc};
 use wasm_filesystem::WasmFileSystem;
 
@@ -74,12 +74,12 @@ fn get_warnings(project_id: usize) -> VectorWarningEmitterIO {
     get_project(project_id).warnings
 }
 
-/// Write a Gleam module to the `/src` directory of the virtual file system.
+/// Write a Rakun module to the `/src` directory of the virtual file system.
 ///
 #[wasm_bindgen]
 pub fn write_module(project_id: usize, module_name: &str, code: &str) {
     let fs = get_filesystem(project_id);
-    let path = format!("/src/{module_name}.gleam");
+    let path = format!("/src/{module_name}.rakun");
     fs.write(&Utf8PathBuf::from(path), code)
         .expect("writing file")
 }
@@ -145,7 +145,7 @@ pub fn read_compiled_javascript(project_id: usize, module_name: &str) -> Option<
 pub fn read_compiled_erlang(project_id: usize, module_name: &str) -> Option<String> {
     let fs = get_filesystem(project_id);
     let path = format!(
-        "/build/_gleam_artefacts/{}.erl",
+        "/build/_rakun_artefacts/{}.erl",
         module_name.replace('/', "@")
     );
     fs.read(&Utf8PathBuf::from(path)).ok()
@@ -182,7 +182,7 @@ fn do_compile_package(project: Project, target: Target) -> Result<(), Error> {
         Target::Erlang => TargetCodegenConfiguration::Erlang { app_file: None },
         Target::JavaScript => TargetCodegenConfiguration::JavaScript {
             emit_typescript_definitions: false,
-            prelude_location: Utf8PathBuf::from("./gleam_prelude.mjs"),
+            prelude_location: Utf8PathBuf::from("./rakun_prelude.mjs"),
         },
     };
 

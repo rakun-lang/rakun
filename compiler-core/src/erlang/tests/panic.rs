@@ -30,13 +30,13 @@ pub fn retstring() {
   "wibble"
 }
 pub fn main() {
-  panic as { retstring() <> "wobble" }
+  panic as { retstring() ++ "wobble" }
 }
 "#
     );
 }
 
-// https://github.com/gleam-lang/gleam/issues/2176
+
 #[test]
 fn piped() {
     assert_erl!(

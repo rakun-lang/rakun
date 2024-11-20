@@ -74,9 +74,9 @@ mod shell;
 use config::root_config;
 use dependencies::UseManifest;
 use fs::{get_current_directory, get_project_root};
-pub use gleam_core::error::{Error, Result};
+pub use rakun_core::error::{Error, Result};
 
-use gleam_core::{
+use rakun_core::{
     analyse::TargetSupport,
     build::{Codegen, Compile, Mode, NullTelemetry, Options, Runtime, Target},
     hex::RetirementReason,
@@ -186,7 +186,7 @@ enum Command {
         #[arg(long)]
         check: bool,
     },
-    /// Rewrite deprecated Gleam code
+    /// Rewrite deprecated Rakun code
     Fix,
 
     /// Start an Erlang shell
@@ -224,11 +224,11 @@ enum Command {
         arguments: Vec<String>,
     },
 
-    /// Compile a single Gleam package
+    /// Compile a single Rakun package
     #[command(hide = true)]
     CompilePackage(CompilePackage),
 
-    /// Read and print gleam.toml for debugging
+    /// Read and print rakun.toml for debugging
     #[command(hide = true)]
     PrintConfig,
 
@@ -257,7 +257,7 @@ enum Command {
     #[command(name = "lsp")]
     LanguageServer,
 
-    /// Export something useful from the Gleam project
+    /// Export something useful from the Rakun project
     #[command(subcommand)]
     Export(ExportTarget),
 }
@@ -319,7 +319,7 @@ pub struct CompilePackage {
     #[arg(long, ignore_case = true)]
     target: Target,
 
-    /// The directory of the Gleam package
+    /// The directory of the Rakun package
     #[arg(long = "package")]
     package_directory: Utf8PathBuf,
 
@@ -327,7 +327,7 @@ pub struct CompilePackage {
     #[arg(long = "out")]
     output_directory: Utf8PathBuf,
 
-    /// A directories of precompiled Gleam projects
+    /// A directories of precompiled Rakun projects
     #[arg(long = "lib")]
     libraries_directory: Utf8PathBuf,
 
@@ -613,10 +613,10 @@ fn clean() -> Result<()> {
 }
 
 fn initialise_logger() {
-    let enable_colours = std::env::var("GLEAM_LOG_NOCOLOUR").is_err();
+    let enable_colours = std::env::var("RAKUN_LOG_NOCOLOUR").is_err();
     tracing_subscriber::fmt()
         .with_writer(std::io::stderr)
-        .with_env_filter(std::env::var("GLEAM_LOG").unwrap_or_else(|_| "off".into()))
+        .with_env_filter(std::env::var("RAKUN_LOG").unwrap_or_else(|_| "off".into()))
         .with_target(false)
         .with_ansi(enable_colours)
         .without_time()

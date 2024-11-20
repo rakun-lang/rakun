@@ -1,9 +1,8 @@
 ---
 source: test-project-compiler/src/generated_tests.rs
-assertion_line: 10
 expression: "./cases/with_dep"
 ---
-//// with_dep/build/dev/erlang/example/_gleam_artefacts/example@@main.erl
+//// with_dep/build/dev/erlang/example/_rakun_artefacts/example@@main.erl
 <erlang entrypoint>
 
 //// with_dep/build/dev/erlang/example/ebin/example.app
@@ -16,5 +15,5 @@ expression: "./cases/with_dep"
 ]}.
 
 
-//// with_dep/build/dev/erlang/gleam_version
-<gleam compiler version string>
+//// with_dep/build/dev/erlang/rakun_version
+<rakun compiler version string>

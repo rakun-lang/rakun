@@ -1,0 +1,178 @@
+---
+source: compiler-core/src/parse/tests.rs
+expression: "\npub fn main() {\n   <img src=\"image.png\" alt=\"Image description\" />\n   <input type=\"text\" placeholder=\"Enter text here\" />\n}\n"
+---
+Parsed {
+    module: Module {
+        name: "",
+        documentation: [],
+        type_info: (),
+        definitions: [
+            TargetedDefinition {
+                definition: Function(
+                    Function {
+                        location: SrcSpan {
+                            start: 1,
+                            end: 14,
+                        },
+                        end_position: 124,
+                        name: Some(
+                            (
+                                SrcSpan {
+                                    start: 8,
+                                    end: 12,
+                                },
+                                "main",
+                            ),
+                        ),
+                        arguments: [],
+                        body: [
+                            Expression(
+                                Html {
+                                    location: SrcSpan {
+                                        start: 20,
+                                        end: 67,
+                                    },
+                                    tag: Some(
+                                        Var {
+                                            location: SrcSpan {
+                                                start: 21,
+                                                end: 24,
+                                            },
+                                            name: "img",
+                                        },
+                                    ),
+                                    children: None,
+                                    attributes: [
+                                        CallArg {
+                                            label: Some(
+                                                "src",
+                                            ),
+                                            location: SrcSpan {
+                                                start: 25,
+                                                end: 40,
+                                            },
+                                            value: String {
+                                                location: SrcSpan {
+                                                    start: 29,
+                                                    end: 40,
+                                                },
+                                                value: "image.png",
+                                            },
+                                            implicit: None,
+                                        },
+                                        CallArg {
+                                            label: Some(
+                                                "alt",
+                                            ),
+                                            location: SrcSpan {
+                                                start: 41,
+                                                end: 64,
+                                            },
+                                            value: String {
+                                                location: SrcSpan {
+                                                    start: 45,
+                                                    end: 64,
+                                                },
+                                                value: "Image description",
+                                            },
+                                            implicit: None,
+                                        },
+                                    ],
+                                },
+                            ),
+                            Expression(
+                                Html {
+                                    location: SrcSpan {
+                                        start: 71,
+                                        end: 122,
+                                    },
+                                    tag: Some(
+                                        Var {
+                                            location: SrcSpan {
+                                                start: 72,
+                                                end: 77,
+                                            },
+                                            name: "input",
+                                        },
+                                    ),
+                                    children: None,
+                                    attributes: [
+                                        CallArg {
+                                            label: Some(
+                                                "type",
+                                            ),
+                                            location: SrcSpan {
+                                                start: 78,
+                                                end: 89,
+                                            },
+                                            value: String {
+                                                location: SrcSpan {
+                                                    start: 83,
+                                                    end: 89,
+                                                },
+                                                value: "text",
+                                            },
+                                            implicit: None,
+                                        },
+                                        CallArg {
+                                            label: Some(
+                                                "placeholder",
+                                            ),
+                                            location: SrcSpan {
+                                                start: 90,
+                                                end: 119,
+                                            },
+                                            value: String {
+                                                location: SrcSpan {
+                                                    start: 102,
+                                                    end: 119,
+                                                },
+                                                value: "Enter text here",
+                                            },
+                                            implicit: None,
+                                        },
+                                    ],
+                                },
+                            ),
+                        ],
+                        publicity: Public,
+                        deprecation: NotDeprecated,
+                        return_annotation: None,
+                        return_type: (),
+                        documentation: None,
+                        external_erlang: None,
+                        external_javascript: None,
+                        implementations: Implementations {
+                            rakun: true,
+                            can_run_on_erlang: true,
+                            can_run_on_javascript: true,
+                            uses_erlang_externals: false,
+                            uses_javascript_externals: false,
+                        },
+                    },
+                ),
+                target: None,
+            },
+        ],
+        names: Names {
+            local_types: {},
+            imported_modules: {},
+            type_variables: {},
+            local_value_constructors: {},
+        },
+    },
+    extra: ModuleExtra {
+        module_comments: [],
+        doc_comments: [],
+        comments: [],
+        empty_lines: [],
+        new_lines: [
+            0,
+            16,
+            67,
+            122,
+            124,
+        ],
+    },
+}

@@ -77,28 +77,28 @@ impl LanguageServerTestIO {
 
     pub fn src_module(&self, name: &str, code: &str) -> Utf8PathBuf {
         let src_dir = self.paths.src_directory();
-        let path = src_dir.join(name).with_extension("gleam");
+        let path = src_dir.join(name).with_extension("rakun");
         self.module(&path, code);
         path
     }
 
     pub fn test_module(&self, name: &str, code: &str) -> Utf8PathBuf {
         let test_dir = self.paths.test_directory();
-        let path = test_dir.join(name).with_extension("gleam");
+        let path = test_dir.join(name).with_extension("rakun");
         self.module(&path, code);
         path
     }
 
     pub fn path_dep_module(&self, dep: &str, name: &str, code: &str) -> Utf8PathBuf {
         let dep_dir = self.paths.root().join(dep).join("src");
-        let path = dep_dir.join(name).with_extension("gleam");
+        let path = dep_dir.join(name).with_extension("rakun");
         self.module(&path, code);
         path
     }
 
     pub fn hex_dep_module(&self, dep: &str, name: &str, code: &str) -> Utf8PathBuf {
         let dep_dir = self.paths.build_packages_package(dep).join("src");
-        let path = dep_dir.join(name).with_extension("gleam");
+        let path = dep_dir.join(name).with_extension("rakun");
         self.module(&path, code);
         path
     }
@@ -109,7 +109,7 @@ impl LanguageServerTestIO {
             source: ManifestPackageSource::Hex {
                 outer_checksum: Base16Checksum(vec![]),
             },
-            build_tools: vec!["gleam".into()],
+            build_tools: vec!["rakun".into()],
             ..Default::default()
         });
     }
@@ -125,12 +125,12 @@ impl LanguageServerTestIO {
 }
 
 impl FileSystemReader for LanguageServerTestIO {
-    fn gleam_source_files(&self, dir: &Utf8Path) -> Vec<Utf8PathBuf> {
-        self.io.gleam_source_files(dir)
+    fn rakun_source_files(&self, dir: &Utf8Path) -> Vec<Utf8PathBuf> {
+        self.io.rakun_source_files(dir)
     }
 
-    fn gleam_cache_files(&self, dir: &Utf8Path) -> Vec<Utf8PathBuf> {
-        self.io.gleam_cache_files(dir)
+    fn rakun_cache_files(&self, dir: &Utf8Path) -> Vec<Utf8PathBuf> {
+        self.io.rakun_cache_files(dir)
     }
 
     fn read_dir(&self, path: &Utf8Path) -> Result<ReadDir> {
@@ -357,11 +357,11 @@ fn add_path_dep<B>(engine: &mut LanguageServerEngine<LanguageServerTestIO, B>, n
     let path = engine.paths.root().join(name);
     add_package_from_manifest(
         engine,
-        path.join("gleam.toml"),
+        path.join("rakun.toml"),
         ManifestPackage {
             name: name.into(),
             version: Version::new(1, 0, 0),
-            build_tools: vec!["gleam".into()],
+            build_tools: vec!["rakun".into()],
             otp_app: None,
             requirements: vec![],
             source: ManifestPackageSource::Local { path: path.clone() },
@@ -412,7 +412,7 @@ impl<'a> TestProject<'a> {
             .skip_while(|segment| *segment != "src")
             .skip(1)
             .join("/")
-            .trim_end_matches(".gleam")
+            .trim_end_matches(".rakun")
             .into();
 
         if module_name == "app" {
@@ -513,7 +513,7 @@ impl<'a> TestProject<'a> {
                 source: ManifestPackageSource::Hex {
                     outer_checksum: Base16Checksum(vec![]),
                 },
-                build_tools: vec!["gleam".into()],
+                build_tools: vec!["rakun".into()],
                 ..Default::default()
             },
         );
@@ -528,7 +528,7 @@ impl<'a> TestProject<'a> {
                 source: ManifestPackageSource::Hex {
                     outer_checksum: Base16Checksum(vec![]),
                 },
-                build_tools: vec!["gleam".into()],
+                build_tools: vec!["rakun".into()],
                 ..Default::default()
             },
         );
@@ -538,9 +538,9 @@ impl<'a> TestProject<'a> {
 
     pub fn build_path(&self, position: Position) -> TextDocumentPositionParams {
         let path = Utf8PathBuf::from(if cfg!(target_family = "windows") {
-            r"\\?\C:\src\app.gleam"
+            r"\\?\C:\src\app.rakun"
         } else {
-            "/src/app.gleam"
+            "/src/app.rakun"
         });
 
         let url = Url::from_file_path(path).unwrap();
@@ -554,9 +554,9 @@ impl<'a> TestProject<'a> {
         test_name: &str,
     ) -> TextDocumentPositionParams {
         let path = Utf8PathBuf::from(if cfg!(target_family = "windows") {
-            format!(r"\\?\C:\test\{test_name}.gleam")
+            format!(r"\\?\C:\test{test_name}.rakun")
         } else {
-            format!("/test/{test_name}.gleam")
+            format!("/test/{test_name}.rakun")
         });
 
         let url = Url::from_file_path(path).unwrap();

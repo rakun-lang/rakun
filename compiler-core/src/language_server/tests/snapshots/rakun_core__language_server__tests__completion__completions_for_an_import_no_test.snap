@@ -1,0 +1,12 @@
+---
+source: compiler-core/src/language_server/tests/completion.rs
+expression: "import rakun\n\npub fn main() {\n  0\n}"
+---
+import rak|un
+
+pub fn main() {
+  0
+}
+
+
+----- Completion content -----
