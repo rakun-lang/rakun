@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 86
 expression: "\nfn my_fn() {\n  Nil\n}\n\nfn main() {\n  my_fn\n}\n"
 ---
 fn my_fn() {

@@ -74,7 +74,6 @@ pub fn generate_html<IO: FileSystemReader>(
         path,
     });
 
-    // https://github.com/rakun-lang/rakun/issues/3020
     let links: Vec<_> = match is_hex_publish {
         DocContext::HexPublish => doc_links
             .chain(repo_link)

@@ -1,7 +1,20 @@
 ---
 source: compiler-core/src/type_/tests/functions.rs
+assertion_line: 293
 expression: "\npub fn main() {\n  // Since the pattern is invalid no variable is created\n  let Junk(a) = 7\n  // Pattern is valid but does not type check\n  let Ok(b) = 1\n  let c = a + b\n}\n"
 ---
+----- SOURCE CODE
+
+pub fn main() {
+  // Since the pattern is invalid no variable is created
+  let Junk(a) = 7
+  // Pattern is valid but does not type check
+  let Ok(b) = 1
+  let c = a + b
+}
+
+
+----- ERROR
 error: Unknown variable
   ┌─ /src/one/two.rakun:4:7
   │
@@ -22,7 +35,7 @@ Expected type:
 
 Found type:
 
-    Result<a, b>
+    Result(a, b)
 
 error: Unknown variable
   ┌─ /src/one/two.rakun:7:11

@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 1504
 expression: "\nrecord Wibble {\n  fn wobble() {}\n}\n"
 ---
+----- SOURCE CODE
+
+record Wibble {
+  fn wobble() {}
+}
+
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:3:3
   │

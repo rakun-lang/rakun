@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 390
 expression: let True(x) = 1
 ---
+----- SOURCE CODE
+let True(x) = 1
+
+----- ERROR
 error: Incorrect arity
   ┌─ /src/one/two.rakun:1:5
   │

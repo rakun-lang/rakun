@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/javascript/tests/externals.rs
+assertion_line: 249
 expression: "\n@external(javascript, \"\", \"one\")\npub fn one(x: Int) -> Int {\n  1\n}\n"
 ---
+----- SOURCE CODE
+
+@external(javascript, "", "one")
+pub fn one(x: Int) -> Int {
+  1
+}
+
+
+----- ERROR
 error: Invalid JavaScript module
   ┌─ /src/one/two.rakun:3:1
   │

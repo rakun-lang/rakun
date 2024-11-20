@@ -1,7 +1,18 @@
 ---
 source: compiler-core/src/type_/tests/functions.rs
+assertion_line: 266
 expression: "\npub fn main() {\n  let a: Int = \"not an int\"\n  let b: String = 1\n  let c = a + 2\n}\n"
 ---
+----- SOURCE CODE
+
+pub fn main() {
+  let a: Int = "not an int"
+  let b: String = 1
+  let c = a + 2
+}
+
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:3:16
   │

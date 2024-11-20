@@ -3,20 +3,21 @@ use crate::{
     analyse::{infer_bit_array_option, name::check_argument_names},
     ast::{
         Arg, Assignment, AssignmentKind, BinOp, BitArrayOption, BitArraySegment, CallArg, Clause,
-        ClauseGuard, Constant, HasLocation, ImplicitCallArgOrigin, Layer, RecordUpdateSpread,
-        SrcSpan, Statement, TodoKind, TypeAst, TypedArg, TypedAssignment, TypedClause,
-        TypedClauseGuard, TypedConstant, TypedExpr, TypedMultiPattern, TypedStatement, UntypedArg,
-        UntypedAssignment, UntypedClause, UntypedClauseGuard, UntypedConstant,
+        ClauseGuard, Constant, FunctionLiteralKind, HasLocation, ImplicitCallArgOrigin, Layer,
+        RecordBeingUpdated, SrcSpan, Statement, TodoKind, TypeAst, TypedArg, TypedAssignment,
+        TypedClause, TypedClauseGuard, TypedConstant, TypedExpr, TypedMultiPattern, TypedStatement,
+        UntypedArg, UntypedAssignment, UntypedClause, UntypedClauseGuard, UntypedConstant,
         UntypedConstantBitArraySegment, UntypedExpr, UntypedExprBitArraySegment,
         UntypedMultiPattern, UntypedStatement, Use, UseAssignment, USE_ASSIGNMENT_VARIABLE,
     },
     build::Target,
-    exhaustiveness,
+    exhaustiveness::{self, Reachability},
 };
 use hexpm::version::Version;
 use id_arena::Arena;
 use im::hashmap;
 use itertools::Itertools;
+use num_bigint::BigInt;
 use vec1::Vec1;
 
 #[derive(Clone, Copy, Debug, Eq, PartialOrd, Ord, PartialEq, Serialize)]
@@ -247,7 +248,7 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
             environment,
             implementations,
             current_function_definition: definition,
-            minimum_required_version: Version::new(1, 0, 0),
+            minimum_required_version: Version::new(0, 1, 0),
             problems,
         }
     }
@@ -309,8 +310,19 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
             UntypedExpr::Var { location, name, .. } => self.infer_var(name, location),
 
             UntypedExpr::Int {
-                location, value, ..
-            } => Ok(self.infer_int(value, location)),
+                location,
+                value,
+                int_value,
+                ..
+            } => {
+                if self.environment.target == Target::JavaScript
+                    && !self.implementations.uses_javascript_externals
+                {
+                    check_javascript_int_safety(&int_value, location, self.problems);
+                }
+
+                Ok(self.infer_int(value, int_value, location))
+            }
 
             UntypedExpr::Block {
                 statements,
@@ -333,12 +345,12 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
 
             UntypedExpr::Fn {
                 location,
-                is_capture,
+                kind,
                 arguments: args,
                 body,
                 return_annotation,
                 ..
-            } => self.infer_fn(args, &[], body, is_capture, return_annotation, location),
+            } => self.infer_fn(args, &[], body, kind, return_annotation, location),
 
             UntypedExpr::Case {
                 location,
@@ -359,6 +371,18 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
                 arguments: args,
                 ..
             } => Ok(self.infer_call(*fun, args, location, CallKind::Function)),
+
+            UntypedExpr::HtmlText {
+                location, value, ..
+            } => Ok(self.infer_html_text(value, location)?),
+
+            UntypedExpr::Html {
+                location,
+                tag,
+                children,
+                attributes,
+                ..
+            } => Ok(self.infer_html(tag, children, attributes, location)?),
 
             UntypedExpr::BinOp {
                 location,
@@ -394,9 +418,9 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
             UntypedExpr::RecordUpdate {
                 location,
                 constructor,
-                spread,
+                record,
                 arguments: args,
-            } => self.infer_record_update(*constructor, spread, args, location),
+            } => self.infer_record_update(*constructor, record, args, location),
 
             UntypedExpr::NegateBool { location, value } => self.infer_negate_bool(location, *value),
 
@@ -490,10 +514,11 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
         }
     }
 
-    fn infer_int(&mut self, value: EcoString, location: SrcSpan) -> TypedExpr {
+    fn infer_int(&mut self, value: EcoString, int_value: BigInt, location: SrcSpan) -> TypedExpr {
         TypedExpr::Int {
             location,
             value,
+            int_value,
             type_: int(),
         }
     }
@@ -537,19 +562,6 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
         self.infer_iter_statements(location, count, untyped.into_iter())
     }
 
-    // Helper to push a new error to the errors list with rigid names.
-    fn error_with_rigid_names(&mut self, error: Error) {
-        let rigid_names = self.hydrator.rigid_names();
-        self.problems
-            .error(error.with_unify_error_rigid_names(&rigid_names));
-    }
-
-    // Helper to push a new error to the errors list and return an invalid expression.
-    fn error_expr_with_rigid_names(&mut self, location: SrcSpan, error: Error) -> TypedExpr {
-        self.error_with_rigid_names(error);
-        self.error_expr(location)
-    }
-
     // Helper to create a new error expr.
     fn error_expr(&mut self, location: SrcSpan) -> TypedExpr {
         TypedExpr::Invalid {
@@ -565,7 +577,7 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
         error: Error,
         type_: Arc<Type>,
     ) -> TypedPattern {
-        self.error_with_rigid_names(error);
+        self.problems.error(error);
         Pattern::Invalid { location, type_ }
     }
 
@@ -592,7 +604,10 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
                     let location = expression.location();
                     let expression = match self.infer(expression) {
                         Ok(expression) => expression,
-                        Err(error) => self.error_expr_with_rigid_names(location, error),
+                        Err(error) => {
+                            self.problems.error(error);
+                            self.error_expr(location)
+                        }
                     };
 
                     // This isn't the final expression in the sequence, so call the
@@ -657,7 +672,9 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
             location: SrcSpan::new(first.start, sequence_location.end),
             end_of_head_byte_index: sequence_location.end,
             return_annotation: None,
-            is_capture: false,
+            kind: FunctionLiteralKind::Use {
+                location: use_.location,
+            },
             body: statements,
         };
 
@@ -742,7 +759,7 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
         args: Vec<UntypedArg>,
         expected_args: &[Arc<Type>],
         body: Vec1<UntypedStatement>,
-        is_capture: bool,
+        kind: FunctionLiteralKind,
         return_annotation: Option<TypeAst>,
         location: SrcSpan,
     ) -> Result<TypedExpr, Error> {
@@ -765,7 +782,7 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
         Ok(TypedExpr::Fn {
             location,
             type_,
-            is_capture,
+            kind,
             args,
             body,
             return_annotation,
@@ -1296,16 +1313,23 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
         let value_location = value.location();
         let value = match self.in_new_scope(|value_typer| value_typer.infer(*value)) {
             Ok(value) => value,
-            Err(error) => self.error_expr_with_rigid_names(value_location, error),
+            Err(error) => {
+                self.problems.error(error);
+                self.error_expr(value_location)
+            }
         };
 
         let value_typ = value.type_();
 
         // Ensure the pattern matches the type of the value
         let pattern_location = pattern.location();
-        let mut pattern_typer =
-            pattern::PatternTyper::new(self.environment, &self.hydrator, self.problems);
-        let unify_result = pattern_typer.unify(pattern, value_typ.clone());
+        let mut pattern_typer = pattern::PatternTyper::new(
+            self.environment,
+            &self.implementations,
+            &self.hydrator,
+            self.problems,
+        );
+        let unify_result = pattern_typer.unify(pattern, value_typ.clone(), None);
 
         let minimum_required_version = pattern_typer.minimum_required_version;
         if minimum_required_version > self.minimum_required_version {
@@ -1329,11 +1353,11 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
                     if let Err(error) = unify(ann_typ, value_typ.clone())
                         .map_err(|e| convert_unify_error(e, value.type_defining_location()))
                     {
-                        self.error_with_rigid_names(error);
+                        self.problems.error(error);
                     }
                 }
                 Err(error) => {
-                    self.error_with_rigid_names(error);
+                    self.problems.error(error);
                 }
             }
         }
@@ -1341,9 +1365,11 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
         // Do not perform exhaustiveness checking if user explicitly used `let assert ... = ...`.
         let exhaustiveness_check = self.check_let_exhaustiveness(location, value.type_(), &pattern);
         match (kind, exhaustiveness_check) {
+            // Generated assignments should be checked before they are generated
+            (AssignmentKind::Generated, _) => {}
             (AssignmentKind::Let, Ok(_)) => {}
             (AssignmentKind::Let, Err(e)) => {
-                self.error_with_rigid_names(e);
+                self.problems.error(e);
             }
             (AssignmentKind::Assert { location }, Ok(_)) => self
                 .problems
@@ -1383,7 +1409,10 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
             });
             let subject = match subject {
                 Ok(subject) => subject,
-                Err(error) => self.error_expr_with_rigid_names(subject_location, error),
+                Err(error) => {
+                    self.problems.error(error);
+                    self.error_expr(subject_location)
+                }
             };
 
             any_subject_panics = any_subject_panics || self.previous_panics;
@@ -1401,13 +1430,13 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
                 all_patterns_are_discards && clause.pattern.iter().all(|p| p.is_discard());
 
             self.previous_panics = false;
-            let typed_clause = self.infer_clause(clause, &subject_types);
+            let typed_clause = self.infer_clause(clause, &typed_subjects);
             all_clauses_panic = all_clauses_panic && self.previous_panics;
 
             if let Err(e) = unify(return_type.clone(), typed_clause.then.type_())
                 .map_err(|e| e.case_clause_mismatch().into_error(typed_clause.location()))
             {
-                self.error_with_rigid_names(e);
+                self.problems.error(e);
             }
             typed_clauses.push(typed_clause);
         }
@@ -1415,7 +1444,7 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
         self.previous_panics = all_clauses_panic || any_subject_panics;
 
         if let Err(e) = self.check_case_exhaustiveness(location, &subject_types, &typed_clauses) {
-            self.error_with_rigid_names(e);
+            self.problems.error(e);
         };
 
         // We track if the case expression is used like an if: that is all its
@@ -1444,7 +1473,7 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
         }
     }
 
-    fn infer_clause(&mut self, clause: UntypedClause, subjects: &[Arc<Type>]) -> TypedClause {
+    fn infer_clause(&mut self, clause: UntypedClause, subjects: &[TypedExpr]) -> TypedClause {
         let Clause {
             pattern,
             alternative_patterns,
@@ -1465,7 +1494,7 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
                 Ok(res) => res,
                 // If an error occurs inferring patterns then assume no patterns
                 Err(error) => {
-                    clause_typer.error_with_rigid_names(error);
+                    clause_typer.problems.error(error);
                     (vec![], vec![])
                 }
             };
@@ -1473,13 +1502,16 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
                 Ok(guard) => guard,
                 // If an error occurs inferring guard then assume no guard
                 Err(error) => {
-                    clause_typer.error_with_rigid_names(error);
+                    clause_typer.problems.error(error);
                     None
                 }
             };
             let then = match clause_typer.infer(then) {
                 Ok(then) => then,
-                Err(error) => clause_typer.error_expr_with_rigid_names(then_location, error),
+                Err(error) => {
+                    clause_typer.problems.error(error);
+                    clause_typer.error_expr(then_location)
+                }
             };
 
             Ok((guard, then, typed_pattern, typed_alternatives))
@@ -1490,7 +1522,7 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
                 // NOTE: theoretically it should be impossible to get here
                 // since the individual parts have been made fault tolerant
                 // but in_new_scope requires that the return type be a result
-                self.error_with_rigid_names(error);
+                self.problems.error(error);
                 (
                     None,
                     TypedExpr::Invalid {
@@ -1516,11 +1548,15 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
         &mut self,
         pattern: UntypedMultiPattern,
         alternatives: Vec<UntypedMultiPattern>,
-        subjects: &[Arc<Type>],
+        subjects: &[TypedExpr],
         location: &SrcSpan,
     ) -> Result<(TypedMultiPattern, Vec<TypedMultiPattern>), Error> {
-        let mut pattern_typer =
-            pattern::PatternTyper::new(self.environment, &self.hydrator, self.problems);
+        let mut pattern_typer = pattern::PatternTyper::new(
+            self.environment,
+            &self.implementations,
+            &self.hydrator,
+            self.problems,
+        );
         let typed_pattern = pattern_typer.infer_multi_pattern(pattern, subjects, location)?;
 
         // Each case clause has one or more patterns that may match the
@@ -2233,58 +2269,110 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
             });
         }
 
-        let has_variants = match &*record_type {
-            Type::Named { name, .. } => self
-                .environment
-                .module_types_constructors
-                .get(name)
-                .map_or(RecordVariants::NoVariants, |type_variant_constructors| {
-                    if type_variant_constructors.variants.len() > 1 {
-                        RecordVariants::HasVariants
-                    } else {
-                        RecordVariants::NoVariants
-                    }
-                }),
-            _ => RecordVariants::NoVariants,
-        };
+        let unknown_field = |fields| {
+            let error = |unknown_field| Error::UnknownRecordField {
+                usage,
+                type_: record_type.clone(),
+                location,
+                label: label.clone(),
+                fields,
+                unknown_field,
+            };
 
-        let unknown_field = |fields| Error::UnknownRecordField {
-            usage,
-            type_: record_type.clone(),
-            location,
-            label: label.clone(),
-            fields,
-            variants: has_variants,
+            let Type::Named {
+                module,
+                name,
+                inferred_variant,
+                ..
+            } = &*record_type
+            else {
+                return error(UnknownField::NoFields);
+            };
+
+            let all_fields = self.environment.get_type_variants_fields(module, name);
+
+            if all_fields.is_empty() {
+                return error(UnknownField::NoFields);
+            }
+
+            if !all_fields.iter().contains(&&label) {
+                return error(UnknownField::TrulyUnknown);
+            }
+
+            // If we know the variant, the field must exist on a different
+            // variant from the one we have inferred.
+            if inferred_variant.is_some() {
+                error(UnknownField::AppearsInAnImpossibleVariant)
+            } else {
+                error(UnknownField::AppearsInAVariant)
+            }
         };
-        let accessors = match collapse_links(record_type.clone()).as_ref() {
+        let (accessors_map, variant_accessors) = match collapse_links(record_type.clone()).as_ref()
+        {
             // A type in the current module which may have fields
-            Type::Named { module, name, .. } if module == &self.environment.current_module => {
-                self.environment.accessors.get(name)
+            Type::Named {
+                module,
+                name,
+                inferred_variant,
+                ..
+            } if module == &self.environment.current_module => {
+                self.environment.accessors.get(name).map(|accessors_map| {
+                    (
+                        accessors_map,
+                        accessors_map.accessors_for_variant(*inferred_variant),
+                    )
+                })
             }
 
             // A type in another module which may have fields
-            Type::Named { module, name, .. } => self
+            Type::Named {
+                module,
+                name,
+                inferred_variant,
+                ..
+            } => self
                 .environment
                 .importable_modules
                 .get(module)
                 .and_then(|module| module.accessors.get(name))
                 .filter(|a| {
                     a.publicity.is_importable() || module == &self.environment.current_module
+                })
+                .map(|accessors_map| {
+                    (
+                        accessors_map,
+                        accessors_map.accessors_for_variant(*inferred_variant),
+                    )
                 }),
 
             _something_without_fields => return Err(unknown_field(vec![])),
         }
         .ok_or_else(|| unknown_field(vec![]))?;
+
         let RecordAccessor {
             index,
             label,
             type_,
-        } = accessors
-            .accessors
+        } = variant_accessors
             .get(&label)
-            .ok_or_else(|| unknown_field(accessors.accessors.keys().cloned().collect()))?
+            .ok_or_else(|| unknown_field(variant_accessors.keys().cloned().collect()))?
             .clone();
-        let accessor_record_type = accessors.type_.clone();
+
+        let accessor_record_type = accessors_map.type_.clone();
+
+        // If the accessor isn't shared across variants, this requires variant inference
+        if !accessors_map.shared_accessors.contains_key(&label) {
+            match usage {
+                FieldAccessUsage::MethodCall | FieldAccessUsage::Other => {
+                    self.track_feature_usage(FeatureKind::RecordAccessVariantInference, location);
+                }
+                // This feature for record updates should be tracked in
+                // `infer_record_update`, so we don't track it here as it would lead
+                // to a duplicate warning with a confusing message.
+                FieldAccessUsage::RecordUpdate => {}
+            }
+        }
+
         let mut type_vars = hashmap![];
         let accessor_record_type = self.instantiate(accessor_record_type, &mut type_vars);
         let type_ = self.instantiate(type_, &mut type_vars);
@@ -2296,7 +2384,7 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
     fn infer_record_update(
         &mut self,
         constructor: UntypedExpr,
-        spread: RecordUpdateSpread,
+        record: RecordBeingUpdated,
         args: Vec<UntypedRecordUpdateArg>,
         location: SrcSpan,
     ) -> Result<TypedExpr, Error> {
@@ -2330,27 +2418,19 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
             .clone();
 
         // It must be a record with a field map for us to be able to update it
-        let (field_map, constructors_count) = match &value_constructor.variant {
+        let (field_map, variants_count, variant_index) = match &value_constructor.variant {
             ValueConstructorVariant::Record {
                 field_map: Some(field_map),
-                constructors_count,
+                variants_count,
+                variant_index,
                 ..
-            } => (field_map, *constructors_count),
+            } => (field_map, *variants_count, *variant_index),
             _ => {
                 return Err(Error::RecordUpdateInvalidConstructor {
                     location: constructor.location(),
                 });
             }
         };
-
-        // We can only update a record if it is the only variant of its type.
-        // If a record has multiple variants it cannot be safely updated as it
-        // could be one of the other variants.
-        if constructors_count != 1 {
-            return Err(Error::UpdateMultiConstructorType {
-                location: constructor.location(),
-            });
-        }
 
         // The type must be a function for it to be a record constructor
         let retrn = match value_constructor.type_.as_ref() {
@@ -2362,34 +2442,94 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
             }
         };
 
-        let spread = self.infer(*spread.base)?;
+        let record = self.infer(*record.base)?;
         let return_type = self.instantiate(retrn.clone(), &mut hashmap![]);
+        let record_type = record.type_();
 
-        // Check that the spread variable unifies with the return type of the constructor
-        unify(return_type, spread.type_())
-            .map_err(|e| convert_unify_error(e, spread.location()))?;
+        // Check that the record variable unifies with the return type of the constructor
+        unify(return_type, record_type.clone())
+            .map_err(|e| convert_unify_error(e, record.location()))?;
+
+        let record_index = record_type.custom_type_inferred_variant();
+
+        // Updating a record with only one variant is always safe
+        if variants_count != 1 {
+            // If we know the variant of the value being spread, and it doesn't match the
+            // one being constructed, we can tell the user that it's always wrong
+            if record_index.is_some_and(|index| index != variant_index) {
+                let Type::Named {
+                    module: record_module,
+                    name: record_name,
+                    inferred_variant: Some(record_index),
+                    ..
+                } = record_type.deref()
+                else {
+                    panic!("Spread type must be named and with an index")
+                };
+
+                return Err(Error::UnsafeRecordUpdate {
+                    location: record.location(),
+                    reason: UnsafeRecordUpdateReason::WrongVariant {
+                        constructed_variant: name,
+                        spread_variant: self
+                            .environment
+                            .type_variant_name(record_module, record_name, *record_index)
+                            .expect("Spread type must exist and variant must be valid")
+                            .clone(),
+                    },
+                });
+            }
+            // If we don't have information about the variant being spread, we tell the user
+            // that it's not safe to update it as it could be any variant
+            else if record_index.is_none() {
+                return Err(Error::UnsafeRecordUpdate {
+                    location: record.location(),
+                    reason: UnsafeRecordUpdateReason::UnknownVariant {
+                        constructed_variant: name,
+                    },
+                });
+            }
+            // This means we can perform a safe record update due to variant inference.
+            else {
+                self.track_feature_usage(FeatureKind::RecordUpdateVariantInference, location);
+            }
+        }
+
+        let mut seen_labels = HashSet::new();
 
         let args: Vec<TypedRecordUpdateArg> = args
             .iter()
             .map(
-                |UntypedRecordUpdateArg {
+                |arg @ UntypedRecordUpdateArg {
                      label,
                      value,
                      location,
                  }| {
                     let value = self.infer(value.clone())?;
-                    let spread_field = self.infer_known_record_expression_access(
-                        spread.clone(),
+                    let record_field = self.infer_known_record_expression_access(
+                        record.clone(),
                         label.clone(),
                         *location,
-                        FieldAccessUsage::Other,
+                        FieldAccessUsage::RecordUpdate,
                     )?;
 
+                    if arg.uses_label_shorthand() {
+                        self.track_feature_usage(FeatureKind::LabelShorthandSyntax, *location);
+                    }
+
+                    if seen_labels.contains(label) {
+                        return Err(Error::DuplicateArgument {
+                            location: *location,
+                            label: label.clone(),
+                        });
+                    }
+                    _ = seen_labels.insert(label.clone());
+
                     // Check that the update argument unifies with the corresponding
-                    // field in the record contained within the spread variable. We
-                    // need to check the spread, and not the constructor, in order
+                    // field in the record contained within the record variable. We
+                    // need to check the record, and not the constructor, in order
                     // to handle polymorphic types.
-                    unify(spread_field.type_(), value.type_())
+                    unify(record_field.type_(), value.type_())
                         .map_err(|e| convert_unify_error(e, value.location()))?;
 
                     match field_map.fields.get(label) {
@@ -2419,8 +2559,8 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
 
         Ok(TypedExpr::RecordUpdate {
             location,
-            type_: spread.type_(),
-            spread: Box::new(spread),
+            type_: record_type,
+            record: Box::new(record),
             args,
         })
     }
@@ -2529,8 +2669,20 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
     fn infer_const_value(&mut self, value: UntypedConstant) -> Result<TypedConstant, Error> {
         match value {
             Constant::Int {
-                location, value, ..
-            } => Ok(Constant::Int { location, value }),
+                location,
+                value,
+                int_value,
+            } => {
+                if self.environment.target == Target::JavaScript {
+                    check_javascript_int_safety(&int_value, location, self.problems);
+                }
+
+                Ok(Constant::Int {
+                    location,
+                    value,
+                    int_value,
+                })
+            }
 
             Constant::Float {
                 location, value, ..
@@ -2936,7 +3088,7 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
 
             UntypedExpr::Fn {
                 location,
-                is_capture,
+                kind,
                 arguments,
                 body,
                 return_annotation,
@@ -2945,7 +3097,7 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
                 arguments,
                 &args,
                 body,
-                is_capture,
+                kind,
                 return_annotation,
                 location,
             ),
@@ -2956,7 +3108,8 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
         let fun = match typed_fun {
             Ok(fun) => fun,
             Err(function_inference_error) => {
-                self.error_expr_with_rigid_names(function_location, function_inference_error)
+                self.problems.error(function_inference_error);
+                self.error_expr(function_location)
             }
         };
 
@@ -2969,7 +3122,7 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
         args: Vec<UntypedArg>,
         call_args: &[CallArg<UntypedExpr>],
         body: Vec1<UntypedStatement>,
-        is_capture: bool,
+        kind: FunctionLiteralKind,
         return_annotation: Option<TypeAst>,
         location: SrcSpan,
     ) -> Result<TypedExpr, Error> {
@@ -2987,7 +3140,7 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
             args,
             &typed_call_args,
             body,
-            is_capture,
+            kind,
             return_annotation,
             location,
         )
@@ -3023,14 +3176,14 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
             } = e
             {
                 labelled_arity_error = true;
-                self.error_with_rigid_names(Error::IncorrectArity {
+                self.problems.error(Error::IncorrectArity {
                     expected,
                     given,
                     labels,
                     location,
                 });
             } else {
-                self.error_with_rigid_names(e);
+                self.problems.error(e);
             }
         }
 
@@ -3057,7 +3210,7 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
                             // If the function has labels then arity issues will already
                             // be handled by the field map so we can ignore them here.
                             if !labelled_arity_error {
-                                self.error_with_rigid_names(converted_error);
+                                self.problems.error(converted_error);
                                 (arg_types, return_type)
                             } else {
                                 // Since arity errors with labels cause incorrect
@@ -3077,7 +3230,7 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
                             }
                         }
                         MatchFunTypeError::NotFn { .. } => {
-                            self.error_with_rigid_names(converted_error);
+                            self.problems.error(converted_error);
                             (vec![], self.new_unbound_var())
                         }
                     }
@@ -3164,7 +3317,10 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
 
                 let value = match self.infer_call_argument(value, type_.clone(), argument_kind) {
                     Ok(value) => value,
-                    Err(e) => self.error_expr_with_rigid_names(location, e),
+                    Err(e) => {
+                        self.problems.error(e);
+                        self.error_expr(location)
+                    }
                 };
 
                 CallArg {
@@ -3237,14 +3393,14 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
                     body,
                     return_annotation,
                     location,
-                    is_capture: false,
+                    kind,
                     ..
                 },
             ) if expected_arguments.len() == arguments.len() => self.infer_fn(
                 arguments,
                 expected_arguments,
                 body,
-                false,
+                kind,
                 return_annotation,
                 location,
             ),
@@ -3335,12 +3491,10 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
             // Check that any return type is accurate.
             if let Some(return_type) = return_type {
                 if let Err(error) = unify(return_type, body.last().type_()) {
-                    let body_rigid_names = body_typer.hydrator.rigid_names();
                     let error = error
                         .return_annotation_mismatch()
-                        .into_error(body.last().type_defining_location())
-                        .with_unify_error_rigid_names(&body_rigid_names);
-                    body_typer.error_with_rigid_names(error);
+                        .into_error(body.last().type_defining_location());
+                    body_typer.problems.error(error);
 
                     // If the return type doesn't match with the annotation we
                     // add a new expression to the end of the function to match
@@ -3469,10 +3623,14 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
 
         // Emit warnings for unreachable clauses
         for (clause_index, clause) in clauses.iter().enumerate() {
-            if !output.is_reachable(clause_index) {
-                self.problems.warning(Warning::UnreachableCaseClause {
-                    location: clause.location,
-                })
+            match output.is_reachable(clause_index) {
+                Reachability::Reachable => {}
+                Reachability::Unreachable(reason) => {
+                    self.problems.warning(Warning::UnreachableCaseClause {
+                        location: clause.location,
+                        reason,
+                    })
+                }
             }
         }
 
@@ -3504,6 +3662,235 @@ impl<'a, 'b> ExprTyper<'a, 'b> {
 
         if minimum_required_version > self.minimum_required_version {
             self.minimum_required_version = minimum_required_version;
+        }
+    }
+
+    fn infer_html_text(&mut self, value: EcoString, location: SrcSpan) -> Result<TypedExpr, Error> {
+        Ok(self.infer_call(
+            UntypedExpr::FieldAccess {
+                location: location,
+                label_location: location,
+                label: EcoString::from("html_text"),
+                container: Box::new(UntypedExpr::Var {
+                    location: location,
+                    name: EcoString::from("rkx"),
+                }),
+            },
+            vec![CallArg {
+                label: None,
+                location: location,
+                implicit: None,
+                value: UntypedExpr::String {
+                    location: location,
+                    value: value,
+                },
+            }],
+            location,
+            CallKind::Function,
+        ))
+    }
+    fn infer_html(
+        &mut self,
+        tag: Option<Box<UntypedExpr>>,
+        children: Option<Vec<UntypedExpr>>,
+        attributes: Vec<crate::ast::CallArg<UntypedExpr>>,
+        location: SrcSpan,
+    ) -> Result<TypedExpr, Error> {
+        match tag {
+            Some(expr) => {
+                let _fn = *expr.to_owned();
+                let record_props = self.infer_html_record_props(_fn)?.unwrap();
+
+                let mut new_attributes = Vec::new();
+
+                new_attributes.extend(attributes);
+                if let Some(children) = children {
+                    new_attributes.push(crate::ast::CallArg {
+                        label: Some(EcoString::from("children")),
+                        location,
+                        implicit: None,
+                        value: UntypedExpr::List {
+                            location,
+                            elements: children
+                                .into_iter()
+                                .map(|child| {
+                                    if let UntypedExpr::Block { .. } = child {
+                                        UntypedExpr::Call {
+                                            location: location,
+                                            fun: Box::new(UntypedExpr::FieldAccess {
+                                                location: location,
+                                                label_location: location,
+                                                label: EcoString::from("html_interpolation"),
+                                                container: Box::new(UntypedExpr::Var {
+                                                    location: location,
+                                                    name: EcoString::from("rkx"),
+                                                }),
+                                            }),
+                                            arguments: vec![CallArg {
+                                                label: None,
+                                                location: location,
+                                                implicit: None,
+                                                value: child,
+                                            }],
+                                        }
+                                    } else {
+                                        child
+                                    }
+                                })
+                                .collect(),
+                            tail: None,
+                        },
+                    });
+                }
+
+                Ok(self.infer_call(
+                    UntypedExpr::FieldAccess {
+                        location: location,
+                        label_location: location,
+                        label: EcoString::from("component_init"),
+                        container: Box::new(UntypedExpr::Var {
+                            location: location,
+                            name: EcoString::from("rkx"),
+                        }),
+                    },
+                    vec![CallArg {
+                        label: None,
+                        location: location,
+                        implicit: None,
+                        value: UntypedExpr::Call {
+                            location: location,
+                            fun: Box::new(*expr.to_owned()),
+                            arguments: vec![CallArg {
+                                label: None,
+                                location: location,
+                                implicit: None,
+                                value: UntypedExpr::Call {
+                                    location: location,
+                                    fun: Box::new(record_props),
+                                    arguments: new_attributes,
+                                },
+                            }],
+                        },
+                    }],
+                    location,
+                    CallKind::Function,
+                ))
+            }
+            None => {
+                todo!()
+            }
+        }
+    }
+    fn infer_html_record_props(&mut self, expr: UntypedExpr) -> Result<Option<UntypedExpr>, Error> {
+        match expr {
+            UntypedExpr::FieldAccess {
+                location,
+                label_location,
+                label,
+                container,
+                ..
+            } => self.infer_html_handle_field_access(
+                location,
+                label_location,
+                label,
+                container.as_ref(),
+            ),
+            UntypedExpr::Var { location, name, .. } => {
+                self.infer_html_handle_variable(location, name)
+            }
+            _ => Ok(None),
+        }
+    }
+
+    fn infer_html_handle_field_access(
+        &mut self,
+        location: SrcSpan,
+        label_location: SrcSpan,
+        label: EcoString,
+        container: &UntypedExpr,
+    ) -> Result<Option<UntypedExpr>, Error> {
+        match container {
+            UntypedExpr::Var {
+                location: module_location,
+                name: module_alias,
+                ..
+            } => {
+                let (_, module) = self
+                    .environment
+                    .imported_modules
+                    .get(module_alias)
+                    .ok_or_else(|| Error::UnknownModule {
+                        name: module_alias.clone(),
+                        location: label_location,
+                        suggestions: self
+                            .environment
+                            .suggest_modules(&module_alias, Imported::Value(label.clone())),
+                    })?;
+
+                let constructor =
+                    module
+                        .get_public_value(&label)
+                        .ok_or_else(|| Error::UnknownModuleValue {
+                            name: label.clone(),
+                            location: SrcSpan {
+                                start: module_location.end,
+                                end: label_location.end,
+                            },
+                            module_name: module.name.clone(),
+                            value_constructors: module.public_value_names(),
+                            type_with_same_name: false,
+                        })?;
+                if let Some(arg_type) = self.infer_html_get_first_argument_type(&constructor.type_)
+                {
+                    if let Some(name) = self.infer_html_extract_name_from_type(arg_type) {
+                        return Ok(Some(UntypedExpr::FieldAccess {
+                            location: location,
+                            label_location: location,
+                            label: name,
+                            container: Box::new(UntypedExpr::Var {
+                                location,
+                                name: module_alias.clone(),
+                            }),
+                        }));
+                    }
+                }
+                Ok(None)
+            }
+            _ => Ok(None),
+        }
+    }
+
+    fn infer_html_handle_variable(
+        &mut self,
+        location: SrcSpan,
+        name: EcoString,
+    ) -> Result<Option<UntypedExpr>, Error> {
+        let constructor = self
+            .environment
+            .get_variable(&name)
+            .cloned()
+            .ok_or_else(|| self.report_name_error(&name, &location))?;
+
+        self.environment.increment_usage(&name);
+        if let Some(arg_type) = self.infer_html_get_first_argument_type(&constructor.type_) {
+            if let Some(name) = self.infer_html_extract_name_from_type(arg_type) {
+                return Ok(Some(UntypedExpr::Var { location, name }));
+            }
+        }
+        Ok(None)
+    }
+
+    fn infer_html_get_first_argument_type(&self, type_: &Type) -> Option<Type> {
+        match type_ {
+            Type::Fn { args, .. } => args.get(0).map(|arg| arg.as_ref().clone()),
+            _ => None,
+        }
+    }
+
+    fn infer_html_extract_name_from_type(&self, type_: Type) -> Option<EcoString> {
+        match type_ {
+            Type::Named { name, .. } => Some(name),
+            _ => None,
         }
     }
 }
@@ -3704,7 +4091,7 @@ impl UseAssignments {
                         location,
                         pattern,
                         annotation,
-                        kind: AssignmentKind::Let,
+                        kind: AssignmentKind::Generated,
                         value: Box::new(UntypedExpr::Var { location, name }),
                     };
                     assignments

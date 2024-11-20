@@ -1,6 +1,6 @@
 use crate::assert_erl;
 
-// https://github.com/rakun-lang/rakun/issues/2163
+
 #[test]
 fn record_constructor() {
     assert_erl!(
@@ -17,7 +17,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2163
+
 #[test]
 fn record_constructor_in_tuple() {
     assert_erl!(
@@ -34,7 +34,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2179
+
 #[test]
 fn const_type_variable() {
     assert_erl!(

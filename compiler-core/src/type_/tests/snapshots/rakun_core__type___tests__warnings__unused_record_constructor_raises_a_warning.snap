@@ -1,7 +1,21 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 1230
 expression: "\npub record Thing {\n  Thing(value: Int)\n}\n\npub fn main() {\n  Thing(1)\n  1\n}\n"
 ---
+----- SOURCE CODE
+
+pub record Thing {
+  Thing(value: Int)
+}
+
+pub fn main() {
+  Thing(1)
+  1
+}
+
+
+----- WARNING
 warning: Unused value
   ┌─ /src/warning/wrn.rakun:7:3
   │

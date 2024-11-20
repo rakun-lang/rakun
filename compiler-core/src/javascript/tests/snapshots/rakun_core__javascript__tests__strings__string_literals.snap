@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/javascript/tests/strings.rs
+assertion_line: 49
 expression: "\nfn go() {\n  \"Hello, Rakun!\"\n}\n"
 ---
+----- SOURCE CODE
+
+fn go() {
+  "Hello, Rakun!"
+}
+
+
+----- COMPILED JAVASCRIPT
 function go() {
   return "Hello, Rakun!";
 }

@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 241
 expression: import xpto
 ---
+----- SOURCE CODE
+import xpto
+
+----- ERROR
 error: Unknown module
   ┌─ /src/one/two.rakun:1:1
   │

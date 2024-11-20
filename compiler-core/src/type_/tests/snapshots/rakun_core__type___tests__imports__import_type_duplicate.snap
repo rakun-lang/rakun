@@ -1,7 +1,21 @@
 ---
 source: compiler-core/src/type_/tests/imports.rs
+assertion_line: 213
 expression: "import one.{One, type One}\n\npub fn main() -> One {\n  todo\n}\n"
 ---
+----- SOURCE CODE
+-- one.rakun
+pub type One = Int
+
+-- main.rakun
+import one.{One, type One}
+
+pub fn main() -> One {
+  todo
+}
+
+
+----- ERROR
 error: Unknown module value
   ┌─ /src/one/two.rakun:1:13
   │

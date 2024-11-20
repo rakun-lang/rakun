@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 1217
 expression: "\nconst cute = \"cute\"\nconst cute_bee = cute ++ \"bee\"\n"
 ---
 Parsed {
@@ -95,6 +96,12 @@ Parsed {
                 target: None,
             },
         ],
+        names: Names {
+            local_types: {},
+            imported_modules: {},
+            type_variables: {},
+            local_value_constructors: {},
+        },
     },
     extra: ModuleExtra {
         module_comments: [],

@@ -4,7 +4,10 @@ mod tests;
 mod wasm_filesystem;
 
 use camino::Utf8PathBuf;
+use hexpm::version::Version;
+use im::HashMap;
 use rakun_core::{
+    analyse::TargetSupport,
     build::{
         Mode, NullTelemetry, PackageCompiler, StaleTracker, Target, TargetCodegenConfiguration,
     },
@@ -14,9 +17,7 @@ use rakun_core::{
     warning::{VectorWarningEmitterIO, WarningEmitter},
     Error,
 };
-use hexpm::version::Version;
-use im::HashMap;
-use std::{cell::RefCell, collections::HashSet, sync::Arc};
+use std::{cell::RefCell, collections::HashSet, rc::Rc};
 use wasm_filesystem::WasmFileSystem;
 
 use wasm_bindgen::prelude::*;
@@ -78,7 +79,7 @@ fn get_warnings(project_id: usize) -> VectorWarningEmitterIO {
 #[wasm_bindgen]
 pub fn write_module(project_id: usize, module_name: &str, code: &str) {
     let fs = get_filesystem(project_id);
-    let path = format!("/src/{}.rakun", module_name);
+    let path = format!("/src/{module_name}.rakun");
     fs.write(&Utf8PathBuf::from(path), code)
         .expect("writing file")
 }
@@ -132,7 +133,7 @@ pub fn compile_package(project_id: usize, target: &str) -> Result<(), String> {
 #[wasm_bindgen]
 pub fn read_compiled_javascript(project_id: usize, module_name: &str) -> Option<String> {
     let fs = get_filesystem(project_id);
-    let path = format!("/build/{}.mjs", module_name);
+    let path = format!("/build/{module_name}.mjs");
     fs.read(&Utf8PathBuf::from(path)).ok()
 }
 
@@ -169,7 +170,7 @@ fn do_compile_package(project: Project, target: Target) -> Result<(), Error> {
     let mut type_manifests = im::HashMap::new();
     let mut defined_modules = im::HashMap::new();
     #[allow(clippy::arc_with_non_send_sync)]
-    let warning_emitter = WarningEmitter::new(Arc::new(project.warnings));
+    let warning_emitter = WarningEmitter::new(Rc::new(project.warnings));
     let config = PackageConfig {
         name: "library".into(),
         version: Version::new(1, 0, 0),
@@ -203,6 +204,7 @@ fn do_compile_package(project: Project, target: Target) -> Result<(), Error> {
     compiler.write_entrypoint = false;
     compiler.write_metadata = false;
     compiler.compile_beam_bytecode = true;
+    compiler.target_support = TargetSupport::Enforced;
     compiler
         .compile(
             &warning_emitter,

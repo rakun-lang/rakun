@@ -1,7 +1,13 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 855
 expression: "type PrivateType\npub record LeakType { Variant(PrivateType) }"
 ---
+----- SOURCE CODE
+type PrivateType
+pub record LeakType { Variant(PrivateType) }
+
+----- ERROR
 error: Private type used in public interface
   ┌─ /src/one/two.rakun:2:23
   │

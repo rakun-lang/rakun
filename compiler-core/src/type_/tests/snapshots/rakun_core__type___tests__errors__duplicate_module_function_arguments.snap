@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 2110
 expression: "\npub fn main(x, x) {\n  Nil\n}\n"
 ---
+----- SOURCE CODE
+
+pub fn main(x, x) {
+  Nil
+}
+
+
+----- ERROR
 error: Argument name already used
   ┌─ /src/one/two.rakun:2:16
   │

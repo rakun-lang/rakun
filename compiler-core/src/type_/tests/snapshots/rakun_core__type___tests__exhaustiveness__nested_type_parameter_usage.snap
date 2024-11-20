@@ -1,7 +1,21 @@
 ---
 source: compiler-core/src/type_/tests/exhaustiveness.rs
+assertion_line: 928
 expression: "\npub record Returned<a> {\n  Returned(List<a>)\n}\n\nfn wibble(user: Returned<#()>) -> Int {\n  let Returned([#()]) = user\n  1\n}\n"
 ---
+----- SOURCE CODE
+
+pub record Returned<a> {
+  Returned(List<a>)
+}
+
+fn wibble(user: Returned<#()>) -> Int {
+  let Returned([#()]) = user
+  1
+}
+
+
+----- ERROR
 error: Inexhaustive pattern
   ┌─ /src/one/two.rakun:7:3
   │

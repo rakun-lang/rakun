@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 546
 expression: "pub fn main() {\n    let #(a, secondValue) = #(1, 2)\n}"
 ---
 ----- BEFORE ACTION

@@ -81,8 +81,29 @@ impl<'a> ModuleEncoder<'a> {
         accessors: &AccessorsMap,
     ) {
         self.build_type(builder.reborrow().init_type(), &accessors.type_);
-        let mut builder = builder.init_accessors(accessors.accessors.len() as u32);
-        for (i, (name, accessor)) in accessors.accessors.iter().enumerate() {
+        let mut accessors_builder = builder
+            .reborrow()
+            .init_shared_accessors(accessors.shared_accessors.len() as u32);
+        for (i, (name, accessor)) in accessors.shared_accessors.iter().enumerate() {
+            let mut property = accessors_builder.reborrow().get(i as u32);
+            property.set_key(name);
+            self.build_record_accessor(property.init_value(), accessor)
+        }
+
+        let mut builder = builder
+            .init_variant_specific_accessors(accessors.variant_specific_accessors.len() as u32);
+        for (i, map) in accessors.variant_specific_accessors.iter().enumerate() {
+            self.build_constructor_accessors(builder.reborrow().get(i as u32), map);
+        }
+    }
+
+    fn build_constructor_accessors(
+        &mut self,
+        builder: variant_specific_accessors::Builder<'_>,
+        accessors: &HashMap<EcoString, RecordAccessor>,
+    ) {
+        let mut builder = builder.init_accessors(accessors.len() as u32);
+        for (i, (name, accessor)) in accessors.iter().enumerate() {
             let mut property = builder.reborrow().get(i as u32);
             property.set_key(name);
             self.build_record_accessor(property.init_value(), accessor)
@@ -285,8 +306,8 @@ impl<'a> ModuleEncoder<'a> {
                 arity,
                 location,
                 module,
-                constructors_count,
-                constructor_index,
+                variants_count: constructors_count,
+                variant_index: constructor_index,
                 documentation: doc,
             } => {
                 let mut builder = builder.init_record();
@@ -308,12 +329,19 @@ impl<'a> ModuleEncoder<'a> {
                 location,
                 documentation: doc,
                 implementations,
+                external_erlang,
+                external_javascript,
             } => {
                 let mut builder = builder.init_module_fn();
                 builder.set_name(name);
                 builder.set_module(module);
                 builder.set_arity(*arity as u16);
                 builder.set_documentation(doc.as_ref().map(EcoString::as_str).unwrap_or_default());
+                self.build_external(builder.reborrow().init_external_erlang(), external_erlang);
+                self.build_external(
+                    builder.reborrow().init_external_javascript(),
+                    external_javascript,
+                );
                 self.build_optional_field_map(builder.reborrow().init_field_map(), field_map);
                 self.build_src_span(builder.reborrow().init_location(), *location);
                 self.build_implementations(builder.init_implementations(), *implementations);
@@ -556,5 +584,20 @@ impl<'a> ModuleEncoder<'a> {
         builder.set_uses_javascript_externals(implementations.uses_javascript_externals);
         builder.set_can_run_on_erlang(implementations.can_run_on_erlang);
         builder.set_can_run_on_javascript(implementations.can_run_on_javascript);
+    }
+
+    fn build_external(
+        &self,
+        mut builder: option::Builder<'_, external::Owned>,
+        external: &Option<(EcoString, EcoString)>,
+    ) {
+        match external {
+            None => builder.set_none(()),
+            Some((module, function)) => {
+                let mut builder = builder.init_some();
+                builder.set_module(module);
+                builder.set_function(function);
+            }
+        }
     }
 }

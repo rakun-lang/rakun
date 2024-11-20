@@ -1,7 +1,20 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 2281
 expression: "\npub fn main() {\n  woble.wubble()\n}\n"
 ---
+----- SOURCE CODE
+-- wibble/wobble.rakun
+pub fn wubble() {}
+
+-- main.rakun
+
+pub fn main() {
+  woble.wubble()
+}
+
+
+----- ERROR
 error: Unknown module
   ┌─ /src/one/two.rakun:3:3
   │

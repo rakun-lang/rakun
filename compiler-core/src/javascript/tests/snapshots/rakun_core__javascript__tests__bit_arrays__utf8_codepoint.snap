@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/javascript/tests/bit_arrays.rs
+assertion_line: 203
 expression: "\nfn go(x) {\n  <<x:utf8_codepoint, \"Rakun\":utf8>>\n}\n"
 ---
+----- SOURCE CODE
+
+fn go(x) {
+  <<x:utf8_codepoint, "Rakun":utf8>>
+}
+
+
+----- COMPILED JAVASCRIPT
 import { toBitArray, stringBits, codepointBits } from "../rakun.mjs";
 
 function go(x) {

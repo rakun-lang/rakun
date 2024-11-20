@@ -1,7 +1,21 @@
 ---
 source: compiler-core/src/type_/tests/functions.rs
+assertion_line: 237
 expression: "\n@external(javascript, \"somemodule\", \"() => 123\")\npub fn one() -> Nil {\n  Nil\n}\n\npub fn two() -> Nil {\n  \"\"\n}\n"
 ---
+----- SOURCE CODE
+
+@external(javascript, "somemodule", "() => 123")
+pub fn one() -> Nil {
+  Nil
+}
+
+pub fn two() -> Nil {
+  ""
+}
+
+
+----- ERROR
 error: Invalid JavaScript function
   ┌─ /src/one/two.rakun:3:1
   │

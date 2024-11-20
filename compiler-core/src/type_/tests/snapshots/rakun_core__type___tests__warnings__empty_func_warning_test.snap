@@ -1,7 +1,14 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 43
 expression: "pub fn main() { wibble() }\npub fn wibble() { }\n"
 ---
+----- SOURCE CODE
+pub fn main() { wibble() }
+pub fn wibble() { }
+
+
+----- WARNING
 warning: Unimplemented function
   ┌─ /src/warning/wrn.rakun:2:1
   │

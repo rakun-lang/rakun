@@ -1,7 +1,28 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 2167
 expression: "\n        record Private {\n            Private\n        }\n\n        pub fn ret_private() -> Private {\n            Private\n        }\n\n        pub fn ret_private2() -> Private {\n            Private\n        }\n\n        pub fn main() {\n            ret_private()\n        }\n        "
 ---
+----- SOURCE CODE
+
+        record Private {
+            Private
+        }
+
+        pub fn ret_private() -> Private {
+            Private
+        }
+
+        pub fn ret_private2() -> Private {
+            Private
+        }
+
+        pub fn main() {
+            ret_private()
+        }
+        
+
+----- ERROR
 error: Private type used in public interface
   ┌─ /src/one/two.rakun:6:9
   │

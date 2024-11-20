@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 547
 expression: "\n/// Exciting documentation\n/// Maybe even multiple lines\nconst one: Int = 1\n"
 ---
 /// Exciting documentation
@@ -11,6 +12,6 @@ const one: Int = 1
 ----- Hover content -----
 Scalar(
     String(
-        "```rakun\nInt\n```\n",
+        "```rakun\nrakun.Int\n```\n",
     ),
 )

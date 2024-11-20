@@ -210,7 +210,7 @@ pub fn go(x) {
     )
 }
 
-// https://github.com/rakun-lang/rakun/issues/2471
+
 #[test]
 fn string_prefix_assignment_with_multiple_subjects() {
     assert_js!(

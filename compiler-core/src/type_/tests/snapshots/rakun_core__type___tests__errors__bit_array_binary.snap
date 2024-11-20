@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 45
 expression: "case <<1>> { <<a:bytes>> if a > 1 -> 1 _ -> 2 }"
 ---
+----- SOURCE CODE
+case <<1>> { <<a:bytes>> if a > 1 -> 1 _ -> 2 }
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:29
   │

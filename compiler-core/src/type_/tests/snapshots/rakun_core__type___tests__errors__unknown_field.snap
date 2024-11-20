@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 596
 expression: "fn(a: a) { a.field }"
 ---
+----- SOURCE CODE
+fn(a: a) { a.field }
+
+----- ERROR
 error: Unknown record field
   ┌─ /src/one/two.rakun:1:13
   │

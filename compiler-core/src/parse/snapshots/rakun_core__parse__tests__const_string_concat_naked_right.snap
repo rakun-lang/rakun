@@ -1,7 +1,14 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 1227
 expression: "\nconst no_cute_bee = \"cute\" ++\n"
 ---
+----- SOURCE CODE
+
+const no_cute_bee = "cute" ++
+
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:2:28
   │

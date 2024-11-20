@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 97
 expression: "pub fn main() { 1 2 }"
 ---
+----- SOURCE CODE
+pub fn main() { 1 2 }
+
+----- WARNING
 warning: Unused literal
   ┌─ /src/warning/wrn.rakun:1:17
   │

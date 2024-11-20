@@ -1,0 +1,22 @@
+---
+source: compiler-core/src/language_server/tests/definition.rs
+assertion_line: 624
+expression: output
+---
+----- Jumping from `src/app.rakun`
+
+pub type Wibble
+
+pub fn main() {
+  fn(w: Wibble) { todo }
+         ↑              
+}
+
+----- Jumped to `src/app.rakun`
+
+pub type Wibble
+↑▔▔▔▔▔▔▔▔▔▔▔▔▔▔
+
+pub fn main() {
+  fn(w: Wibble) { todo }
+}

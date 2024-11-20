@@ -1,7 +1,28 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 2233
 expression: "\npub record Wibble {\n  Wibble\n  Wobble\n  Wobble\n  Wubble\n}\n\npub fn main() {\n  let wibble = Wobble\n  case wibble {\n    Wibble -> Nil\n    Wobble -> Nil\n    Wubble -> Nil\n  }\n}\n"
 ---
+----- SOURCE CODE
+
+pub record Wibble {
+  Wibble
+  Wobble
+  Wobble
+  Wubble
+}
+
+pub fn main() {
+  let wibble = Wobble
+  case wibble {
+    Wibble -> Nil
+    Wobble -> Nil
+    Wubble -> Nil
+  }
+}
+
+
+----- ERROR
 error: Duplicate definition
   ┌─ /src/one/two.rakun:4:3
   │

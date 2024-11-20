@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 307
 expression: const myInvalid_Constant = 42
 ---
 ----- BEFORE ACTION

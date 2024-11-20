@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 1077
 expression: "\nrecord A {\n    A(type: String)\n}\n"
 ---
+----- SOURCE CODE
+
+record A {
+    A(type: String)
+}
+
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:3:7
   │

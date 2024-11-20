@@ -1,0 +1,16 @@
+---
+source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 1257
+expression: "\nimport alias.{type Bool}\nconst value = True\n"
+---
+import alias.{type Bool}
+const value = True
+▔▔▔▔▔▔↑▔▔▔▔       
+
+
+----- Hover content -----
+Scalar(
+    String(
+        "```rakun\nrakun.Bool\n```\n",
+    ),
+)

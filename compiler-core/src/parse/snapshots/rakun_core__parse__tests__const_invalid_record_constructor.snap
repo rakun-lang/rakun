@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 1150
 expression: "\nrecord A {\n    A(String, Int)\n}\nconst a = A(\"a\", let)\n"
 ---
+----- SOURCE CODE
+
+record A {
+    A(String, Int)
+}
+const a = A("a", let)
+
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:5:18
   │

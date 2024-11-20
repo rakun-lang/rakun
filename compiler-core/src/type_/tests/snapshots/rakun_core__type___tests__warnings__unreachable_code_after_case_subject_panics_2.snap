@@ -1,7 +1,19 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 1862
 expression: "\n        pub fn main(a, b) {\n            case a, b, panic {\n                _, _, _ -> \"no warning here!\"\n            }\n            \"warning here!\"\n        }\n        "
 ---
+----- SOURCE CODE
+
+        pub fn main(a, b) {
+            case a, b, panic {
+                _, _, _ -> "no warning here!"
+            }
+            "warning here!"
+        }
+        
+
+----- WARNING
 warning: Unreachable code
   ┌─ /src/warning/wrn.rakun:6:13
   │

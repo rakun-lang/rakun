@@ -1,0 +1,240 @@
+---
+source: compiler-core/src/parse/tests.rs
+assertion_line: 1684
+expression: "\npub fn main() {\n   let title = \"My Title\"\n   let description = \"This is a description.\"\n\n   <c.card title={ title } description={ description }>\n       <p>\n        This is the card content.\n       </p>\n   </c.card>\n}\n"
+---
+Parsed {
+    module: Module {
+        name: "",
+        documentation: [],
+        type_info: (),
+        definitions: [
+            TargetedDefinition {
+                definition: Function(
+                    Function {
+                        location: SrcSpan {
+                            start: 1,
+                            end: 14,
+                        },
+                        end_position: 217,
+                        name: Some(
+                            (
+                                SrcSpan {
+                                    start: 8,
+                                    end: 12,
+                                },
+                                "main",
+                            ),
+                        ),
+                        arguments: [],
+                        body: [
+                            Assignment(
+                                Assignment {
+                                    location: SrcSpan {
+                                        start: 20,
+                                        end: 42,
+                                    },
+                                    value: String {
+                                        location: SrcSpan {
+                                            start: 32,
+                                            end: 42,
+                                        },
+                                        value: "My Title",
+                                    },
+                                    pattern: Variable {
+                                        location: SrcSpan {
+                                            start: 24,
+                                            end: 29,
+                                        },
+                                        name: "title",
+                                        type_: (),
+                                    },
+                                    kind: Let,
+                                    annotation: None,
+                                },
+                            ),
+                            Assignment(
+                                Assignment {
+                                    location: SrcSpan {
+                                        start: 46,
+                                        end: 88,
+                                    },
+                                    value: String {
+                                        location: SrcSpan {
+                                            start: 64,
+                                            end: 88,
+                                        },
+                                        value: "This is a description.",
+                                    },
+                                    pattern: Variable {
+                                        location: SrcSpan {
+                                            start: 50,
+                                            end: 61,
+                                        },
+                                        name: "description",
+                                        type_: (),
+                                    },
+                                    kind: Let,
+                                    annotation: None,
+                                },
+                            ),
+                            Expression(
+                                Html {
+                                    location: SrcSpan {
+                                        start: 93,
+                                        end: 215,
+                                    },
+                                    tag: Some(
+                                        FieldAccess {
+                                            location: SrcSpan {
+                                                start: 94,
+                                                end: 100,
+                                            },
+                                            label_location: SrcSpan {
+                                                start: 95,
+                                                end: 100,
+                                            },
+                                            label: "card",
+                                            container: Var {
+                                                location: SrcSpan {
+                                                    start: 94,
+                                                    end: 95,
+                                                },
+                                                name: "c",
+                                            },
+                                        },
+                                    ),
+                                    children: Some(
+                                        [
+                                            Html {
+                                                location: SrcSpan {
+                                                    start: 153,
+                                                    end: 202,
+                                                },
+                                                tag: Some(
+                                                    Var {
+                                                        location: SrcSpan {
+                                                            start: 154,
+                                                            end: 155,
+                                                        },
+                                                        name: "p",
+                                                    },
+                                                ),
+                                                children: Some(
+                                                    [
+                                                        HtmlText {
+                                                            location: SrcSpan {
+                                                                start: 156,
+                                                                end: 198,
+                                                            },
+                                                            value: "This is the card content.",
+                                                        },
+                                                    ],
+                                                ),
+                                                attributes: [],
+                                            },
+                                        ],
+                                    ),
+                                    attributes: [
+                                        CallArg {
+                                            label: Some(
+                                                "title",
+                                            ),
+                                            location: SrcSpan {
+                                                start: 101,
+                                                end: 108,
+                                            },
+                                            value: Block {
+                                                location: SrcSpan {
+                                                    start: 107,
+                                                    end: 116,
+                                                },
+                                                statements: [
+                                                    Expression(
+                                                        Var {
+                                                            location: SrcSpan {
+                                                                start: 109,
+                                                                end: 114,
+                                                            },
+                                                            name: "title",
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                            implicit: None,
+                                        },
+                                        CallArg {
+                                            label: Some(
+                                                "description",
+                                            ),
+                                            location: SrcSpan {
+                                                start: 117,
+                                                end: 130,
+                                            },
+                                            value: Block {
+                                                location: SrcSpan {
+                                                    start: 129,
+                                                    end: 144,
+                                                },
+                                                statements: [
+                                                    Expression(
+                                                        Var {
+                                                            location: SrcSpan {
+                                                                start: 131,
+                                                                end: 142,
+                                                            },
+                                                            name: "description",
+                                                        },
+                                                    ),
+                                                ],
+                                            },
+                                            implicit: None,
+                                        },
+                                    ],
+                                },
+                            ),
+                        ],
+                        publicity: Public,
+                        deprecation: NotDeprecated,
+                        return_annotation: None,
+                        return_type: (),
+                        documentation: None,
+                        external_erlang: None,
+                        external_javascript: None,
+                        implementations: Implementations {
+                            rakun: true,
+                            can_run_on_erlang: true,
+                            can_run_on_javascript: true,
+                            uses_erlang_externals: false,
+                            uses_javascript_externals: false,
+                        },
+                    },
+                ),
+                target: None,
+            },
+        ],
+        names: Names {
+            local_types: {},
+            imported_modules: {},
+            type_variables: {},
+            local_value_constructors: {},
+        },
+    },
+    extra: ModuleExtra {
+        module_comments: [],
+        doc_comments: [],
+        comments: [],
+        empty_lines: [
+            89,
+        ],
+        new_lines: [
+            0,
+            16,
+            42,
+            88,
+            89,
+            215,
+            217,
+        ],
+    },
+}

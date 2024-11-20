@@ -60,7 +60,7 @@ fn write_cache(
         is_internal: false,
         src_path: Utf8PathBuf::from(format!("/src/{}.rakun", name)),
         warnings: vec![],
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
     let path = Utf8Path::new("/artefact").join(format!("{name}.cache"));
     fs.write_bytes(
@@ -216,6 +216,43 @@ fn module_is_stale_if_deps_are_stale() {
         vec![EcoString::from("one"), EcoString::from("two")]
     );
     assert_eq!(loaded.cached, vec![EcoString::from("three")]);
+}
+
+#[test]
+fn module_continues_to_be_stale_if_deps_get_updated() {
+    let fs = InMemoryFileSystem::new();
+    let root = Utf8Path::new("/");
+    let artefact = Utf8Path::new("/artefact");
+
+    // Cache is stale
+    write_src(&fs, "/src/one.rakun", 1, TEST_SOURCE_2);
+    write_cache(&fs, "one", 0, vec![], TEST_SOURCE_1);
+
+    // Cache is fresh but dep is stale
+    write_src(&fs, "/src/two.rakun", 1, "import one");
+    write_cache(
+        &fs,
+        "two",
+        2,
+        vec![(EcoString::from("one"), SrcSpan { start: 0, end: 0 })],
+        "import one",
+    );
+
+    // Cache is fresh
+    write_src(&fs, "/src/three.rakun", 1, TEST_SOURCE_1);
+    write_cache(&fs, "three", 2, vec![], TEST_SOURCE_1);
+
+    let _loaded1 = run_loader(fs.clone(), root, artefact);
+
+    // update the dependency
+    write_cache(&fs, "one", 3, vec![], TEST_SOURCE_2);
+    let loaded2 = run_loader(fs, root, artefact);
+
+    assert_eq!(loaded2.to_compile, vec![EcoString::from("two")]);
+    assert_eq!(
+        loaded2.cached,
+        vec![EcoString::from("one"), EcoString::from("three")]
+    );
 }
 
 #[test]

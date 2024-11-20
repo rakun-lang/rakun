@@ -1,0 +1,26 @@
+---
+source: compiler-core/src/language_server/tests/definition.rs
+assertion_line: 94
+expression: output
+---
+----- Jumping from `src/app.rakun`
+
+fn add_2(x) {
+  x + 2
+}
+
+pub fn main() {
+  add_2(1)
+  ↑       
+}
+
+----- Jumped to `src/app.rakun`
+
+fn add_2(x) {
+↑▔▔▔▔▔▔▔▔▔▔  
+  x + 2
+}
+
+pub fn main() {
+  add_2(1)
+}

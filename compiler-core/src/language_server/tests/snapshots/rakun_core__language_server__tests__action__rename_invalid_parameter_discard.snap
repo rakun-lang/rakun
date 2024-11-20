@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 345
 expression: "fn ignore(_ignoreMe: Bool) { 98 }"
 ---
 ----- BEFORE ACTION

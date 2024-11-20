@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 301
 expression: "fn(x: Int) -> Float { x }"
 ---
+----- SOURCE CODE
+fn(x: Int) -> Float { x }
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:23
   │

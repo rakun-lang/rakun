@@ -1,11 +1,21 @@
 ---
 source: compiler-core/src/type_/tests/exhaustiveness.rs
-expression: "\nrecord Wibble { Wibble Wobble Wubble }\npub fn main() {\n  let wibble = Wobble\n  case wibble {}\n}\n"
+assertion_line: 1148
+expression: "\npub record Wibble { Wibble Wobble Wubble }\npub fn main(wibble: Wibble) {\n  case wibble {}\n}\n"
 ---
+----- SOURCE CODE
+
+pub record Wibble { Wibble Wobble Wubble }
+pub fn main(wibble: Wibble) {
+  case wibble {}
+}
+
+
+----- ERROR
 error: Inexhaustive patterns
-  ┌─ /src/one/two.rakun:5:3
+  ┌─ /src/one/two.rakun:4:3
   │
-5 │   case wibble {}
+4 │   case wibble {}
   │   ^^^^^^^^^^^^^^
 
 This case expression does not have a pattern for all possible values. If it

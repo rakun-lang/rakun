@@ -668,7 +668,7 @@ fn opaque_types_typescript() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1650
+
 #[test]
 fn types_must_be_rendered_before_functions() {
     assert_js!(
@@ -679,7 +679,7 @@ pub record One { One }
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2386
+
 #[test]
 fn new_type_import_syntax() {
     assert_js!(
@@ -689,6 +689,80 @@ import a.{type A, A}
 
 pub fn main() {
   A
+}
+"#
+    );
+}
+
+
+#[test]
+fn record_with_field_named_constructor() {
+    assert_js!(
+        r#"
+pub record Thing {
+  Thing(constructor: Nil)
+}
+
+pub fn main() {
+  let a = Thing(constructor: Nil)
+  let b = Thing(..a, constructor: Nil)
+  b.constructor
+}
+"#
+    );
+}
+
+#[test]
+fn record_with_field_named_then() {
+    assert_js!(
+        r#"
+pub record Thing {
+  Thing(then: Nil)
+}
+
+pub fn main() {
+  let a = Thing(then: Nil)
+  let b = Thing(..a, then: Nil)
+  b.then
+}
+"#
+    );
+}
+#[test]
+fn record_access_in_guard_with_reserved_field_name() {
+    assert_js!(
+        r#"
+pub record Thing {
+  Thing(constructor: Nil)
+}
+
+pub fn main() {
+  let a = Thing(constructor: Nil)
+  case Nil {
+      Nil if a.constructor == Nil -> a.constructor
+      _ -> Nil
+  }
+}
+"#
+    );
+}
+
+#[test]
+fn record_access_in_pattern_with_reserved_field_name() {
+    assert_js!(
+        r#"
+pub record Thing {
+  Thing(constructor: Nil)
+}
+
+pub fn main() {
+  let a = Thing(constructor: Nil)
+  let Thing(constructor: ctor) = a
+  case a {
+      a if a.constructor == ctor -> Nil
+      Thing(constructor:) if ctor == constructor -> Nil
+      _ -> Nil
+  }
 }
 "#
     );

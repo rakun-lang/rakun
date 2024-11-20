@@ -1,7 +1,26 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1906
 expression: "\n        import one as x\n        import two as x\n        "
 ---
+----- SOURCE CODE
+-- one.rakun
+
+            pub fn fn1() { 1 }
+            
+
+-- two.rakun
+
+            pub fn fn2() { 1 }
+            
+
+-- main.rakun
+
+        import one as x
+        import two as x
+        
+
+----- ERROR
 error: Duplicate import
   ┌─ /src/one/two.rakun:2:9
   │

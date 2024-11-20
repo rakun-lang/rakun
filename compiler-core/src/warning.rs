@@ -4,18 +4,21 @@ use crate::{
     error::wrap,
     type_::{
         self,
-        error::{FeatureKind, LiteralCollectionKind, PanicPosition, TodoOrPanic},
+        error::{
+            FeatureKind, LiteralCollectionKind, PanicPosition, TodoOrPanic,
+            UnreachableCaseClauseReason,
+        },
         pretty::Printer,
     },
 };
 use camino::Utf8PathBuf;
 use debug_ignore::DebugIgnore;
 use ecow::EcoString;
-use std::sync::atomic::AtomicUsize;
 use std::{
     io::Write,
     sync::{atomic::Ordering, Arc},
 };
+use std::{rc::Rc, sync::atomic::AtomicUsize};
 use termcolor::Buffer;
 
 pub trait WarningEmitterIO {
@@ -73,11 +76,11 @@ pub struct WarningEmitter {
     /// package only, the count is reset back to zero after the dependencies are
     /// compiled.
     count: Arc<AtomicUsize>,
-    emitter: DebugIgnore<Arc<dyn WarningEmitterIO>>,
+    emitter: DebugIgnore<Rc<dyn WarningEmitterIO>>,
 }
 
 impl WarningEmitter {
-    pub fn new(emitter: Arc<dyn WarningEmitterIO>) -> Self {
+    pub fn new(emitter: Rc<dyn WarningEmitterIO>) -> Self {
         Self {
             count: Arc::new(AtomicUsize::new(0)),
             emitter: DebugIgnore(emitter),
@@ -85,7 +88,7 @@ impl WarningEmitter {
     }
 
     pub fn null() -> Self {
-        Self::new(Arc::new(NullWarningEmitterIO))
+        Self::new(Rc::new(NullWarningEmitterIO))
     }
 
     pub fn reset_count(&self) {
@@ -101,10 +104,10 @@ impl WarningEmitter {
         self.emitter.emit_warning(warning);
     }
 
-    pub fn vector() -> (Self, Arc<VectorWarningEmitterIO>) {
-        let io = Arc::new(VectorWarningEmitterIO::default());
+    pub fn vector() -> (Self, Rc<VectorWarningEmitterIO>) {
+        let io = Rc::new(VectorWarningEmitterIO::default());
         let emitter = Self::new(io.clone());
-        (emitter, Arc::clone(&io))
+        (emitter, Rc::clone(&io))
     }
 }
 
@@ -128,7 +131,7 @@ impl TypeWarningEmitter {
         Self {
             module_path: Utf8PathBuf::new(),
             module_src: EcoString::from(""),
-            emitter: WarningEmitter::new(Arc::new(NullWarningEmitterIO)),
+            emitter: WarningEmitter::new(Rc::new(NullWarningEmitterIO)),
         }
     }
 
@@ -727,11 +730,17 @@ Run this command to add it to your dependencies:
                     }
                 }
 
-                type_::Warning::UnreachableCaseClause { location } => {
-                    let text: String =
-                        "This case clause cannot be reached as a previous clause matches
-the same values.\n"
-                            .into();
+                type_::Warning::UnreachableCaseClause { location, reason } => {
+                    let text: String = match reason {
+                        UnreachableCaseClauseReason::DuplicatePattern => wrap(
+                            "This case clause cannot be reached as a previous clause matches \
+the same values.\n",
+                        ),
+                        UnreachableCaseClauseReason::ImpossibleVariant => wrap(
+                            "This case clause cannot be reached as it matches \
+on a variant of a type which is never present.\n",
+                        ),
+                    };
                     Diagnostic {
                         title: "Unreachable case clause".into(),
                         text,
@@ -1001,6 +1010,12 @@ See: https://tour.rakun.run/functions/pipelines/",
                         FeatureKind::AtInJavascriptModules => {
                             "The ability to have `@` in a Javascript module's name was"
                         }
+                        FeatureKind::RecordUpdateVariantInference => {
+                            "Record updates for custom types when the variant is known was"
+                        }
+                        FeatureKind::RecordAccessVariantInference => {
+                            "Field access on custom types when the variant is known was"
+                        }
                     };
 
                     Diagnostic {
@@ -1013,15 +1028,13 @@ See: https://tour.rakun.run/functions/pipelines/",
                         hint: Some(format!(
                             "Remove the version constraint from your `rakun.toml` or update it to be:
 
-    rakun = \">= {}\"",
-                            minimum_required_version
+    rakun = \">= {minimum_required_version}\""
                         )),
                         level: diagnostic::Level::Warning,
                         location: Some(Location {
                             label: diagnostic::Label {
                                 text: Some(format!(
-                                    "This requires a Rakun version >= {}",
-                                    minimum_required_version
+                                    "This requires a Rakun version >= {minimum_required_version}"
                                 )),
                                 span: *location,
                             },
@@ -1031,6 +1044,29 @@ See: https://tour.rakun.run/functions/pipelines/",
                         }),
                     }
                 }
+
+                type_::Warning::JavaScriptIntUnsafe { location } => Diagnostic {
+                    title: "Int is outside JavaScript's safe integer range".into(),
+                    text: wrap(
+                        "This integer value is too large to be represented accurately by \
+JavaScript's number type. To avoid this warning integer values must be in the range \
+-(2^53 - 1) - (2^53 - 1).
+
+See JavaScript's Number.MAX_SAFE_INTEGER and Number.MIN_SAFE_INTEGER properties for more \
+information.",
+                    ),
+                    hint: None,
+                    level: diagnostic::Level::Warning,
+                    location: Some(Location {
+                        path: path.to_path_buf(),
+                        src: src.clone(),
+                        label: diagnostic::Label {
+                            text: Some("This is not a safe integer value on JavaScript".into()),
+                            span: *location,
+                        },
+                        extra_labels: Vec::new(),
+                    }),
+                },
             },
         }
     }

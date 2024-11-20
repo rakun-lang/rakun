@@ -1,0 +1,30 @@
+---
+source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 2496
+expression: "\npub record User {\n  User(name: String)\n}\n\npub fn main() {\n  User(\"Jak\").nam\n}\n"
+---
+----- SOURCE CODE
+
+pub record User {
+  User(name: String)
+}
+
+pub fn main() {
+  User("Jak").nam
+}
+
+
+----- ERROR
+error: Unknown record field
+  ┌─ /src/one/two.rakun:7:14
+  │
+7 │   User("Jak").nam
+  │              ^^^^ Did you mean `name`?
+
+The value being accessed has this type:
+
+    User
+
+It has these accessible fields:
+
+    .name

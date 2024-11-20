@@ -1,0 +1,16 @@
+---
+source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 1030
+expression: "\nimport aliases.{type Aliased}\nconst thing: Aliased = 10\n"
+---
+import aliases.{type Aliased}
+const thing: Aliased = 10
+▔▔▔▔▔▔▔▔▔▔↑▔▔▔▔▔▔▔▔▔     
+
+
+----- Hover content -----
+Scalar(
+    String(
+        "```rakun\nAliased\n```\n",
+    ),
+)

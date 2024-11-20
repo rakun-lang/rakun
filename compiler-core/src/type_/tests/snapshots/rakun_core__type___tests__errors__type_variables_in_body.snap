@@ -1,7 +1,20 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1010
 expression: "\npub record Box<a> {\n  Box(value: a)\n}\npub fn go(box1: Box<a>, box2: Box<b>) {\n  let _: Box<a> = box2\n  let _: Box<b> = box1\n  5\n}"
 ---
+----- SOURCE CODE
+
+pub record Box<a> {
+  Box(value: a)
+}
+pub fn go(box1: Box<a>, box2: Box<b>) {
+  let _: Box<a> = box2
+  let _: Box<b> = box1
+  5
+}
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:6:19
   │
@@ -10,11 +23,11 @@ error: Type mismatch
 
 Expected type:
 
-    Box<a>
+    Box(a)
 
 Found type:
 
-    Box<b>
+    Box(b)
 
 error: Type mismatch
   ┌─ /src/one/two.rakun:7:19
@@ -24,8 +37,8 @@ error: Type mismatch
 
 Expected type:
 
-    Box<b>
+    Box(b)
 
 Found type:
 
-    Box<a>
+    Box(a)

@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/document_symbols.rs
+assertion_line: 153
 expression: "doc_symbols(TestProject::for_source(code))"
 ---
 [
@@ -36,7 +37,7 @@ expression: "doc_symbols(TestProject::for_source(code))"
     DocumentSymbol {
         name: "my_const2",
         detail: Some(
-            "List<Int>",
+            "List(Int)",
         ),
         kind: Constant,
         tags: None,

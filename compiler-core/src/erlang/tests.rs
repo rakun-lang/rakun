@@ -20,6 +20,7 @@ mod custom_types;
 mod external_fn;
 mod functions;
 mod guards;
+mod html;
 mod let_assert;
 mod numbers;
 mod panic;
@@ -33,7 +34,7 @@ mod type_params;
 mod use_;
 mod variables;
 
-pub fn compile_test_project(src: &str, dep: Option<(&str, &str, &str)>) -> String {
+pub fn compile_test_project(src: &str, src_path: &str, dep: Option<(&str, &str, &str)>) -> String {
     let mut modules = im::HashMap::new();
     let ids = UniqueIdGenerator::new();
     // DUPE: preludeinsertion
@@ -73,7 +74,7 @@ pub fn compile_test_project(src: &str, dep: Option<(&str, &str, &str)>) -> Strin
         let _ = modules.insert(dep_name.into(), dep.type_info);
         let _ = direct_dependencies.insert(dep_package.into(), ());
     }
-    let path = Utf8PathBuf::from("/root/project/test/my/mod.rakun");
+    let path = Utf8PathBuf::from(src_path);
     let parsed = crate::parse::parse_module(path.clone(), src, &WarningEmitter::null())
         .expect("syntax error");
     let mut config = PackageConfig::default();
@@ -100,15 +101,28 @@ pub fn compile_test_project(src: &str, dep: Option<(&str, &str, &str)>) -> Strin
 #[macro_export]
 macro_rules! assert_erl {
     (($dep_package:expr, $dep_name:expr, $dep_src:expr), $src:expr $(,)?) => {{
-        let output = $crate::erlang::tests::compile_test_project(
+        let compiled = $crate::erlang::tests::compile_test_project(
             $src,
+            "/root/project/test/my/mod.rakun",
             Some(($dep_package, $dep_name, $dep_src)),
+        );
+        let output = format!(
+            "----- SOURCE CODE\n{}\n\n----- COMPILED ERLANG\n{}",
+            $src, compiled
         );
         insta::assert_snapshot!(insta::internals::AutoName, output, $src);
     }};
 
     ($src:expr $(,)?) => {{
-        let output = $crate::erlang::tests::compile_test_project($src, None);
+        let compiled = $crate::erlang::tests::compile_test_project(
+            $src,
+            "/root/project/test/my/mod.rakun",
+            None,
+        );
+        let output = format!(
+            "----- SOURCE CODE\n{}\n\n----- COMPILED ERLANG\n{}",
+            $src, compiled
+        );
         insta::assert_snapshot!(insta::internals::AutoName, output, $src);
     }};
 }
@@ -289,7 +303,7 @@ pub fn x() { go(x: 1, y: 2) go(y: 3, x: 4) }"#
 
 #[test]
 fn integration_test17() {
-    // https://github.com/rakun-lang/rakun/issues/289
+    
     assert_erl!(
         r#"
 record User { User(id: Int, name: String, age: Int) }
@@ -339,7 +353,7 @@ pub fn go(a) {
 
 #[test]
 fn integration_test22() {
-    // https://github.com/rakun-lang/rakun/issues/358
+    
     assert_erl!(
         r#"
 pub fn factory(f, i) {
@@ -359,7 +373,7 @@ pub fn main() {
 
 #[test]
 fn integration_test23() {
-    // https://github.com/rakun-lang/rakun/issues/384
+    
     assert_erl!(
         r#"
 pub fn main(args) {
@@ -420,7 +434,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/777
+
 #[test]
 fn block_assignment() {
     assert_erl!(
@@ -488,13 +502,13 @@ fn allowed_string_escapes() {
     assert_erl!(r#"pub fn a() { "\n" "\r" "\t" "\\" "\"" "\\^" }"#);
 }
 
-// https://github.com/rakun-lang/rakun/issues/1006
+
 #[test]
 fn keyword_constructors() {
     assert_erl!("pub record X { Div }");
 }
 
-// https://github.com/rakun-lang/rakun/issues/1006
+
 #[test]
 fn keyword_constructors1() {
     assert_erl!("pub record X { Fun(Int) }");
@@ -510,7 +524,7 @@ fn discard_in_assert() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1424
+
 #[test]
 fn operator_pipe_right_hand_side() {
     assert_erl!(
@@ -545,7 +559,7 @@ fn negation_block() {
     )
 }
 
-// https://github.com/rakun-lang/rakun/issues/1655
+
 #[test]
 fn tail_maybe_expr_block() {
     assert_erl!(
@@ -563,7 +577,7 @@ fn tail_maybe_expr_block() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1587
+
 #[test]
 fn guard_variable_rewriting() {
     assert_erl!(
@@ -580,7 +594,7 @@ fn guard_variable_rewriting() {
     )
 }
 
-// https://github.com/rakun-lang/rakun/issues/1816
+
 #[test]
 fn function_argument_shadowing() {
     assert_erl!(
@@ -595,13 +609,13 @@ pub record Box {
     )
 }
 
-// https://github.com/rakun-lang/rakun/issues/2156
+
 #[test]
 fn dynamic() {
     assert_erl!("pub type Dynamic")
 }
 
-// https://github.com/rakun-lang/rakun/issues/2166
+
 #[test]
 fn inline_const_pattern_option() {
     assert_erl!(
@@ -619,7 +633,7 @@ fn inline_const_pattern_option() {
     )
 }
 
-// https://github.com/rakun-lang/rakun/issues/2349
+
 #[test]
 fn positive_zero() {
     assert_erl!(
@@ -631,7 +645,7 @@ pub fn main() {
     )
 }
 
-// https://github.com/rakun-lang/rakun/issues/3073
+
 #[test]
 fn scientific_notation() {
     assert_erl!(
@@ -644,7 +658,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3304
+
 #[test]
 fn type_named_else() {
     assert_erl!(
@@ -660,7 +674,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3382
+
 #[test]
 fn type_named_module_info() {
     assert_erl!(
@@ -676,7 +690,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3382
+
 #[test]
 fn function_named_module_info() {
     assert_erl!(
@@ -692,7 +706,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3382
+
 #[test]
 fn function_named_module_info_imported() {
     assert_erl!(
@@ -715,7 +729,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3382
+
 #[test]
 fn function_named_module_info_imported_qualified() {
     assert_erl!(
@@ -738,7 +752,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3382
+
 #[test]
 fn constant_named_module_info() {
     assert_erl!(
@@ -752,7 +766,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3382
+
 #[test]
 fn constant_named_module_info_imported() {
     assert_erl!(
@@ -773,7 +787,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3382
+
 #[test]
 fn constant_named_module_info_imported_qualified() {
     assert_erl!(
@@ -794,7 +808,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3382
+
 #[test]
 fn constant_named_module_info_with_function_inside() {
     assert_erl!(
@@ -812,7 +826,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3382
+
 #[test]
 fn constant_named_module_info_with_function_inside_imported() {
     assert_erl!(
@@ -837,7 +851,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3382
+
 #[test]
 fn constant_named_module_info_with_function_inside_imported_qualified() {
     assert_erl!(
@@ -862,7 +876,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3382
+
 #[test]
 fn function_named_module_info_in_constant() {
     assert_erl!(
@@ -880,7 +894,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3382
+
 #[test]
 fn function_named_module_info_in_constant_imported() {
     assert_erl!(
@@ -905,7 +919,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3382
+
 #[test]
 fn function_named_module_info_in_constant_imported_qualified() {
     assert_erl!(
@@ -928,4 +942,29 @@ pub fn main() {
 }
 "
     );
+}
+
+
+#[test]
+fn windows_file_escaping_bug() {
+    let src = "pub fn main() { Nil }";
+    let path = "C:\\root\\project\\test\\my\\mod.rakun";
+    let output = compile_test_project(src, path, None);
+    insta::assert_snapshot!(insta::internals::AutoName, output, src);
+}
+
+
+#[test]
+fn bit_pattern_shadowing() {
+    assert_erl!(
+        "
+pub fn main() {
+  let code = <<\"hello world\":utf8>>
+  let pre = 1
+  case code {
+    <<pre:bytes-size(pre), _:bytes>> -> pre
+    _ -> panic
+  }
+}        "
+    )
 }

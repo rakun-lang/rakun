@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 1066
 expression: "\nrecord A<a, type> {\n    A\n}\n"
 ---
+----- SOURCE CODE
+
+record A<a, type> {
+    A
+}
+
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:2:13
   │

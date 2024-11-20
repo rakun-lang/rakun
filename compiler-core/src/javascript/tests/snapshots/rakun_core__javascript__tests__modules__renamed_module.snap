@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/javascript/tests/modules.rs
+assertion_line: 70
 expression: "\nimport x as y\nconst z = y.v\n"
 ---
+----- SOURCE CODE
+
+import x as y
+const z = y.v
+
+
+----- COMPILED JAVASCRIPT
 import * as $y from "../x.mjs";
 
 const z = $y.v;

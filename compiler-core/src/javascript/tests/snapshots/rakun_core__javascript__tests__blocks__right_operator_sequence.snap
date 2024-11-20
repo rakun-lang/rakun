@@ -1,7 +1,19 @@
 ---
 source: compiler-core/src/javascript/tests/blocks.rs
+assertion_line: 141
 expression: "\nfn go() {\n  {\n    1\n    2\n  } == 1\n}\n"
 ---
+----- SOURCE CODE
+
+fn go() {
+  {
+    1
+    2
+  } == 1
+}
+
+
+----- COMPILED JAVASCRIPT
 function go() {
   return (() => {
     1;

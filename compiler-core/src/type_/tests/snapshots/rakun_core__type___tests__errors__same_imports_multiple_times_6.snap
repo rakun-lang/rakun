@@ -1,7 +1,26 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1972
 expression: "\n        import one.{fn1} as x\n        import two.{fn2} as x\n        "
 ---
+----- SOURCE CODE
+-- one.rakun
+
+            pub fn fn1() { 1 }
+            
+
+-- two.rakun
+
+            pub fn fn2() { 1 }
+            
+
+-- main.rakun
+
+        import one.{fn1} as x
+        import two.{fn2} as x
+        
+
+----- ERROR
 error: Duplicate import
   ┌─ /src/one/two.rakun:2:9
   │

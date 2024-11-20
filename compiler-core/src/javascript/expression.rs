@@ -88,8 +88,8 @@ impl<'module> Generator<'module> {
                 maybe_escape_identifier_doc(name)
             }
             Some(0) => maybe_escape_identifier_doc(name),
-            Some(n) if name == "$" => Document::String(format!("${n}")),
-            Some(n) => Document::String(format!("{name}${n}")),
+            Some(n) if name == "$" => eco_format!("${n}").to_doc(),
+            Some(n) => eco_format!("{name}${n}").to_doc(),
         }
     }
 
@@ -162,10 +162,11 @@ impl<'module> Generator<'module> {
             } => self.case(subjects, clauses),
 
             TypedExpr::Call { fun, args, .. } => self.call(fun, args),
+            TypedExpr::Html { fun, args, .. } => self.call(fun, args),
             TypedExpr::Fn { args, body, .. } => self.fn_(args, body),
 
             TypedExpr::RecordAccess { record, label, .. } => self.record_access(record, label),
-            TypedExpr::RecordUpdate { spread, args, .. } => self.record_update(spread, args),
+            TypedExpr::RecordUpdate { record, args, .. } => self.record_update(record, args),
 
             TypedExpr::Var {
                 name, constructor, ..
@@ -328,6 +329,7 @@ impl<'module> Generator<'module> {
                         location: _,
                         type_: _,
                         value,
+                        int_value: _,
                     } => value.parse().unwrap_or(0),
                     _ => 0,
                 };
@@ -781,7 +783,7 @@ impl<'module> Generator<'module> {
                     // Create an assignment for each variable created by the function arguments
                     if let Some(name) = argument {
                         docs.push("loop$".to_doc());
-                        docs.push(Document::String((*name).to_string()));
+                        docs.push(name.to_doc());
                         docs.push(" = ".to_doc());
                     }
                     // Render the value given to the function. Even if it is not
@@ -853,7 +855,7 @@ impl<'module> Generator<'module> {
     fn record_access<'a>(&mut self, record: &'a TypedExpr, label: &'a str) -> Output<'a> {
         self.not_in_tail_position(|gen| {
             let record = gen.wrap_expression(record)?;
-            Ok(docvec![record, ".", label])
+            Ok(docvec![record, ".", maybe_escape_property_doc(label)])
         })
     }
 
@@ -867,7 +869,7 @@ impl<'module> Generator<'module> {
             let fields = updates
                 .iter()
                 .map(|TypedRecordUpdateArg { label, value, .. }| {
-                    (label.to_doc(), gen.wrap_expression(value))
+                    (maybe_escape_property_doc(label), gen.wrap_expression(value))
                 });
             let object = try_wrap_object(fields)?;
             Ok(docvec![record, ".withFields(", object, ")"])
@@ -877,7 +879,7 @@ impl<'module> Generator<'module> {
     fn tuple_index<'a>(&mut self, tuple: &'a TypedExpr, index: u64) -> Output<'a> {
         self.not_in_tail_position(|gen| {
             let tuple = gen.wrap_expression(tuple)?;
-            Ok(docvec![tuple, Document::String(format!("[{index}]"))])
+            Ok(docvec![tuple, eco_format!("[{index}]")])
         })
     }
 
@@ -1239,6 +1241,23 @@ pub(crate) fn guard_constant_expression<'a>(
                     tracker.error_used = true;
                 }
             }
+
+            // If there's no arguments and the type is a function that takes
+            // arguments then this is the constructor being referenced, not the
+            // function being called.
+            if let Some(arity) = type_.fn_arity() {
+                if args.is_empty() && arity != 0 {
+                    let arity = arity as u16;
+                    return Ok(record_constructor(
+                        type_.clone(),
+                        None,
+                        name,
+                        arity,
+                        tracker,
+                    ));
+                }
+            }
+
             let field_values: Vec<_> = args
                 .iter()
                 .map(|arg| guard_constant_expression(assignments, tracker, &arg.value))
@@ -1510,7 +1529,11 @@ fn sized_bit_array_segment_details<'a>(
     let size = match size {
         Some(Opt::Size { value: size, .. }) => {
             let size_int = match *size.clone() {
-                Constant::Int { location: _, value } => value.parse().unwrap_or(0),
+                Constant::Int {
+                    location: _,
+                    value,
+                    int_value: _,
+                } => value.parse().unwrap_or(0),
                 _ => 0,
             };
             if size_int > 0 && size_int % 8 != 0 {
@@ -1542,7 +1565,9 @@ fn sized_bit_array_segment_details<'a>(
 
 pub fn string(value: &str) -> Document<'_> {
     if value.contains('\n') {
-        Document::String(value.replace('\n', r"\n")).surround("\"", "\"")
+        EcoString::from(value.replace('\n', r"\n"))
+            .to_doc()
+            .surround("\"", "\"")
     } else {
         value.to_doc().surround("\"", "\"")
     }
@@ -1629,6 +1654,7 @@ impl TypedExpr {
         match self {
             TypedExpr::Todo { .. }
             | TypedExpr::Call { .. }
+            | TypedExpr::Html { .. }
             | TypedExpr::Case { .. }
             | TypedExpr::Panic { .. }
             | TypedExpr::Block { .. }
@@ -1695,6 +1721,7 @@ fn requires_semicolon(statement: &TypedStatement) -> bool {
             | TypedExpr::Var { .. }
             | TypedExpr::List { .. }
             | TypedExpr::Call { .. }
+            | TypedExpr::Html { .. }
             | TypedExpr::Float { .. }
             | TypedExpr::String { .. }
             | TypedExpr::BinOp { .. }
@@ -1758,7 +1785,7 @@ fn record_constructor<'a>(
             None => docvec!["new ", name, "()"],
         }
     } else {
-        let vars = (0..arity).map(|i| Document::String(format!("var{i}")));
+        let vars = (0..arity).map(|i| eco_format!("var{i}").to_doc());
         let body = docvec![
             "return ",
             construct_record(qualifier, name, vars.clone()),

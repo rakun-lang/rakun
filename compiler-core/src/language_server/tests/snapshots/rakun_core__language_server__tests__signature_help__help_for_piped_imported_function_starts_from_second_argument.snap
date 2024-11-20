@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/signature_help.rs
+assertion_line: 363
 expression: "\nimport example\npub fn main() {\n    1 |> example.example_fn()\n}\n    "
 ---
 import example

@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/type_/tests/functions.rs
+assertion_line: 516
 expression: "\npub fn main() {\n   fn(x) { x.2 }(z)\n}\n"
 ---
+----- SOURCE CODE
+
+pub fn main() {
+   fn(x) { x.2 }(z)
+}
+
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:3:12
   │

@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 227
 expression: "pub fn main() {\n  case #(case #(0) { #(a) -> 0 }) { #(b) -> 0 }\n}"
 ---
 ----- BEFORE ACTION

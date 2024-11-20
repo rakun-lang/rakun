@@ -1,7 +1,20 @@
 ---
 source: compiler-core/src/javascript/tests/custom_types.rs
+assertion_line: 23
 expression: "\nrecord Mine {\n    This\n    ThatOneIsAMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchLongerVariant\n}\n\nconst this = This\nconst that = ThatOneIsAMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchLongerVariant\n"
 ---
+----- SOURCE CODE
+
+record Mine {
+    This
+    ThatOneIsAMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchLongerVariant
+}
+
+const this = This
+const that = ThatOneIsAMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchLongerVariant
+
+
+----- COMPILED JAVASCRIPT
 import { CustomType as $CustomType } from "../rakun.mjs";
 
 class This extends $CustomType {}

@@ -1,7 +1,20 @@
 ---
 source: compiler-core/src/type_/tests/functions.rs
+assertion_line: 321
 expression: "\nfn add(x: Int, y: Int) {\n  x + y\n}\n\npub fn main() {\n  add(1.0, 1.0)\n}\n"
 ---
+----- SOURCE CODE
+
+fn add(x: Int, y: Int) {
+  x + y
+}
+
+pub fn main() {
+  add(1.0, 1.0)
+}
+
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:7:7
   │

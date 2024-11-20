@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/javascript/tests/custom_types.rs
+assertion_line: 472
 expression: "import other\npub fn main() {\n  other.Two\n}"
 ---
+----- SOURCE CODE
+import other
+pub fn main() {
+  other.Two
+}
+
+----- COMPILED JAVASCRIPT
 import * as $other from "../other.mjs";
 
 export function main() {

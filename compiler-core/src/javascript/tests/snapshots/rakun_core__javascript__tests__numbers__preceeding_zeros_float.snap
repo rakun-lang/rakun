@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/javascript/tests/numbers.rs
+assertion_line: 264
 expression: "\nfn main() {\n  09_179.1\n}\n"
 ---
+----- SOURCE CODE
+
+fn main() {
+  09_179.1
+}
+
+
+----- COMPILED JAVASCRIPT
 function main() {
   return 9_179.1;
 }

@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1376
 expression: "case 21 { twentyOne -> {Nil} }"
 ---
+----- SOURCE CODE
+case 21 { twentyOne -> {Nil} }
+
+----- ERROR
 error: Invalid variable name
   ┌─ /src/one/two.rakun:1:11
   │

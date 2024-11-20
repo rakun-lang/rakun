@@ -1,0 +1,20 @@
+---
+source: compiler-core/src/javascript/tests/bit_arrays.rs
+assertion_line: 502
+expression: "\nfn go(x) {\n  let assert <<a:float-size(16)>> = x\n}\n"
+---
+----- SOURCE CODE
+
+fn go(x) {
+  let assert <<a:float-size(16)>> = x
+}
+
+
+----- ERROR
+error: Unsupported feature for compilation target
+  ┌─ /src/javascript/error.rakun:3:16
+  │
+3 │   let assert <<a:float-size(16)>> = x
+  │                ^^^^^^^^^^^^^^^^
+
+Float width of 16 bits in patterns is not supported for JavaScript compilation.

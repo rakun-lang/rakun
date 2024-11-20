@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 758
 expression: "fn main() {\n            let #(y, [..x]): #(x, List<x>) = #(\"one\", [1,2,3])\n            x\n        }"
 ---
+----- SOURCE CODE
+fn main() {
+            let #(y, [..x]): #(x, List<x>) = #("one", [1,2,3])
+            x
+        }
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:2:46
   │
@@ -10,8 +18,8 @@ error: Type mismatch
 
 Expected type:
 
-    #(x, List<x>)
+    #(x, List(x))
 
 Found type:
 
-    #(String, List<Int>)
+    #(String, List(Int))

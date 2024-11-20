@@ -62,7 +62,7 @@ fn one(x: Int) -> Int {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2259
+
 #[test]
 fn break_external_fn_arguments() {
     assert_format!(

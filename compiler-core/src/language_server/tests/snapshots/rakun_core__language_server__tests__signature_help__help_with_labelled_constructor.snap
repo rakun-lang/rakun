@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/signature_help.rs
+assertion_line: 441
 expression: "\npub record Pokemon {\n    Pokemon(name: String, types: List<String>, moves: List<String>)\n}\n\npub fn main() {\n    Pokemon(name: \"Jirachi\",)\n}\n    "
 ---
 pub record Pokemon {

@@ -1,0 +1,17 @@
+---
+source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 1230
+expression: "\nimport rakun/option.{type Option as Maybe}\n\nconst none: Maybe<Int> = option.None\n"
+---
+import rakun/option.{type Option as Maybe}
+
+const none: Maybe<Int> = option.None
+▔▔▔▔▔▔▔▔▔↑▔▔▔▔▔▔▔▔▔▔▔▔              
+
+
+----- Hover content -----
+Scalar(
+    String(
+        "```rakun\nMaybe(Int)\n```\n",
+    ),
+)

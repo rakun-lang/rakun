@@ -17,16 +17,20 @@ use crate::{fs::get_current_directory, NewOptions};
 
 const RAKUN_STDLIB_REQUIREMENT: &str = ">= 0.34.0 and < 2.0.0";
 const GLEEUNIT_REQUIREMENT: &str = ">= 1.0.0 and < 2.0.0";
-const ERLANG_OTP_VERSION: &str = "26.0.2";
+const ERLANG_OTP_VERSION: &str = "27.1.2";
 const REBAR3_VERSION: &str = "3";
 const ELIXIR_VERSION: &str = "1.15.4";
 
 #[derive(
     Debug, Serialize, Deserialize, Display, EnumString, VariantNames, ValueEnum, Clone, Copy,
 )]
-#[strum(serialize_all = "kebab_case")]
+#[strum(serialize_all = "lowercase")]
+#[clap(rename_all = "lower")]
 pub enum Template {
+    #[clap(skip)]
     Lib,
+    Erlang,
+    JavaScript,
 }
 
 #[derive(Debug)]
@@ -74,6 +78,10 @@ impl FileToCreate {
         let skip_git = creator.options.skip_git;
         let skip_github = creator.options.skip_github;
         let rakun_version = creator.rakun_version;
+        let target = match creator.options.template {
+            Template::JavaScript => "target = \"javascript\"\n",
+            Template::Lib | Template::Erlang => "",
+        };
 
         match self {
             Self::Readme => Some(format!(
@@ -142,7 +150,7 @@ pub fn hello_world_test() {
             Self::RakunToml => Some(format!(
                 r#"name = "{project_name}"
 version = "1.0.0"
-
+{target}
 # Fill out these fields if you intend to generate HTML documentation or publish
 # your project to the Hex package manager.
 #
@@ -241,7 +249,7 @@ impl Creator {
         }
 
         match self.options.template {
-            Template::Lib => {
+            Template::Lib | Template::Erlang | Template::JavaScript => {
                 for file in FileToCreate::iter() {
                     let path = file.location(self);
                     if let Some(contents) = file.contents(self) {
@@ -300,7 +308,8 @@ fn validate_root_folder(creator: &Creator) -> Result<(), Error> {
 
     for t in FileToCreate::iter() {
         let full_path = t.location(creator);
-        if full_path.exists() {
+        let content = t.contents(creator);
+        if full_path.exists() && content.is_some() {
             duplicate_files.push(full_path);
         }
     }

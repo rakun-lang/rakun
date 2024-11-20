@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 380
 expression: "case 1 { _, _ -> 1 }"
 ---
+----- SOURCE CODE
+case 1 { _, _ -> 1 }
+
+----- ERROR
 error: Incorrect number of patterns
   ┌─ /src/one/two.rakun:1:10
   │

@@ -1,4 +1,4 @@
-// https://github.com/rakun-lang/rakun/issues/807
+
 import power.{type Power}
 
 pub fn module_function(power: Power) {

@@ -63,7 +63,7 @@ fn constant_module(constant: TypedConstant) -> ModuleInterface {
         .into(),
         line_numbers: LineNumbers::new(""),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     }
 }
 
@@ -75,6 +75,7 @@ fn bit_array_segment_option_module(option: TypedConstantBitArraySegmentOption) -
             value: Box::new(Constant::Int {
                 location: Default::default(),
                 value: "1".into(),
+                int_value: 1.into(),
             }),
             options: vec![option],
             type_: type_::int(),
@@ -96,7 +97,7 @@ fn empty_module() {
         accessors: HashMap::new(),
         line_numbers: LineNumbers::new(""),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
     assert_eq!(roundtrip(&module), module);
 }
@@ -119,7 +120,7 @@ fn with_line_numbers() {
         const c = 3",
         ),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
     assert_eq!(roundtrip(&module), module);
 }
@@ -150,7 +151,7 @@ fn module_with_private_type() {
         accessors: HashMap::new(),
         line_numbers: LineNumbers::new(""),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
     assert_eq!(roundtrip(&module), module);
 }
@@ -181,7 +182,7 @@ fn module_with_app_type() {
         accessors: HashMap::new(),
         line_numbers: LineNumbers::new(""),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
     assert_eq!(roundtrip(&module), module);
 }
@@ -212,7 +213,7 @@ fn module_with_fn_type() {
         accessors: HashMap::new(),
         line_numbers: LineNumbers::new(""),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
     assert_eq!(roundtrip(&module), module);
 }
@@ -243,7 +244,7 @@ fn module_with_tuple_type() {
         accessors: HashMap::new(),
         line_numbers: LineNumbers::new(""),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
     assert_eq!(roundtrip(&module), module);
 }
@@ -280,7 +281,7 @@ fn module_with_generic_type() {
             accessors: HashMap::new(),
             line_numbers: LineNumbers::new(""),
             src_path: "some_path".into(),
-            minimum_required_version: Version::new(1, 0, 0),
+            minimum_required_version: Version::new(0, 1, 0),
         }
     }
 
@@ -317,7 +318,7 @@ fn module_with_type_links() {
             accessors: HashMap::new(),
             line_numbers: LineNumbers::new(""),
             src_path: "some_path".into(),
-            minimum_required_version: Version::new(1, 0, 0),
+            minimum_required_version: Version::new(0, 1, 0),
         }
     }
 
@@ -354,7 +355,7 @@ fn module_with_type_constructor_documentation() {
             accessors: HashMap::new(),
             line_numbers: LineNumbers::new(""),
             src_path: "some_path".into(),
-            minimum_required_version: Version::new(1, 0, 0),
+            minimum_required_version: Version::new(0, 1, 0),
         }
     }
 
@@ -394,7 +395,7 @@ fn module_with_type_constructor_origin() {
             accessors: HashMap::new(),
             line_numbers: LineNumbers::new(""),
             src_path: "some_path".into(),
-            minimum_required_version: Version::new(1, 0, 0),
+            minimum_required_version: Version::new(0, 1, 0),
         }
     }
 
@@ -425,7 +426,7 @@ fn module_type_to_constructors_mapping() {
         values: HashMap::new(),
         line_numbers: LineNumbers::new(""),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
 
     assert_eq!(roundtrip(&module), module);
@@ -458,6 +459,8 @@ fn module_fn_value() {
                         start: 535,
                         end: 1100,
                     },
+                    external_erlang: None,
+                    external_javascript: None,
                     implementations: Implementations {
                         rakun: true,
                         uses_erlang_externals: false,
@@ -471,7 +474,7 @@ fn module_fn_value() {
         .into(),
         line_numbers: LineNumbers::new(""),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
     assert_eq!(roundtrip(&module), module);
 }
@@ -505,6 +508,8 @@ fn deprecated_module_fn_value() {
                         start: 535,
                         end: 1100,
                     },
+                    external_erlang: None,
+                    external_javascript: None,
                     implementations: Implementations {
                         rakun: true,
                         uses_erlang_externals: false,
@@ -518,7 +523,7 @@ fn deprecated_module_fn_value() {
         .into(),
         line_numbers: LineNumbers::new(""),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
     assert_eq!(roundtrip(&module), module);
 }
@@ -550,6 +555,8 @@ fn private_module_fn_value() {
                         start: 535,
                         end: 1100,
                     },
+                    external_erlang: None,
+                    external_javascript: None,
                     implementations: Implementations {
                         rakun: true,
                         uses_erlang_externals: false,
@@ -563,13 +570,12 @@ fn private_module_fn_value() {
         .into(),
         line_numbers: LineNumbers::new(""),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
 
     assert_eq!(roundtrip(&module), module);
 }
 
-// https://github.com/rakun-lang/rakun/commit/c8f3bd0ddbf61c27ea35f37297058ecca7515f6c
 #[test]
 fn module_fn_value_regression() {
     let module = ModuleInterface {
@@ -597,6 +603,8 @@ fn module_fn_value_regression() {
                         start: 52,
                         end: 1100,
                     },
+                    external_erlang: None,
+                    external_javascript: None,
                     implementations: Implementations {
                         rakun: true,
                         uses_erlang_externals: false,
@@ -610,7 +618,7 @@ fn module_fn_value_regression() {
         .into(),
         line_numbers: LineNumbers::new(""),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
 
     assert_eq!(roundtrip(&module), module);
@@ -640,6 +648,8 @@ fn module_fn_value_with_field_map() {
                         arity: 20,
                         fields: [("ok".into(), 5), ("ko".into(), 7)].into(),
                     }),
+                    external_erlang: None,
+                    external_javascript: None,
                     module: "a".into(),
                     arity: 5,
                     location: SrcSpan { start: 2, end: 11 },
@@ -656,7 +666,7 @@ fn module_fn_value_with_field_map() {
         .into(),
         line_numbers: LineNumbers::new(""),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
 
     assert_eq!(roundtrip(&module), module);
@@ -687,19 +697,19 @@ fn record_value() {
                     module: "themodule".into(),
                     field_map: None,
                     arity: random.gen(),
-                    constructors_count: random.gen(),
+                    variants_count: random.gen(),
                     location: SrcSpan {
                         start: random.gen(),
                         end: random.gen(),
                     },
-                    constructor_index: random.gen(),
+                    variant_index: random.gen(),
                 },
             },
         )]
         .into(),
         line_numbers: LineNumbers::new(""),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
 
     assert_eq!(roundtrip(&module), module);
@@ -733,8 +743,8 @@ fn record_value_with_field_map() {
                         fields: [("ok".into(), random.gen()), ("ko".into(), random.gen())].into(),
                     }),
                     arity: random.gen(),
-                    constructors_count: random.gen(),
-                    constructor_index: random.gen(),
+                    variants_count: random.gen(),
+                    variant_index: random.gen(),
                     location: SrcSpan {
                         start: random.gen(),
                         end: random.gen(),
@@ -745,7 +755,7 @@ fn record_value_with_field_map() {
         .into(),
         line_numbers: LineNumbers::new(""),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
 
     assert_eq!(roundtrip(&module), module);
@@ -753,6 +763,34 @@ fn record_value_with_field_map() {
 
 #[test]
 fn accessors() {
+    let accessors1 = [
+        (
+            "a".into(),
+            RecordAccessor {
+                index: 6,
+                label: "siiixxx".into(),
+                type_: type_::nil(),
+            },
+        ),
+        (
+            "a".into(),
+            RecordAccessor {
+                index: 5,
+                label: "fiveee".into(),
+                type_: type_::float(),
+            },
+        ),
+    ];
+
+    let accessors2 = [(
+        "a".into(),
+        RecordAccessor {
+            index: 1,
+            label: "ok".into(),
+            type_: type_::float(),
+        },
+    )];
+
     let module = ModuleInterface {
         warnings: vec![],
         is_internal: false,
@@ -768,25 +806,8 @@ fn accessors() {
                 AccessorsMap {
                     publicity: Publicity::Public,
                     type_: type_::int(),
-                    accessors: [
-                        (
-                            "a".into(),
-                            RecordAccessor {
-                                index: 6,
-                                label: "siiixxx".into(),
-                                type_: type_::nil(),
-                            },
-                        ),
-                        (
-                            "a".into(),
-                            RecordAccessor {
-                                index: 5,
-                                label: "fiveee".into(),
-                                type_: type_::float(),
-                            },
-                        ),
-                    ]
-                    .into(),
+                    shared_accessors: accessors1.clone().into(),
+                    variant_specific_accessors: vec![accessors1.into()],
                 },
             ),
             (
@@ -794,22 +815,15 @@ fn accessors() {
                 AccessorsMap {
                     publicity: Publicity::Public,
                     type_: type_::int(),
-                    accessors: [(
-                        "a".into(),
-                        RecordAccessor {
-                            index: 1,
-                            label: "ok".into(),
-                            type_: type_::float(),
-                        },
-                    )]
-                    .into(),
+                    shared_accessors: accessors2.clone().into(),
+                    variant_specific_accessors: vec![accessors2.into()],
                 },
             ),
         ]
         .into(),
         line_numbers: LineNumbers::new(""),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
 
     assert_eq!(roundtrip(&module), module);
@@ -820,6 +834,7 @@ fn constant_int() {
     let module = constant_module(Constant::Int {
         location: Default::default(),
         value: "100".into(),
+        int_value: 100.into(),
     });
 
     assert_eq!(roundtrip(&module), module);
@@ -853,6 +868,7 @@ fn constant_tuple() {
             Constant::Int {
                 location: Default::default(),
                 value: "1".into(),
+                int_value: 1.into(),
             },
             Constant::Float {
                 location: Default::default(),
@@ -864,6 +880,7 @@ fn constant_tuple() {
                     Constant::Int {
                         location: Default::default(),
                         value: "1".into(),
+                        int_value: 1.into(),
                     },
                     Constant::Float {
                         location: Default::default(),
@@ -886,14 +903,17 @@ fn constant_list() {
             Constant::Int {
                 location: Default::default(),
                 value: "1".into(),
+                int_value: 1.into(),
             },
             Constant::Int {
                 location: Default::default(),
                 value: "2".into(),
+                int_value: 2.into(),
             },
             Constant::Int {
                 location: Default::default(),
                 value: "3".into(),
+                int_value: 3.into(),
             },
         ],
     });
@@ -924,6 +944,7 @@ fn constant_record() {
                 value: Constant::Int {
                     location: Default::default(),
                     value: "1".into(),
+                    int_value: 1.into(),
                 },
             },
         ],
@@ -940,6 +961,7 @@ fn constant_var() {
     let one_original = Constant::Int {
         location: Default::default(),
         value: "1".into(),
+        int_value: 1.into(),
     };
 
     let one = Constant::Var {
@@ -1023,7 +1045,7 @@ fn constant_var() {
         .into(),
         line_numbers: LineNumbers::new(""),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
 
     assert_eq!(roundtrip(&module), module);
@@ -1070,6 +1092,7 @@ fn constant_bit_array_size() {
         value: Box::new(Constant::Int {
             location: Default::default(),
             value: "1".into(),
+            int_value: 1.into(),
         }),
         short_form: false,
     });
@@ -1083,6 +1106,7 @@ fn constant_bit_array_size_short_form() {
         value: Box::new(Constant::Int {
             location: Default::default(),
             value: "1".into(),
+            int_value: 1.into(),
         }),
         short_form: true,
     });
@@ -1213,7 +1237,7 @@ fn deprecated_type() {
         accessors: HashMap::new(),
         line_numbers: LineNumbers::new(""),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
     assert_eq!(roundtrip(&module), module);
 }
@@ -1245,6 +1269,8 @@ fn module_fn_value_with_external_implementations() {
                         start: 52,
                         end: 1100,
                     },
+                    external_erlang: Some(("wibble".into(), "wobble".into())),
+                    external_javascript: Some(("wobble".into(), "wibble".into())),
                     implementations: Implementations {
                         rakun: false,
                         uses_erlang_externals: true,
@@ -1258,7 +1284,7 @@ fn module_fn_value_with_external_implementations() {
         .into(),
         line_numbers: LineNumbers::new(""),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
 
     assert_eq!(roundtrip(&module), module);
@@ -1293,6 +1319,8 @@ fn internal_module_fn() {
                         start: 52,
                         end: 1100,
                     },
+                    external_erlang: Some(("wibble".into(), "wobble".into())),
+                    external_javascript: Some(("wobble".into(), "wibble".into())),
                     implementations: Implementations {
                         rakun: false,
                         uses_erlang_externals: true,
@@ -1306,7 +1334,7 @@ fn internal_module_fn() {
         .into(),
         line_numbers: LineNumbers::new(""),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
 
     assert_eq!(roundtrip(&module), module);
@@ -1344,6 +1372,8 @@ fn internal_annotated_module_fn() {
                         start: 52,
                         end: 1100,
                     },
+                    external_erlang: Some(("wibble".into(), "wobble".into())),
+                    external_javascript: Some(("wobble".into(), "wibble".into())),
                     implementations: Implementations {
                         rakun: false,
                         uses_erlang_externals: true,
@@ -1357,13 +1387,12 @@ fn internal_annotated_module_fn() {
         .into(),
         line_numbers: LineNumbers::new(""),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
 
     assert_eq!(roundtrip(&module), module);
 }
 
-// https://github.com/rakun-lang/rakun/issues/2599
 #[test]
 fn type_variable_ids_in_constructors_are_shared() {
     let module = ModuleInterface {
@@ -1397,7 +1426,7 @@ fn type_variable_ids_in_constructors_are_shared() {
         values: [].into(),
         line_numbers: LineNumbers::new(""),
         src_path: "some_path".into(),
-        minimum_required_version: Version::new(1, 0, 0),
+        minimum_required_version: Version::new(0, 1, 0),
     };
 
     let expected = HashMap::from([(

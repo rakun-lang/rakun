@@ -1,7 +1,18 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 1526
 expression: "\npub fn main() {\n  let a = if wibble {\n    wobble\n  }\n}\n"
 ---
+----- SOURCE CODE
+
+pub fn main() {
+  let a = if wibble {
+    wobble
+  }
+}
+
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:3:11
   │

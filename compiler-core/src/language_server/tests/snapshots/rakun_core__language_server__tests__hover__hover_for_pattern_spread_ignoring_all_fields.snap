@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 685
 expression: "\npub record Model {\n  Model(\n    Int,\n    Float,\n    label1: Int,\n    label2: String,\n  )\n}\n\npub fn main() {\n  case todo {\n    Model(..) -> todo\n  }\n}\n"
 ---
 pub record Model {

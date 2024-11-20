@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 615
 expression: "pub fn main() {\n    let assert \"prefix\" as thePrefix ++ _suffix = \"prefix-suffix\"\n}"
 ---
 ----- BEFORE ACTION

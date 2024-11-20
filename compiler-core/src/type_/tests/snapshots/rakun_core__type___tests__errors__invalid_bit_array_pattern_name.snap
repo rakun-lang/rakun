@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1351
 expression: let assert <<bitValue>> = <<73>>
 ---
+----- SOURCE CODE
+let assert <<bitValue>> = <<73>>
+
+----- ERROR
 error: Invalid variable name
   ┌─ /src/one/two.rakun:1:14
   │

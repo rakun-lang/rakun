@@ -52,7 +52,8 @@ fn module_types() {
                 package: "package".into(),
                 module: module_name,
                 name: "my_type".into(),
-                args: vec![]
+                args: vec![],
+                inferred_variant: None,
             })
         )]
     ));
@@ -318,7 +319,7 @@ pub fn a() { A }"
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1698
+
 #[test]
 fn pipe_update_subject() {
     assert_erl!(
@@ -335,7 +336,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1698
+
 #[test]
 fn record_access_block() {
     assert_erl!(
@@ -352,7 +353,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1981
+
 #[test]
 fn imported_qualified_constructor_as_fn_name_escape() {
     assert_erl!(

@@ -1,412 +1,457 @@
 # Changelog
 
-## Unreleased
+## v1.6.0-rc2 - 2024-11-14
 
 ### Build tool
 
-- The `--no-print-progress` flag has been added to prevent the build tool from
-  printing messages as the project is built.
-  ([Ankit Goel](https://github.com/crazymerlyn))
+- The version of Erlang used in the GitHub Actions workflow created by
+  `rakun new` has been increased from v26.0.2 to v27.1.2.
+  ([Richard Viney](https://github.com/richard-viney))
 
-- The compiler is now able to run a dependency's module using `rakun run -m`
-  even when there's compilation errors in your own project's code.
-  ([Giacomo Cavalieri](https://github.com/giacomocavalieri))
+### Bug fixes
 
-- HTML docs: make module names in sidebar wrap before a / when possible
-  ([Jiangda Wang](https://github.com/frank-iii))
+- Fixed a bug where some reserved field names were not properly escaped in
+  custom types on the JavaScript target.
+  ([yoshi](https://github.com/joshi-monster))
 
-- The printing of runtime errors has been improved, including those from linked
-  processes.
+- Fixed a bug where a warning about unsafe integers on the JavaScript target was
+  emitted when the enclosing function has an external JavaScript implementation.
+  ([Richard Viney](https://github.com/richard-viney))
+
+- Fixed a bug where updating a dependency could break the build cache.
+  ([yoshi](https://github.com/joshi-monster))
+
+- Fixed a bug where if the build directory was not writable then the build tool
+  would crash when trying to lock the build directory.
+  ([Zak Farmer](https://github.com/ZakFarmer))
+
+## v1.6.0-rc1 - 2024-11-10
+
+### Build tool
+
+- The `--template` flag for `rakun new` takes the values `erlang` and
+  `javascript` to specify what target to use, with `erlang` being the default.
+  ([Mohammed Khouni](https://github.com/Tar-Tarus))
+
+- The Erlang/Elixir compiler process is now re-used for all packages, shaving
+  off 0.3-0.5s per compiled package.
+  ([yoshi](https://github.com/joshi-monster))
+
+- When a symlink cannot be made on Windows due to lack of permissions the error
+  now includes information on how to enable Windows' developer mode, enabling
+  symlinks.
   ([Louis Pilfold](https://github.com/lpil))
 
-- OTP application trees are now shut down gracefully when `main` exits.
-  ([Louis Pilfold](https://github.com/lpil))
+- The cli can now update individual dependencies.
+
+  `rakun update` and `rakun deps update` now take an optional list of package
+  names to update:
+
+  ```shell
+  rakun update package_a
+  rakun deps update package_b package_c
+  ```
+
+  This allows for selective updating of dependencies. When package names are
+  provided, only those packages and their unique dependencies are unlocked and
+  updated. If no package names are specified, the command behaves as before,
+  updating all dependencies.
+
+  ([Jason Sipula](https://github.com/SnakeDoc))
+
+- The `repository` config in `rakun.toml` can now optionally include a `path`
+  so that source links in generated documentation are correct for packages that
+  aren't located at the root of their repository:
+
+  ```toml
+  [repository]
+  type = "github"
+  user = "rakun-lang"
+  repo = "rakun"
+  path = "packages/my_package"
+  ```
+
+  ([Richard Viney](https://github.com/richard-viney))
 
 ### Compiler
 
-- Compiler progress is now printed to stderr, instead of stdout.
-  ([Victor Kobinski](https://github.com/vkobinski))
+- The compiler now prints correctly qualified or aliased type names when
+  printing type errors.
 
-- It is now possible to omit the `:utf8` option for literal strings used in a
-  `BitArray` segment.
-
-  ```rakun
-  <<"Hello", " ", "world">>
-  ```
-
-  Is the same as:
+  This code:
 
   ```rakun
-  <<"Hello":utf8, " ":utf8, "world":utf8>>
-  ```
+  pub type Int
 
-  ([Giacomo Cavalieri](https://github.com/giacomocavalieri))
-
-- In inexhaustive pattern match errors the missing variants are now printed
-  using the correct syntax for the module the error is emitted in, rather than
-  the module it was defined in. For example, if you had this code:
-
-  ```rakun
-  import rakun/option
+  pub fn different_int_types(value: Int) {
+    value
+  }
 
   pub fn main() {
-    let an_option = option.Some("wibble!")
-    case an_option {
-      option.None -> "missing"
-    }
+    different_int_types(20)
   }
   ```
 
-  The error message would show the qualified `option.Some(_)` as the missing
-  pattern:
+  Produces this error:
 
-  ```txt
-  error: Inexhaustive patterns
-    ┌─ /Users/giacomocavalieri/Desktop/prova/src/prova.rakun:5:3
+  ```
+  error: Type mismatch
+    ┌─ /src/wibble.rakun:8:23
     │
-  5 │ ╭   case an_option {
-  6 │ │     option.None -> "missing"
-  7 │ │   }
-    │ ╰───^
+  8 │   different_int_types(20)
+    │                       ^^
 
-  This case expression does not have a pattern for all possible values. If it
-  is run on one of the values without a pattern then it will crash.
+  Expected type:
 
-  The missing patterns are:
+      Int
 
-      option.Some(_)
+  Found type:
+
+      rakun.Int
   ```
 
-  ([Surya Rose](https://github.com/gearsdatapacks))
+  ([Surya Rose](https://github.com/GearsDatapacks))
 
-- Anonymous functions that are immediately called with a record or a tuple as an
-  argument are now inferred correctly without the need to add type annotations.
-  For example you can now write:
-
-  ```rakun
-  fn(x) { x.0 }(#(1, 2))
-  // ^ you no longer need to annotate this!
-  ```
-
-  ([sobolevn](https://github.com/sobolevn))
-
-- Anonymous functions that are being piped a record or a tuple as an argument
-  are now inferred correctly without the need to add type annotations. For
-  example you can now write:
-
-  ```rakun
-  pub record User {
-    User(name: String)
-  }
-
-  pub fn main() {
-    User("Giacomo")
-    |> fn(user) { user.name }
-    //    ^^^^ you no longer need to annotate this!
-    |> io.debug
-  }
-  ```
-
-  ([sobolevn](https://github.com/sobolevn))
-
-- The record pattern matching syntax `Record(a ..)` is now deprecated in favour
-  of the `Record(a, ..)` syntax.
-  ([Giacomo Cavalieri](https://github.com/giacomocavalieri))
-
-- Adds a better error message when module names are used as values. For example
-  the following code:
+- The compiler can now suggest to pattern match on a `Result<a, b>` if it's
+  being used where a value of type `a` is expected. For example, this code:
 
   ```rakun
   import rakun/list
+  import rakun/int
 
   pub fn main() {
-    list
-  }
-  ```
-
-  Results in the error:
-
-  ```txt
-  error: Module `list` used as a value
-    ┌─ /Users/giacomocavalieri/Desktop/prova/src/prova.rakun:4:3
-    │
-  4 │   list
-    │   ^^^^
-
-  Modules are not values, so you cannot assign them to variables, pass them to
-  functions, or anything else that you would do with a value.
-  ```
-
-  ([sobolevn](https://github.com/sobolevn))
-
-- An helpful error message has been added when the programmer attempts to write
-  a function within a custom type definition, likely trying to declare an OOP
-  class. For example:
-
-  ```rakun
-  pub record User {
-    User(name: String)
-
-    fn greet(user: User) -> String {
-      "hello " ++ user.name
-    }
-  }
-  ```
-
-  Now results in the following error:
-
-  ```txt
-  error: Syntax error
-    ┌─ /Users/giacomocavalieri/Desktop/prova/src/prova.rakun:8:3
-    │
-  8 │   fn greet(user: User) -> String {
-    │   ^^ I was not expecting this
-
-  Found the keyword `fn`, expected one of:
-  - `}`
-  - a record constructor
-  Hint: Rakun is not an object oriented programming language so
-  functions are declared separately from types.
-  ```
-
-  ([sobolevn](https://github.com/sobolevn))
-
-- The compiler now gives a hint to import a module when accessing modules that
-  aren't imported. It only suggests a module if it exports a type/value with
-  the same name as what the user was trying to access:
-
-  ```rakun
-  pub fn main() {
-    io.println("Hello, world!")
-  }
-  ```
-
-  Produces the following error:
-
-  ```
-  error: Unknown module
-    ┌─ /src/file.rakun:2:3
-    │
-  2 │   io.println("Hello, world!")
-    │   ^^
-
-  No module has been found with the name `io`.
-  Hint: Did you mean to import `rakun/io`?
-  ```
-
-  This code, however, produces no hint:
-
-  ```rakun
-  pub fn main() {
-    io.non_existent()
-  }
-  ```
-
-  ([Surya Rose](https://github.com/gearsdatapacks))
-
-- The compiler now provides improved suggestions in the error for an
-  inexhaustive case expression. The following code:
-
-    ```rakun
-    let a = True
-    case a {}
-    ```
-
-  Now produces this error:
-
-    ```
-    error: Inexhaustive patterns
-      ┌─ /src/file.rakun:3:3
-      │
-    3 │   case a {}
-      │   ^^^^^^^^^
-
-
-  This case expression does not have a pattern for all possible values. If it
-  is run on one of the values without a pattern then it will crash.
-
-  The missing patterns are:
-
-      False
-      True
-  ```
-
-  Whereas before, it would suggest `_` as the only missing pattern.
-  ([Surya Rose](https://github.com/GearsDatapacks))
-
-- Improve error message for using `@external` with unknown target
-  ([Jiangda Wang](https://github.com/frank-iii))
-
-- Improved error title when using an unknown module value.
-  ([Giacomo Cavalieri](https://github.com/giacomocavalieri))
-
-- The compiler now shows an helpful error message if you try writing an `if`
-  expression instead of a case. For example, this code:
-
-  ```rakun
-  pub fn main() {
-    let a = if wibble {
-      1
-    }
+    let not_a_number = list.first([1, 2, 3])
+    int.add(1, not_a_number)
   }
   ```
 
   Results in the following error:
 
   ```txt
-  error: Syntax error
-    ┌─ /src/parse/error.rakun:3:11
+  error: Type mismatch
+    ┌─ /src/one/two.rakun:6:9
     │
-  3 │   let a = if wibble {
-    │           ^^ Rakun doesn't have if expressions
+  6 │   int.add(1, not_a_number)
+    │              ^^^^^^^^^^^^
 
-  If you want to write a conditional expression you can use a `case`:
+  Expected type:
 
-      case condition {
-        True -> todo
-        False -> todo
+      Int
+
+  Found type:
+
+      Result<Int, a>
+
+  Hint: If you want to get a `Int` out of a `Result<Int, a>` you can pattern
+  match on it:
+
+      case result {
+        Ok(value) -> todo
+        Error(error) -> todo
       }
-
-  See: https://tour.rakun.run/flow-control/case-expressions/
   ```
 
   ([Giacomo Cavalieri](https://github.com/giacomocavalieri))
+
+- Improved the error message for unknown record fields, displaying an additional
+  note on how to have a field accessor only if it makes sense.
+  ([Giacomo Cavalieri](https://github.com/giacomocavalieri))
+
+- The compiler now ignores `optional` dependencies when resolving versions
+  unless explicitly specified.
+  ([Gustavo Inacio](https://github.com/gusinacio))
+
+- Improved the error message for using `@deprecated` with no deprecation message
+  ([Jiangda Wang](https://github.com/frank-iii))
+
+- Optimised creation of bit arrays on the JavaScript target.
+  ([Richard Viney](https://github.com/richard-viney))
+
+- The compiler can now infer the variant of custom types within expressions that
+  construct or pattern match on them.
+
+  Using this information it can now be more precise with exhaustiveness
+  checking, identifying patterns for the other variants as unnecessary.
+
+  ```rakun
+  pub record Pet {
+    Dog(name: String, cuteness: Int)
+    Turtle(name: String, speed: Int, times_renamed: Int)
+  }
+
+  pub fn main() {
+    // We know `charlie` is a `Dog`...
+    let charlie = Dog("Charles", 1000)
+
+    // ...so you do not need to match on the `Turtle` variant
+    case charlie {
+      Dog(..) -> todo
+    }
+  }
+  ```
+
+  This also means that the record update syntax can be used on multi-variant
+  custom types, so long as the variant can be inferred from the surrounding
+  code.
+
+  ```rakun
+  pub fn rename(pet: Pet, to name: String) -> Pet {
+    case pet {
+      Dog(..) -> Dog(..pet, name:)
+      Turtle(..) -> Turtle(..pet, name:, times_renamed: pet.times_renamed + 1)
+    }
+  }
+  ```
+
+  Variant specific fields can also be used with the accessor syntax.
+
+  ```rakun
+  pub fn speed(pet: Pet) -> Int {
+    case pet {
+      Dog(..) -> 500
+      Turtle(..) -> pet.speed
+    }
+  }
+  ```
+
+  ([Surya Rose](https://github.com/GearsDatapacks))
+
+- When targeting JavaScript the compiler now emits a warning for integer
+  literals and constants that lie outside JavaScript's safe integer range:
+
+  ```txt
+  warning: Int is outside the safe range on JavaScript
+    ┌─ /Users/richard/Desktop/int_test/src/int_test.rakun:1:15
+    │
+  1 │ pub const i = 9_007_199_254_740_992
+    │               ^^^^^^^^^^^^^^^^^^^^^ This is not a safe integer on JavaScript
+
+  This integer value is too large to be represented accurately by
+  JavaScript's number type. To avoid this warning integer values must be in
+  the range -(2^53 - 1) - (2^53 - 1).
+
+  See JavaScript's Number.MAX_SAFE_INTEGER and Number.MIN_SAFE_INTEGER
+  properties for more information.
+  ```
+
+  ([Richard Viney](https://github.com/richard-viney))
 
 ### Formatter
 
-- The formatter now adds a `todo` after a `use` expression if it is the last
-  expression in a block. For example, the following code:
+- The formatter no longer removes the first argument from a function
+  which is part of a pipeline if the first argument is a capture
+  and it has a label. This snippet of code is left as is by the formatter:
 
   ```rakun
+  pub fn divide(dividend a: Int, divisor b: Int) -> Int {
+    a / b
+  }
+
   pub fn main() {
-    use user <- result.try(fetch_user())
+    10 |> divide(dividend: _, divisor: 2)
   }
   ```
 
-  Is rewritten as:
+  Whereas previously, the label of the capture variable would be lost:
 
   ```rakun
+  pub fn divide(dividend a: Int, divisor b: Int) -> Int {
+    a / b
+  }
+
   pub fn main() {
-    use user <- result.try(fetch_user())
-    todo
+    10 |> divide(divisor: 2)
   }
   ```
 
-  ([Giacomo Cavalieri](https://github.com/giacomocavalieri))
+  ([Surya Rose](https://github.com/GearsDatapacks))
 
 ### Language Server
 
-- The language server can now suggest a code action to assign an unused value to
-  `_`.
-  ([Jiangda Wang](https://github.com/frank-iii))
-
-- The language server can now suggest a code action to import modules for
-  existing code which references unimported modules:
+- The Language Server now displays correctly qualified or aliased type names
+  when hovering over a value in a Rakun file:
 
   ```rakun
-  pub fn main() {
-    io.println("Hello, world!")
+  import rakun/option
+
+  const value = option.Some(1)
+  //    ^ hovering here shows `option.Option<Int>`
+  ```
+
+  ```rakun
+  import rakun/option.{type Option as Maybe}
+
+  const value = option.Some(1)
+  //    ^ hovering here shows `Maybe<Int>`
+  ```
+
+  ([Surya Rose](https://github.com/GearsDatapacks))
+
+- The Language Server now suggests a code action to add type annotations to
+  local variables, constants and functions:
+
+  ```rakun
+  pub fn add_int_to_float(a, b) {
+    a +. int.to_float(b)
   }
   ```
 
   Becomes:
 
   ```rakun
-  import rakun/io
-
-  pub fn main() {
-    io.println("Hello, world!")
-  }
-  ```
-
-  ([Surya Rose](https://github.com/gearsdatapacks))
-
-- The Language Server can now suggest a code action to fill in the missing
-  patterns of a case expression:
-
-  ```rakun
-  let a = True
-  case a {}
-  ```
-
-  Becomes:
-
-  ```rakun
-  let a = True
-  case a {
-    False -> todo
-    True -> todo
+  pub fn add_int_to_float(a: Float, b: Int) -> Float {
+    a +. int.to_float(b)
   }
   ```
 
   ([Surya Rose](https://github.com/GearsDatapacks))
+
+- The Language Server now suggests a code action to convert qualified imports to
+  unqualified imports, which updates all occurrences of the qualified name
+  throughout the module:
+
+  ```rakun
+  import option
+
+  pub fn main() {
+    option.Some(1)
+  }
+  ```
+
+  Becomes:
+
+  ```rakun
+  import option.{Some}
+
+  pub fn main() {
+    Some(1)
+  }
+  ```
+
+  ([Jiangda Wang](https://github.com/Frank-III))
+
+- The Language Server now suggests a code action to convert unqualified imports
+  to qualified imports, which updates all occurrences of the unqualified name
+  throughout the module:
+
+  ```rakun
+  import list.{map}
+
+  pub fn main() {
+    map([1, 2, 3], fn(x) { x * 2 })
+  }
+  ```
+
+  Becomes:
+
+  ```rakun
+  import list.{}
+
+  pub fn main() {
+    list.map([1, 2, 3], fn(x) { x * 2 })
+  }
+  ```
+
+  ([Jiangda Wang](https://github.com/Frank-III))
 
 ### Bug Fixes
 
-- Fixed a bug where the warnings were printed above the errors without any new
-  line between them.
-  ([Victor Kobinski](https://github.com/vkobinski))
+- Fixed a bug in the compiler where shadowing a sized value in a bit pattern
+  would cause invalid erlang code to be generated.
+  ([Antonio Iaccarino](https://github.com/eingin))
 
-- Fixed a bug which caused the language server and compiler to crash when two
-  constructors of the same name were created.
+- Fixed a bug where the formatter would not format strings with big grapheme
+  clusters properly.
+  ([Giacomo Cavalieri](https://github.com/giacomocavalieri))
+
+- Fixed the `BitArray` constructor not being present in the types for the
+  JavaScript prelude.
+  ([Richard Viney](https://github.com/richard-viney))
+
+- Fixed a bug where generated TypeScript definitions were invalid for opaque
+  types that use a private type.
+  ([Richard Viney](https://github.com/richard-viney))
+
+- Fixed the prelude re-export in generated TypeScript definitions.
+  ([Richard Viney](https://github.com/richard-viney))
+
+- Fixed a bug where the compiler would incorrectly type-check and compile
+  calls to functions with labelled arguments in certain cases.
   ([Surya Rose](https://github.com/GearsDatapacks))
 
-- Fixed a bug where jumping to the definition of an unqualified function would
-  produce the correct location, but remain in the same file.
-  ([Surya Rose](https://github.com/gearsdatapacks))
+- Fixed a bug where importing type aliases that reference unimported modules
+  would generate invalid TypeScript definitions.
+  ([Richard Viney](https://github.com/richard-viney))
 
-- Fixed a bug where incorrect syntax error message were shown, when using `:` or
-  `=` in wrong positions in expressions.
-  ([Ankit Goel](https://github.com/crazymerlyn))
+- When splitting a constant list made of records, the formatter will keep each
+  item on its own line to make things easier to read.
+  ([Giacomo Cavalieri](https://github.com/giacomocavalieri))
 
 - Fixed a bug where the compiler would crash when pattern matching on a type
-  which had constructors of duplicate names.
-  ([Surya Rose](https://github.com/gearsdatapacks))
+  which was defined with duplicate fields in one of its variants.
+  ([Surya Rose](https://github.com/GearsDatapacks))
 
-- Fixed a bug where referencing record constructors in JavaScript constants but
-  not calling them could produce invalid code.
+- Fixed a bug where the WASM compiler would return incomplete JavaScript when
+  unsupported features were used. It now returns a compilation error.
+  ([Richard Viney](https://github.com/richard-viney))
+
+- Fixed a bug where incorrect code would be generated for external function on
+  the Erlang target if any of their arguments were discarded.
+  ([Giacomo Cavalieri](https://github.com/giacomocavalieri))
+
+- Fixed a bug in the error message when using wrong values in a pipe where the
+  message would swap the "Expected" and "Found" types.
+  ([Markus Pettersson](https://github.com/MarkusPettersson98/))
+
+- Fixed a bug where the parser would incorrectly parse a record constructor with
+  no arguments.
   ([Louis Pilfold](https://github.com/lpil))
 
-- Fixed a bug where source links in HTML documentation would be incorrect for
-  Codeberg, SourceHut, and Gitea.
-  ([sobolevn](https://github.com/sobolevn))
-
-- Fixed a bug with Erlang code generation for discard utf8 patterns in bit
-  arrays.
+- Fixed a bug where the parser would incorrectly parse a generic type
+  constructor with no arguments.
   ([Giacomo Cavalieri](https://github.com/giacomocavalieri))
 
-- Fixed a bug which affected inference of function calls in pipe expressions.
-  ([sobolevn](https://github.com/sobolevn))
-
-- Improved an error message when using variable names starting with an
-  underscore in expression like: `let some = _func()` or `case { 1 -> _func() }`
-  ([sobolevn](https://github.com/sobolevn))
-
-- Fixed a bug where the provided `REBAR_BARE_COMPILER_OUTPUT_DIR` env var would
-  use relative path instead of absolute path causing compilation errors in some
-  packages.
-  ([Gustavo Inacio](https://github.com/gusinacio))
-
-- Fixed a bug where the compiler would print incorrect missing patterns for
-  inexhaustive case expressions matching on more than one subject.
-  ([Surya Rose](https://github.com/GearsDatapacks))
-
-- Fixed a bug where the compiler would not check the target support of a
-  function if it was imported and not used, and generate invalid code.
-  ([Surya Rose](https://github.com/GearsDatapacks))
-
-- Fixed a bug where an qualified unused constructor wouldn't be reported as
-  unused.
+- Fixed a bug where the parser would incorrectly parse a generic type definition
+  with no arguments.
   ([Giacomo Cavalieri](https://github.com/giacomocavalieri))
 
-- The Language Server now correctly shows completions for values in the Rakun
-  prelude.
+- Fixed a bug where the language server wouldn't show hints when hovering over
+  the tail of a list.
+  ([Giacomo Cavalieri](https://github.com/giacomocavalieri))
+
+- Fixed a bug where attempting to jump to the definition of a type from the
+  annotation of a parameter of an anonymous function would do nothing.
   ([Surya Rose](https://github.com/GearsDatapacks))
 
-## v1.4.1 - 2024-08-04
+- Fixed a bug where referencing record constructors in JavaScript guards but
+  not calling them could produce invalid code.
+  ([PgBiel](https://github.com/PgBiel))
+
+- Fixed a bug where using the label shorthand syntax inside of a record update
+  wouldn't emit a warning when the minimum specified Rakun version was < 1.4.0.
+  ([yoshi](https://github.com/joshi-monster))
+
+- Fixed a bug where no error would be reported when duplicate labelled
+  arguments were supplied in a record update.
+  ([Surya Rose](https://github.com/GearsDatapacks))
+
+- Fixed a bug where an incorrect bit array would be generated on JavaScript for
+  negative `Int` values when the segment's `size` was wider than 48 bits or when
+  the `Int` value was less than the minimum representable value for the segment
+  size.
+  ([Richard Viney](https://github.com/richard-viney))
+
+- Fixed a bug where an incorrect `Int` would be returned when pattern matching
+  to a negative value wider than 48 bits in a bit array.
+  ([Richard Viney](https://github.com/richard-viney))
+
+- Fixed a bug where unused values coming from other modules wouldn't raise a
+  warning.
+  ([Giacomo Cavalieri](https://github.com/giacomocavalieri))
+
+## v1.5.1 - 2024-09-26
 
 ### Bug Fixes
 
-- Fix a bug that caused record accessors for private types to not be completed
-  by the LSP, even when in the same module.
-  ([Ameen Radwan](https://github.com/Acepie))
+- Fixed a bug where Erlang file paths would not be escaped on Windows.
+  ([Louis Pilfold](https://github.com/lpil))

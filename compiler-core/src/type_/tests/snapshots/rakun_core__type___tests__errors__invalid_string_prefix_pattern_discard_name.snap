@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1366
 expression: "let assert \"prefix\" ++ _boringSuffix = \"prefix-suffix\""
 ---
+----- SOURCE CODE
+let assert "prefix" ++ _boringSuffix = "prefix-suffix"
+
+----- ERROR
 error: Invalid discard name
   ┌─ /src/one/two.rakun:1:24
   │

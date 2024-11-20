@@ -100,7 +100,7 @@ fn go(xs) {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2904
+
 #[test]
 fn tight_empty_list() {
     assert_js!(

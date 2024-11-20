@@ -1,7 +1,21 @@
 ---
 source: compiler-core/src/type_/tests/exhaustiveness.rs
+assertion_line: 1069
 expression: "\nimport rakun\nrecord MyResult { Ok Error }\npub fn main() {\n  let res = rakun.Ok(10)\n  case res {\n    rakun.Ok(n) -> Nil\n  }\n}\n"
 ---
+----- SOURCE CODE
+
+import rakun
+record MyResult { Ok Error }
+pub fn main() {
+  let res = rakun.Ok(10)
+  case res {
+    rakun.Ok(n) -> Nil
+  }
+}
+
+
+----- ERROR
 error: Inexhaustive patterns
   ┌─ /src/one/two.rakun:6:3
   │  

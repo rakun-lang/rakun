@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 1201
 expression: "\npub fn main() {\n  let string = \"a\" ++ \"b\" \"c\" ++ \"d\"\n  string\n}\n"
 ---
+----- SOURCE CODE
+
+pub fn main() {
+  let string = "a" ++ "b" "c" ++ "d"
+  string
+}
+
+
+----- WARNING
 warning: Unused value
   ┌─ /src/warning/wrn.rakun:3:27
   │

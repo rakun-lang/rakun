@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 589
 expression: "\n/// Exciting documentation\n/// Maybe even multiple lines\nrecord Wibble {\n    Wibble(arg: String)\n}\n\nfn identity(x: Wibble) -> Wibble {\n  x\n}\n"
 ---
 /// Exciting documentation
@@ -17,6 +18,6 @@ fn identity(x: Wibble) -> Wibble {
 ----- Hover content -----
 Scalar(
     String(
-        "```rakun\nWibble\n```\n Exciting documentation\n Maybe even multiple lines\n",
+        "```rakun\napp.Wibble\n```\n Exciting documentation\n Maybe even multiple lines\n",
     ),
 )

@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/javascript/tests/tuples.rs
+assertion_line: 42
 expression: "\nfn go() {\n  #(1, 2).0\n}\n"
 ---
+----- SOURCE CODE
+
+fn go() {
+  #(1, 2).0
+}
+
+
+----- COMPILED JAVASCRIPT
 function go() {
   return [1, 2][0];
 }

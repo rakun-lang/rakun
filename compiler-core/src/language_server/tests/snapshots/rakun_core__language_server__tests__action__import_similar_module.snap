@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 1340
 expression: "\npub fn main() {\n  reult.is_ok()\n}\n"
 ---
 ----- BEFORE ACTION

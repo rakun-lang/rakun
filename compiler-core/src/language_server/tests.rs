@@ -7,7 +7,7 @@ mod hover;
 mod signature_help;
 
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     sync::{Arc, Mutex},
     time::SystemTime,
 };
@@ -16,18 +16,20 @@ use ecow::EcoString;
 use hexpm::version::{Range, Version};
 
 use camino::{Utf8Path, Utf8PathBuf};
+use itertools::Itertools;
 use lsp_types::{Position, TextDocumentIdentifier, TextDocumentPositionParams, Url};
 
 use crate::{
     config::PackageConfig,
     io::{
-        memory::InMemoryFileSystem, CommandExecutor, FileSystemReader, FileSystemWriter, ReadDir,
-        WrappedReader,
+        memory::InMemoryFileSystem, BeamCompiler, CommandExecutor, FileSystemReader,
+        FileSystemWriter, ReadDir, WrappedReader,
     },
     language_server::{
         engine::LanguageServerEngine, files::FileSystemProxy, progress::ProgressReporter,
         DownloadDependencies, LockGuard, Locker, MakeLocker,
     },
+    line_numbers::LineNumbers,
     manifest::{Base16Checksum, Manifest, ManifestPackage, ManifestPackageSource},
     paths::ProjectPaths,
     requirement::Requirement,
@@ -222,9 +224,21 @@ impl CommandExecutor for LanguageServerTestIO {
         cwd: Option<&Utf8Path>,
         stdio: crate::io::Stdio,
     ) -> Result<i32> {
+        panic!("exec({program:?}, {args:?}, {env:?}, {cwd:?}, {stdio:?}) is not implemented")
+    }
+}
+
+impl BeamCompiler for LanguageServerTestIO {
+    fn compile_beam(
+        &self,
+        out: &Utf8Path,
+        lib: &Utf8Path,
+        modules: &HashSet<Utf8PathBuf>,
+        stdio: crate::io::Stdio,
+    ) -> Result<()> {
         panic!(
-            "exec({:?}, {:?}, {:?}, {:?}, {:?}) is not implemented",
-            program, args, env, cwd, stdio
+            "compile_beam({:?}, {:?}, {:?}, {:?}) is not implemented",
+            out, lib, modules, stdio
         )
     }
 }
@@ -392,6 +406,34 @@ impl<'a> TestProject<'a> {
         }
     }
 
+    pub fn src_from_module_url(&self, url: &Url) -> Option<&str> {
+        let module_name: EcoString = url
+            .path_segments()?
+            .skip_while(|segment| *segment != "src")
+            .skip(1)
+            .join("/")
+            .trim_end_matches(".rakun")
+            .into();
+
+        if module_name == "app" {
+            return Some(self.src);
+        }
+
+        let find_module = |modules: &Vec<(&'a str, &'a str)>| {
+            modules
+                .iter()
+                .find(|(name, _)| *name == module_name)
+                .map(|(_, src)| *src)
+        };
+
+        find_module(&self.root_package_modules)
+            .or_else(|| find_module(&self.dependency_modules))
+            .or_else(|| find_module(&self.test_modules))
+            .or_else(|| find_module(&self.hex_modules))
+            .or_else(|| find_module(&self.dev_hex_modules))
+            .or_else(|| find_module(&self.indirect_hex_modules))
+    }
+
     pub fn add_module(mut self, name: &'a str, src: &'a str) -> Self {
         self.root_package_modules.push((name, src));
         self
@@ -512,9 +554,9 @@ impl<'a> TestProject<'a> {
         test_name: &str,
     ) -> TextDocumentPositionParams {
         let path = Utf8PathBuf::from(if cfg!(target_family = "windows") {
-            format!(r"\\?\C:\test\{}.rakun", test_name)
+            format!(r"\\?\C:\test{test_name}.rakun")
         } else {
-            format!("/test/{}.rakun", test_name)
+            format!("/test/{test_name}.rakun")
         });
 
         let url = Url::from_file_path(path).unwrap();
@@ -565,7 +607,7 @@ impl<'a> TestProject<'a> {
     }
 
     pub fn at<T>(
-        self,
+        &self,
         position: Position,
         executor: impl FnOnce(
             &mut LanguageServerEngine<LanguageServerTestIO, LanguageServerTestIO>,
@@ -691,4 +733,27 @@ fn byte_index_to_position(src: &str, byte_index: usize) -> Position {
     }
 
     Position::new(line, col)
+}
+
+/// This function replicates how the text editor applies TextEdit.
+///
+pub fn apply_code_edit(src: &str, mut change: Vec<lsp_types::TextEdit>) -> String {
+    let mut result = src.to_string();
+    let line_numbers = LineNumbers::new(src);
+    let mut offset = 0;
+
+    change.sort_by_key(|edit| (edit.range.start.line, edit.range.start.character));
+    for edit in change {
+        let start = line_numbers.byte_index(edit.range.start.line, edit.range.start.character)
+            as i32
+            - offset;
+        let end =
+            line_numbers.byte_index(edit.range.end.line, edit.range.end.character) as i32 - offset;
+        let range = (start as usize)..(end as usize);
+        offset += end - start;
+        offset -= edit.new_text.len() as i32;
+        result.replace_range(range, &edit.new_text);
+    }
+
+    result
 }

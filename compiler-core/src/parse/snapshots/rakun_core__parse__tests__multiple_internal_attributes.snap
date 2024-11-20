@@ -1,7 +1,18 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 645
 expression: "\n@internal\n@internal\npub fn main() -> Nil {\n  Nil\n}\n"
 ---
+----- SOURCE CODE
+
+@internal
+@internal
+pub fn main() -> Nil {
+  Nil
+}
+
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:3:1
   │

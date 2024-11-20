@@ -12,11 +12,12 @@ use crate::{
 use ecow::EcoString;
 use itertools::Itertools;
 use pubgrub::range::Range;
-use std::sync::Arc;
+use std::rc::Rc;
 use vec1::Vec1;
 
 use camino::Utf8PathBuf;
 
+mod accessors;
 mod assert;
 mod assignments;
 mod conditional_compilation;
@@ -26,6 +27,7 @@ mod exhaustiveness;
 mod externals;
 mod functions;
 mod guards;
+mod html;
 mod imports;
 mod pipes;
 mod pretty;
@@ -96,7 +98,8 @@ macro_rules! assert_js_module_infer {
 #[macro_export]
 macro_rules! assert_module_error {
     ($src:expr) => {
-        let output = $crate::type_::tests::module_error($src, vec![]);
+        let error = $crate::type_::tests::module_error($src, vec![]);
+        let output = format!("----- SOURCE CODE\n{}\n\n----- ERROR\n{}", $src, error);
         insta::assert_snapshot!(insta::internals::AutoName, output, $src);
     };
 }
@@ -104,7 +107,8 @@ macro_rules! assert_module_error {
 #[macro_export]
 macro_rules! assert_internal_module_error {
     ($src:expr) => {
-        let output = $crate::type_::tests::internal_module_error($src, vec![]);
+        let error = $crate::type_::tests::internal_module_error($src, vec![]);
+        let output = format!("----- SOURCE CODE\n{}\n\n----- ERROR\n{}", $src, error);
         insta::assert_snapshot!(insta::internals::AutoName, output, $src);
     };
 }
@@ -112,11 +116,12 @@ macro_rules! assert_internal_module_error {
 #[macro_export]
 macro_rules! assert_js_module_error {
     ($src:expr) => {
-        let output = $crate::type_::tests::module_error_with_target(
+        let error = $crate::type_::tests::module_error_with_target(
             $src,
             vec![],
             $crate::build::Target::JavaScript,
         );
+        let output = format!("----- SOURCE CODE\n{}\n\n----- ERROR\n{}", $src, error);
         insta::assert_snapshot!(insta::internals::AutoName, output, $src);
     };
 }
@@ -124,7 +129,8 @@ macro_rules! assert_js_module_error {
 #[macro_export]
 macro_rules! assert_module_syntax_error {
     ($src:expr) => {
-        let output = $crate::type_::tests::syntax_error($src);
+        let error = $crate::type_::tests::syntax_error($src);
+        let output = format!("----- SOURCE CODE\n{}\n\n----- ERROR\n{}", $src, error);
         insta::assert_snapshot!(insta::internals::AutoName, output, $src);
     };
 }
@@ -138,14 +144,19 @@ macro_rules! assert_error {
     };
 
     ($src:expr) => {
-        let error = $crate::type_::tests::compile_statement_sequence($src)
+        let (error, names) = $crate::type_::tests::compile_statement_sequence($src)
             .expect_err("should infer an error");
         let error = $crate::error::Error::Type {
+            names,
             src: $src.into(),
             path: camino::Utf8PathBuf::from("/src/one/two.rakun"),
             errors: error,
         };
-        let output = error.pretty_string();
+        let error_string = error.pretty_string();
+        let output = format!(
+            "----- SOURCE CODE\n{}\n\n----- ERROR\n{}",
+            $src, error_string
+        );
         insta::assert_snapshot!(insta::internals::AutoName, output, $src);
     };
 }
@@ -153,8 +164,20 @@ macro_rules! assert_error {
 #[macro_export]
 macro_rules! assert_with_module_error {
     (($name:expr, $module_src:literal), $src:expr $(,)?) => {
-        let output =
+        let error =
             $crate::type_::tests::module_error($src, vec![("thepackage", $name, $module_src)]);
+        let output = format!(
+            "----- SOURCE CODE
+-- {}.rakun
+{}
+
+-- main.rakun
+{}
+
+----- ERROR
+{}",
+            $name, $module_src, $src, error
+        );
         insta::assert_snapshot!(insta::internals::AutoName, output, $src);
     };
 
@@ -163,12 +186,27 @@ macro_rules! assert_with_module_error {
         ($name2:expr, $module_src2:literal),
         $src:expr $(,)?
     ) => {
-        let output = $crate::type_::tests::module_error(
+        let error = $crate::type_::tests::module_error(
             $src,
             vec![
                 ("thepackage", $name, $module_src),
                 ("thepackage", $name2, $module_src2),
             ],
+        );
+        let output = format!(
+            "----- SOURCE CODE
+-- {}.rakun
+{}
+
+-- {}.rakun
+{}
+
+-- main.rakun
+{}
+
+----- ERROR
+{}",
+            $name, $module_src, $name2, $module_src2, $src, error
         );
         insta::assert_snapshot!(insta::internals::AutoName, output, $src);
     };
@@ -177,27 +215,30 @@ macro_rules! assert_with_module_error {
 fn get_warnings(
     src: &str,
     deps: Vec<DependencyModule<'_>>,
+    target: Target,
     rakun_version: Option<Range<Version>>,
 ) -> Vec<crate::warning::Warning> {
     let warnings = VectorWarningEmitterIO::default();
     _ = compile_module_with_opts(
         "test_module",
         src,
-        Some(Arc::new(warnings.clone())),
+        Some(Rc::new(warnings.clone())),
         deps,
-        Target::Erlang,
+        target,
         TargetSupport::NotEnforced,
         rakun_version,
-    );
+    )
+    .expect("Compilation should succeed");
     warnings.take().into_iter().collect_vec()
 }
 
 fn get_printed_warnings(
     src: &str,
     deps: Vec<DependencyModule<'_>>,
+    target: Target,
     rakun_version: Option<Range<Version>>,
 ) -> String {
-    print_warnings(get_warnings(src, deps, rakun_version))
+    print_warnings(get_warnings(src, deps, target, rakun_version))
 }
 
 fn print_warnings(warnings: Vec<crate::warning::Warning>) -> String {
@@ -211,13 +252,20 @@ fn print_warnings(warnings: Vec<crate::warning::Warning>) -> String {
 #[macro_export]
 macro_rules! assert_warnings_with_imports {
     ($(($name:literal, $module_src:literal)),+; $src:literal,) => {
-        let output = $crate::type_::tests::get_printed_warnings(
+        let warning = $crate::type_::tests::get_printed_warnings(
             $src,
             vec![
                 $(("thepackage", $name, $module_src)),*
             ],
+            crate::build::Target::Erlang,
             None
         );
+
+        let mut output = String::from("----- SOURCE CODE\n");
+        for (name, src) in [$(($name, $module_src)),*] {
+            output.push_str(&format!("-- {name}.rakun\n{src}\n\n"));
+        }
+        output.push_str(&format!("-- main.rakun\n{}\n\n----- WARNING\n{warning}", $src));
         insta::assert_snapshot!(insta::internals::AutoName, output, $src);
     };
 }
@@ -225,37 +273,76 @@ macro_rules! assert_warnings_with_imports {
 #[macro_export]
 macro_rules! assert_warning {
     ($src:expr) => {
-        let output = $crate::type_::tests::get_printed_warnings($src, vec![], None);
-        assert!(!output.is_empty());
+        let warning = $crate::type_::tests::get_printed_warnings($src, vec![], crate::build::Target::Erlang, None);
+        assert!(!warning.is_empty());
+        let output = format!("----- SOURCE CODE\n{}\n\n----- WARNING\n{}", $src, warning);
         insta::assert_snapshot!(insta::internals::AutoName, output, $src);
     };
 
     ($(($name:expr, $module_src:literal)),+, $src:expr) => {
-        let output = $crate::type_::tests::get_printed_warnings(
+        let warning = $crate::type_::tests::get_printed_warnings(
             $src,
             vec![$(("thepackage", $name, $module_src)),*],
+            crate::build::Target::Erlang,
             None
         );
-        assert!(!output.is_empty());
+        assert!(!warning.is_empty());
+        let output = format!("----- SOURCE CODE\n{}\n\n----- WARNING\n{}", $src, warning);
         insta::assert_snapshot!(insta::internals::AutoName, output, $src);
     };
 
     ($(($package:expr, $name:expr, $module_src:literal)),+, $src:expr) => {
-        let output = $crate::type_::tests::get_printed_warnings(
+        let warning = $crate::type_::tests::get_printed_warnings(
             $src,
             vec![$(($package, $name, $module_src)),*],
+            crate::build::Target::Erlang,
             None
         );
-        assert!(!output.is_empty());
+        assert!(!warning.is_empty());
+        let output = format!("----- SOURCE CODE\n{}\n\n----- WARNING\n{}", $src, warning);
         insta::assert_snapshot!(insta::internals::AutoName, output, $src);
+    };
+}
+
+#[macro_export]
+macro_rules! assert_js_warning {
+    ($src:expr) => {
+        let warning = $crate::type_::tests::get_printed_warnings(
+            $src,
+            vec![],
+            crate::build::Target::JavaScript,
+            None,
+        );
+        assert!(!warning.is_empty());
+        let output = format!("----- SOURCE CODE\n{}\n\n----- WARNING\n{}", $src, warning);
+        insta::assert_snapshot!(insta::internals::AutoName, output, $src);
+    };
+}
+
+#[macro_export]
+macro_rules! assert_js_no_warnings {
+    ($src:expr) => {
+        let warning = $crate::type_::tests::get_printed_warnings(
+            $src,
+            vec![],
+            crate::build::Target::JavaScript,
+            None,
+        );
+        assert!(warning.is_empty());
     };
 }
 
 #[macro_export]
 macro_rules! assert_warnings_with_rakun_version {
     ($rakun_version:expr, $src:expr$(,)?) => {
-        let output = $crate::type_::tests::get_printed_warnings($src, vec![], Some($rakun_version));
-        assert!(!output.is_empty());
+        let warning = $crate::type_::tests::get_printed_warnings(
+            $src,
+            vec![],
+            crate::build::Target::Erlang,
+            Some($rakun_version),
+        );
+        assert!(!warning.is_empty());
+        let output = format!("----- SOURCE CODE\n{}\n\n----- WARNING\n{}", $src, warning);
         insta::assert_snapshot!(insta::internals::AutoName, output, $src);
     };
 }
@@ -263,13 +350,14 @@ macro_rules! assert_warnings_with_rakun_version {
 #[macro_export]
 macro_rules! assert_no_warnings {
     ($src:expr $(,)?) => {
-        let warnings = $crate::type_::tests::get_warnings($src, vec![], None);
+        let warnings = $crate::type_::tests::get_warnings($src, vec![], crate::build::Target::Erlang, None);
         assert_eq!(warnings, vec![]);
     };
     ($(($package:expr, $name:expr, $module_src:literal)),+, $src:expr $(,)?) => {
         let warnings = $crate::type_::tests::get_warnings(
             $src,
             vec![$(($package, $name, $module_src)),*],
+            crate::build::Target::Erlang,
             None,
         );
         assert_eq!(warnings, vec![]);
@@ -278,7 +366,7 @@ macro_rules! assert_no_warnings {
 
 fn compile_statement_sequence(
     src: &str,
-) -> Result<Vec1<TypedStatement>, Vec1<crate::type_::Error>> {
+) -> Result<Vec1<TypedStatement>, (Vec1<crate::type_::Error>, Names)> {
     let ast = crate::parse::parse_statement_sequence(src).expect("syntax error");
     let mut modules = im::HashMap::new();
     let ids = UniqueIdGenerator::new();
@@ -288,16 +376,17 @@ fn compile_statement_sequence(
     // place.
     let _ = modules.insert(PRELUDE_MODULE_NAME.into(), build_prelude(&ids));
     let mut problems = Problems::new();
+    let mut environment = Environment::new(
+        ids,
+        "thepackage".into(),
+        None,
+        "themodule".into(),
+        Target::Erlang,
+        &modules,
+        TargetSupport::Enforced,
+    );
     let res = ExprTyper::new(
-        &mut Environment::new(
-            ids,
-            "thepackage".into(),
-            None,
-            "themodule".into(),
-            Target::Erlang,
-            &modules,
-            TargetSupport::Enforced,
-        ),
+        &mut environment,
         FunctionDefinition {
             has_body: true,
             has_erlang_external: false,
@@ -308,7 +397,7 @@ fn compile_statement_sequence(
     .infer_statements(ast);
     match Vec1::try_from_vec(problems.take_errors()) {
         Err(_) => Ok(res),
-        Ok(errors) => Err(errors),
+        Ok(errors) => Err((errors, environment.names)),
     }
 }
 
@@ -368,9 +457,9 @@ pub fn infer_module_with_target(
 pub fn compile_module(
     module_name: &str,
     src: &str,
-    warnings: Option<Arc<dyn WarningEmitterIO>>,
+    warnings: Option<Rc<dyn WarningEmitterIO>>,
     dep: Vec<DependencyModule<'_>>,
-) -> Result<TypedModule, Vec<crate::type_::Error>> {
+) -> Result<TypedModule, (Vec<crate::type_::Error>, Names)> {
     compile_module_with_opts(
         module_name,
         src,
@@ -385,18 +474,17 @@ pub fn compile_module(
 pub fn compile_module_with_opts(
     module_name: &str,
     src: &str,
-    warnings: Option<Arc<dyn WarningEmitterIO>>,
+    warnings: Option<Rc<dyn WarningEmitterIO>>,
     dep: Vec<DependencyModule<'_>>,
     target: Target,
     target_support: TargetSupport,
     rakun_version: Option<Range<Version>>,
-) -> Result<TypedModule, Vec<crate::type_::Error>> {
+) -> Result<TypedModule, (Vec<crate::type_::Error>, Names)> {
     let ids = UniqueIdGenerator::new();
     let mut modules = im::HashMap::new();
 
-    let emitter = WarningEmitter::new(
-        warnings.unwrap_or_else(|| Arc::new(VectorWarningEmitterIO::default())),
-    );
+    let emitter =
+        WarningEmitter::new(warnings.unwrap_or_else(|| Rc::new(VectorWarningEmitterIO::default())));
 
     // DUPE: preludeinsertion
     // TODO: Currently we do this here and also in the tests. It would be better
@@ -456,8 +544,8 @@ pub fn compile_module_with_opts(
 
     match inference_result {
         Outcome::Ok(ast) => Ok(ast),
-        Outcome::PartialFailure(_, errors) => Err(errors.into()),
-        Outcome::TotalFailure(error) => Err(error.into()),
+        Outcome::PartialFailure(ast, errors) => Err((errors.into(), ast.names)),
+        Outcome::TotalFailure(error) => Err((error.into(), Default::default())),
     }
 }
 
@@ -470,7 +558,7 @@ pub fn module_error_with_target(
     deps: Vec<DependencyModule<'_>>,
     target: Target,
 ) -> String {
-    let error = compile_module_with_opts(
+    let (error, names) = compile_module_with_opts(
         "themodule",
         src,
         None,
@@ -481,6 +569,7 @@ pub fn module_error_with_target(
     )
     .expect_err("should infer an error");
     let error = Error::Type {
+        names,
         src: src.into(),
         path: Utf8PathBuf::from("/src/one/two.rakun"),
         errors: Vec1::try_from_vec(error).expect("should have at least one error"),
@@ -497,7 +586,7 @@ pub fn internal_module_error_with_target(
     deps: Vec<DependencyModule<'_>>,
     target: Target,
 ) -> String {
-    let error = compile_module_with_opts(
+    let (error, names) = compile_module_with_opts(
         "thepackage/internal/themodule",
         src,
         None,
@@ -508,6 +597,7 @@ pub fn internal_module_error_with_target(
     )
     .expect_err("should infer an error");
     let error = Error::Type {
+        names,
         src: src.into(),
         path: Utf8PathBuf::from("/src/one/two.rakun"),
         errors: Vec1::try_from_vec(error).expect("should have at least one error"),
@@ -531,6 +621,7 @@ pub fn syntax_error(src: &str) -> String {
 fn field_map_reorder_test() {
     let int = |value: &str| UntypedExpr::Int {
         value: value.into(),
+        int_value: crate::parse::parse_int_value(value).unwrap(),
         location: SrcSpan { start: 0, end: 0 },
     };
 
@@ -666,6 +757,7 @@ fn infer_module_type_retention_test() {
         name: "ok".into(),
         definitions: vec![],
         type_info: (),
+        names: Default::default(),
     };
     let direct_dependencies = HashMap::from_iter(vec![]);
     let ids = UniqueIdGenerator::new();
@@ -753,7 +845,7 @@ fn infer_module_type_retention_test() {
             accessors: HashMap::new(),
             line_numbers: LineNumbers::new(""),
             src_path: "".into(),
-            minimum_required_version: Version::new(1, 0, 0),
+            minimum_required_version: Version::new(0, 1, 0),
         }
     );
 }
@@ -1771,6 +1863,371 @@ fn record_update_generic_unannotated() {
 }
 
 #[test]
+fn record_update_variant_inference() {
+    assert_module_infer!(
+        "
+pub record Shape {
+  Circle(cx: Int, cy: Int, radius: Int)
+  Square(x: Int, y: Int, width: Int, height: Int)
+}
+
+pub fn grow(shape) {
+  case shape {
+    Circle(radius:, ..) as circle -> Circle(..circle, radius: radius + 1)
+    Square(width:, height:, ..) as square -> Square(..square, width: width + 1, height: height + 1)
+  }
+}
+",
+        vec![
+            ("Circle", "fn(Int, Int, Int) -> Shape"),
+            ("Square", "fn(Int, Int, Int, Int) -> Shape"),
+            ("grow", "fn(Shape) -> Shape")
+        ]
+    );
+}
+
+#[test]
+fn record_access_variant_inference() {
+    assert_module_infer!(
+        "
+pub record Wibble {
+  Wibble(a: Int, b: Int)
+  Wobble(a: Int, c: Int)
+}
+
+pub fn get(wibble) {
+  case wibble {
+    Wibble(..) as w -> w.b
+    Wobble(..) as w -> w.c
+  }
+}
+",
+        vec![
+            ("Wibble", "fn(Int, Int) -> Wibble"),
+            ("Wobble", "fn(Int, Int) -> Wibble"),
+            ("get", "fn(Wibble) -> Int")
+        ]
+    );
+}
+
+#[test]
+fn local_variable_variant_inference() {
+    assert_module_infer!(
+        "
+pub record Wibble {
+  Wibble(a: Int, b: Int)
+  Wobble(a: Int, c: Int)
+}
+
+pub fn main() {
+  let always_wibble = Wibble(1, 2)
+  always_wibble.b
+}
+",
+        vec![
+            ("Wibble", "fn(Int, Int) -> Wibble"),
+            ("Wobble", "fn(Int, Int) -> Wibble"),
+            ("main", "fn() -> Int")
+        ]
+    );
+}
+
+#[test]
+fn record_update_variant_inference_for_original_variable() {
+    assert_module_infer!(
+        r#"
+pub record Wibble {
+  Wibble(a: Int, b: Int)
+  Wobble(a: Int, c: String)
+}
+
+pub fn update(wibble: Wibble) -> Wibble {
+  case wibble {
+    Wibble(..) -> Wibble(..wibble, a: 1)
+    Wobble(..) -> Wobble(..wibble, c: "hello")
+  }
+}
+"#,
+        vec![
+            ("Wibble", "fn(Int, Int) -> Wibble"),
+            ("Wobble", "fn(Int, String) -> Wibble"),
+            ("update", "fn(Wibble) -> Wibble")
+        ]
+    );
+}
+
+#[test]
+fn record_access_variant_inference_for_original_variable() {
+    assert_module_infer!(
+        "
+pub record Wibble {
+  Wibble(a: Int, b: Int)
+  Wobble(a: Int, c: Int)
+}
+
+pub fn get(wibble) {
+  case wibble {
+    Wibble(..) -> wibble.b
+    Wobble(..) -> wibble.c
+  }
+}
+",
+        vec![
+            ("Wibble", "fn(Int, Int) -> Wibble"),
+            ("Wobble", "fn(Int, Int) -> Wibble"),
+            ("get", "fn(Wibble) -> Int")
+        ]
+    );
+}
+
+#[test]
+fn variant_inference_for_imported_type() {
+    assert_infer_with_module!(
+        (
+            "wibble",
+            "
+pub record Wibble {
+  Wibble(a: Int, b: Int)
+  Wobble(a: Int, c: Int)
+}
+"
+        ),
+        "
+import wibble.{Wibble, Wobble}
+
+pub fn main(wibble) {
+  case wibble {
+    Wibble(..) -> Wibble(a: 1, b: wibble.b + 1)
+    Wobble(..) -> Wobble(..wibble, c: wibble.c - 4)
+  }
+}
+",
+        vec![("main", "fn(Wibble) -> Wibble")]
+    );
+}
+
+#[test]
+fn local_variable_variant_inference_for_imported_type() {
+    assert_infer_with_module!(
+        (
+            "wibble",
+            "
+pub record Wibble {
+  Wibble(a: Int, b: Int)
+  Wobble(a: Int, c: Int)
+}
+"
+        ),
+        "
+import wibble.{Wibble}
+
+pub fn main() {
+  let wibble = Wibble(4, 9)
+  Wibble(..wibble, b: wibble.b)
+}
+",
+        vec![("main", "fn() -> Wibble")]
+    );
+}
+
+#[test]
+fn record_update_variant_inference_fails_for_several_possible_variants() {
+    assert_module_error!(
+        "
+pub record Vector {
+  Vector2(x: Float, y: Float)
+  Vector3(x: Float, y: Float, z: Float)
+}
+
+pub fn increase_y(vector, by increase) {
+  case vector {
+    Vector2(y:, ..) as vector | Vector3(y:, ..) as vector ->
+      Vector2(..vector, y: y +. increase)
+  }
+}
+"
+    );
+}
+
+#[test]
+fn record_update_variant_inference_fails_for_several_possible_variants_on_subject_variable() {
+    assert_module_error!(
+        r#"
+pub record Wibble {
+  Wibble(a: Int, b: Int)
+  Wobble(a: Int, c: String)
+}
+
+pub fn update(wibble: Wibble) -> Wibble {
+  case wibble {
+    Wibble(..) | Wobble(..) -> Wibble(..wibble, a: 1)
+  }
+}
+"#
+    );
+}
+
+#[test]
+fn type_unification_does_not_cause_false_positives_for_variant_matching() {
+    assert_module_error!(
+        r#"
+pub record Wibble {
+  Wibble(a: Int, b: Int)
+  Wobble(a: Int, c: String)
+}
+
+pub fn wibbler() { todo }
+
+pub fn main() {
+  let c = wibbler()
+
+  case todo {
+    Wibble(..) -> Wibble(..c, b: 1)
+    _ -> todo
+  }
+}
+"#
+    );
+}
+
+#[test]
+fn type_unification_does_not_allow_different_variants_to_be_treated_as_safe() {
+    assert_module_error!(
+        r#"
+pub record Wibble {
+  Wibble(a: Int, b: Int)
+  Wobble(a: Int, c: String)
+}
+
+pub fn main() {
+  let a = case todo {
+    Wibble(..) as b -> Wibble(..b, b: 1)
+    Wobble(..) as b -> Wobble(..b, c: "a")
+  }
+
+  a.b
+}
+"#
+    );
+}
+
+#[test]
+fn record_update_variant_inference_in_alternate_pattern_with_all_same_variants() {
+    assert_module_infer!(
+        r#"
+pub record Vector {
+  Vector2(x: Float, y: Float)
+  Vector3(x: Float, y: Float, z: Float)
+}
+
+pub fn increase_y(vector, by increase) {
+  case vector {
+    Vector2(y:, ..) as vector -> Vector2(..vector, y: y +. increase)
+    Vector3(y:, z: 12.3, ..) as vector | Vector3(y:, z: 15.0, ..) as vector ->
+      Vector3(..vector, y: y +. increase, z: 0.0)
+    _ -> panic as "Could not increase Y"
+  }
+}
+"#,
+        vec![
+            ("Vector2", "fn(Float, Float) -> Vector"),
+            ("Vector3", "fn(Float, Float, Float) -> Vector"),
+            ("increase_y", "fn(Vector, Float) -> Vector")
+        ]
+    );
+}
+
+#[test]
+fn variant_inference_does_not_escape_clause_scope() {
+    assert_module_error!(
+        "
+pub record Thingy {
+  A(a: Int)
+  B(x: Int, b: Int)
+}
+
+pub fn fun(x) {
+  case x {
+    A(..) -> x.a
+    B(..) -> x.b
+  }
+  x.b
+}
+"
+    );
+}
+
+#[test]
+
+fn type_unification_removes_inferred_variant_in_tuples() {
+    assert_module_error!(
+        r#"
+pub record Either<a, b> {
+  Left(value: a)
+  Right(value: b)
+}
+
+fn a_or_b(_first: value, second: value) -> value {
+  second
+}
+
+pub fn main() {
+  let #(right) = a_or_b(#(Left(5)), #(Right("hello")))
+  Left(..right, value: 10)
+}
+"#
+    );
+}
+
+#[test]
+
+fn type_unification_removes_inferred_variant_in_functions() {
+    assert_module_error!(
+        r#"
+pub record Either<a, b> {
+  Left(value: a)
+  Right(value: b)
+}
+
+fn a_or_b(_first: value, second: value) -> value {
+  second
+}
+
+pub fn main() {
+  let func = a_or_b(fn() { Left(1) }, fn() { Right("hello") })
+  Left(..func(), value: 10)
+}
+"#
+    );
+}
+
+#[test]
+
+fn type_unification_removes_inferred_variant_in_nested_type() {
+    assert_module_error!(
+        r#"
+pub record Box<a> {
+  Box(inner: a)
+}
+
+pub record Either<a, b> {
+  Left(value: a)
+  Right(value: b)
+}
+
+fn a_or_b(_first: value, second: value) -> value {
+  second
+}
+
+pub fn main() {
+  let Box(inner) = a_or_b(Box(Left(1)), Box(Right("hello")))
+  Left(..inner, value: 10)
+}
+"#
+    );
+}
+
+#[test]
 fn module_constants() {
     assert_module_infer!(
         "
@@ -1972,7 +2429,6 @@ fn early_function_generalisation2() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/970
 #[test]
 fn bit_array_pattern_unification() {
     assert_module_infer!(
@@ -1981,7 +2437,6 @@ fn bit_array_pattern_unification() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/970
 #[test]
 fn bit_array_pattern_unification2() {
     assert_module_infer!(
@@ -1990,7 +2445,6 @@ fn bit_array_pattern_unification2() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/983
 #[test]
 fn qualified_prelude() {
     assert_module_infer!(
@@ -2002,7 +2456,6 @@ pub fn a() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1029
 #[test]
 fn empty_list_const() {
     assert_module_infer!(
@@ -2044,7 +2497,6 @@ fn string_concat_ko_2() {
     assert_error!(r#" 1 ++ "2" "#);
 }
 
-// https://github.com/rakun-lang/rakun/issues/1087
 #[test]
 fn generic_inner_access() {
     assert_module_infer!(
@@ -2056,7 +2508,6 @@ pub fn b_get_first(b: B<#(a)>) {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1093
 #[test]
 fn fn_contextual_info() {
     assert_module_infer!(
@@ -2077,7 +2528,6 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1519
 #[test]
 fn permit_holes_in_fn_args_and_returns() {
     assert_module_infer!(
@@ -2236,6 +2686,7 @@ fn assert_suitable_main_function_not_module_function() {
             literal: Constant::Int {
                 location: Default::default(),
                 value: "1".into(),
+                int_value: 1.into(),
             },
             implementations: Implementations {
                 rakun: true,
@@ -2262,6 +2713,8 @@ fn assert_suitable_main_function_wrong_arity() {
             documentation: None,
             location: Default::default(),
             module: "module".into(),
+            external_erlang: None,
+            external_javascript: None,
             implementations: Implementations {
                 rakun: true,
                 uses_erlang_externals: false,
@@ -2287,6 +2740,8 @@ fn assert_suitable_main_function_ok() {
             documentation: None,
             location: Default::default(),
             module: "module".into(),
+            external_erlang: None,
+            external_javascript: None,
             implementations: Implementations {
                 rakun: true,
                 uses_erlang_externals: false,
@@ -2312,6 +2767,8 @@ fn assert_suitable_main_function_erlang_not_supported() {
             documentation: None,
             location: Default::default(),
             module: "module".into(),
+            external_erlang: Some(("wibble".into(), "wobble".into())),
+            external_javascript: Some(("wobble".into(), "wibble".into())),
             implementations: Implementations {
                 rakun: false,
                 uses_erlang_externals: true,
@@ -2337,6 +2794,8 @@ fn assert_suitable_main_function_javascript_not_supported() {
             documentation: None,
             location: Default::default(),
             module: "module".into(),
+            external_erlang: Some(("wibble".into(), "wobble".into())),
+            external_javascript: Some(("wobble".into(), "wibble".into())),
             implementations: Implementations {
                 rakun: false,
                 uses_erlang_externals: true,
@@ -2423,7 +2882,6 @@ pub fn main() {
 
 #[test]
 fn pipe_with_annonymous_functions_using_structs() {
-    // https://github.com/rakun-lang/rakun/issues/2504
     assert_module_infer!(
         r#"
 record Date {
@@ -2443,5 +2901,82 @@ pub fn main() {
 }
 "#,
         vec![("main", "fn() -> Int")]
+    );
+}
+
+#[test]
+fn labelled_argument_ordering() {
+    assert_module_infer!(
+        "
+record A { A }
+record B { B }
+record C { C }
+record D { D }
+
+fn wibble(a a: A, b b: B, c c: C, d d: D) {
+  Nil
+}
+
+pub fn main() {
+  wibble(A, C, D, b: B)
+  wibble(A, C, D, b: B)
+  wibble(B, C, D, a: A)
+  wibble(B, C, a: A, d: D)
+  wibble(B, C, d: D, a: A)
+  wibble(B, D, a: A, c: C)
+  wibble(B, D, c: C, a: A)
+  wibble(C, D, b: B, a: A)
+}
+",
+        vec![("main", "fn() -> Nil")]
+    );
+}
+
+#[test]
+fn variant_inference_allows_inference() {
+    assert_module_infer!(
+        "
+pub record Wibble {
+  Wibble(a: Int)
+  Wobble(b: Int)
+}
+
+pub fn do_a_thing(wibble) {
+  case wibble {
+    Wibble(..) -> wibble.a
+    _ -> todo
+  }
+  wibble
+}
+",
+        vec![
+            ("Wibble", "fn(Int) -> Wibble"),
+            ("Wobble", "fn(Int) -> Wibble"),
+            ("do_a_thing", "fn(Wibble) -> Wibble")
+        ]
+    );
+}
+
+#[test]
+fn variant_inference_allows_inference2() {
+    assert_module_infer!(
+        "
+pub record Box<a> {
+  Box(inner: a)
+  UnBox
+}
+
+pub fn rebox(box) {
+  case box {
+    Box(..) -> Box(box.inner + 1)
+    UnBox -> UnBox
+  }
+}
+",
+        vec![
+            ("Box", "fn(a) -> Box<a>"),
+            ("UnBox", "Box<a>"),
+            ("rebox", "fn(Box<Int>) -> Box<Int>")
+        ]
     );
 }

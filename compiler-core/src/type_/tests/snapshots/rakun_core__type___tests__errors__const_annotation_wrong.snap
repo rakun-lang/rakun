@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1410
 expression: "pub const group_id: Int = \"42\""
 ---
+----- SOURCE CODE
+pub const group_id: Int = "42"
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:27
   │

@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 464
 expression: "pub fn main() { let _ = --7 }"
 ---
+----- SOURCE CODE
+pub fn main() { let _ = --7 }
+
+----- WARNING
 warning: Unnecessary double negation (--) on integer
   ┌─ /src/warning/wrn.rakun:1:25
   │

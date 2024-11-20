@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 1214
 expression: "\npub fn main() {\n    Ok(0)\n    Ok(1)\n    Nil\n}\n"
 ---
 ----- BEFORE ACTION

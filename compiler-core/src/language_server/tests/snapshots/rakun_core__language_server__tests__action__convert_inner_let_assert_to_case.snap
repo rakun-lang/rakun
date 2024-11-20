@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 788
 expression: "pub fn main() {\n    let assert [wibble] = {\n        let assert Ok(wobble) = {\n            Ok(1)\n        }\n        [wobble]\n    }\n}"
 ---
 ----- BEFORE ACTION

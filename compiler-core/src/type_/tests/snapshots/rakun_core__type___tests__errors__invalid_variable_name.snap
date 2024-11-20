@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1286
 expression: let theAnswer = 42
 ---
+----- SOURCE CODE
+let theAnswer = 42
+
+----- ERROR
 error: Invalid variable name
   ┌─ /src/one/two.rakun:1:5
   │

@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 657
 expression: type Phantom<phantomType>= Int
 ---
 ----- BEFORE ACTION

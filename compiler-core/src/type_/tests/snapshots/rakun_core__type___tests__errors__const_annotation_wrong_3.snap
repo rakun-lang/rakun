@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1420
 expression: "pub const numbers: List<Int> = [1.1, 2.2, 3.3]"
 ---
+----- SOURCE CODE
+pub const numbers: List<Int> = [1.1, 2.2, 3.3]
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:32
   │
@@ -10,8 +15,8 @@ error: Type mismatch
 
 Expected type:
 
-    List<Int>
+    List(Int)
 
 Found type:
 
-    List<Float>
+    List(Float)

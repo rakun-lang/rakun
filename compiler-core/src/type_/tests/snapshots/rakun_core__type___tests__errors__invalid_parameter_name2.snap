@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1226
 expression: "fn pass(label paramName: Bool) { paramName }"
 ---
+----- SOURCE CODE
+fn pass(label paramName: Bool) { paramName }
+
+----- ERROR
 error: Invalid argument name
   ┌─ /src/one/two.rakun:1:15
   │

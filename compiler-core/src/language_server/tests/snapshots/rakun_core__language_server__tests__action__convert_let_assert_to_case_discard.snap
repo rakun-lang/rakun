@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 710
 expression: "pub fn main() {\n  let assert [_elem] = [6]\n}"
 ---
 ----- BEFORE ACTION

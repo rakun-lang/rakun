@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 2162
 expression: "[\"wibble\", ..[1, 2]]"
 ---
+----- SOURCE CODE
+["wibble", ..[1, 2]]
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:14
   │
@@ -13,8 +18,8 @@ this list don't match the type of the elements being prepended to it.
 
 Expected type:
 
-    List<String>
+    List(String)
 
 Found type:
 
-    List<Int>
+    List(Int)

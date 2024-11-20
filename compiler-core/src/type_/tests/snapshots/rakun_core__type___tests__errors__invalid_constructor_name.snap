@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1261
 expression: "record MyType { Int_Value(Int) }"
 ---
+----- SOURCE CODE
+record MyType { Int_Value(Int) }
+
+----- ERROR
 error: Invalid type variant name
   ┌─ /src/one/two.rakun:1:17
   │

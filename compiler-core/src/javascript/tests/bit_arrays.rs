@@ -386,6 +386,29 @@ fn go(x) {
 }
 
 #[test]
+fn match_dynamic_size_error() {
+    assert_js_error!(
+        r#"
+fn go(x) {
+  let n = 16
+  let assert <<a:size(n)>> = x
+}
+"#
+    );
+}
+
+#[test]
+fn match_non_byte_aligned_size_error() {
+    assert_js_error!(
+        r#"
+fn go(x) {
+  let assert <<a:size(7)>> = x
+}
+"#
+    );
+}
+
+#[test]
 fn discard_sized() {
     assert_js!(
         r#"
@@ -475,6 +498,17 @@ fn go(x) {
 }
 
 #[test]
+fn match_float_16_bit_error() {
+    assert_js_error!(
+        r#"
+fn go(x) {
+  let assert <<a:float-size(16)>> = x
+}
+"#
+    );
+}
+
+#[test]
 fn match_rest() {
     assert_js!(
         r#"
@@ -542,7 +576,7 @@ fn go() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1591
+
 #[test]
 fn not_byte_aligned() {
     assert_js_error!(

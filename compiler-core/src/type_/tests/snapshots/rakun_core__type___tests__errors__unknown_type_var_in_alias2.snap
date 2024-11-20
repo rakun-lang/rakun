@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 919
 expression: type X = List<a>
 ---
+----- SOURCE CODE
+type X = List<a>
+
+----- ERROR
 error: Unknown type
   ┌─ /src/one/two.rakun:1:15
   │

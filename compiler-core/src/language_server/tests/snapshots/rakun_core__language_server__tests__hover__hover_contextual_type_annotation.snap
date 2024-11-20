@@ -1,0 +1,17 @@
+---
+source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 1082
+expression: "\nimport wibble/wobble\n\nfn make_wibble() -> wobble.Wibble { wobble.Wibble }\n"
+---
+import wibble/wobble
+
+fn make_wibble() -> wobble.Wibble { wobble.Wibble }
+                    ▔↑▔▔▔▔▔▔▔▔▔▔▔                  
+
+
+----- Hover content -----
+Scalar(
+    String(
+        "```rakun\nwobble.Wibble\n```\n",
+    ),
+)

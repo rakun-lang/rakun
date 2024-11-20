@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 788
 expression: "\npub record Wibble { Wibble(arg1: Int, arg2: Bool) }\n\npub fn main() {\n  let Wibble(arg2:, ..) = todo\n}\n"
 ---
 pub record Wibble { Wibble(arg1: Int, arg2: Bool) }

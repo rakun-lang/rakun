@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 803
 expression: "type PrivateType\n\n@external(erlang, \"a\", \"b\")\npub fn leak_type() -> PrivateType\n"
 ---
+----- SOURCE CODE
+type PrivateType
+
+@external(erlang, "a", "b")
+pub fn leak_type() -> PrivateType
+
+
+----- ERROR
 error: Private type used in public interface
   ┌─ /src/one/two.rakun:4:1
   │

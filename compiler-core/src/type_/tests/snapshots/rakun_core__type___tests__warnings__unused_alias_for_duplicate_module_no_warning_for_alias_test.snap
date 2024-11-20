@@ -1,7 +1,23 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 1014
 expression: "\n            import a/wibble\n            import b/wibble as wobble\n            const one = wibble.one\n        "
 ---
+----- SOURCE CODE
+-- a/wibble.rakun
+pub const one = 1
+
+-- b/wibble.rakun
+pub const two = 2
+
+-- main.rakun
+
+            import a/wibble
+            import b/wibble as wobble
+            const one = wibble.one
+        
+
+----- WARNING
 warning: Unused imported module
   ┌─ /src/warning/wrn.rakun:3:13
   │

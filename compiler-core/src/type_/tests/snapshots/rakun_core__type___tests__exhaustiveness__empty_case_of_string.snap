@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/type_/tests/exhaustiveness.rs
+assertion_line: 1190
 expression: "\nlet name = \"John Doe\"\ncase name {}\n"
 ---
+----- SOURCE CODE
+
+let name = "John Doe"
+case name {}
+
+
+----- ERROR
 error: Inexhaustive patterns
   ┌─ /src/one/two.rakun:3:1
   │

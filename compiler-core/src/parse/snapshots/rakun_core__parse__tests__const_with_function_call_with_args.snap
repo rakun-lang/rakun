@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 698
 expression: "\npub fn wibble() { 123 }\nconst wib: Int = wibble(1, \"wobble\")\n"
 ---
+----- SOURCE CODE
+
+pub fn wibble() { 123 }
+const wib: Int = wibble(1, "wobble")
+
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:3:18
   │

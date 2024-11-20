@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 559
 expression: "\nrecord Wibble {\n    Wibble(arg: String)\n}\n"
 ---
 record Wibble {
@@ -11,6 +12,6 @@ record Wibble {
 ----- Hover content -----
 Scalar(
     String(
-        "```rakun\nString\n```\n",
+        "```rakun\nrakun.String\n```\n",
     ),
 )

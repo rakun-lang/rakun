@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 897
 expression: "\n@internal\nrecord Wibble {\n  Wibble\n}\n"
 ---
+----- SOURCE CODE
+
+@internal
+record Wibble {
+  Wibble
+}
+
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:2:1
   │

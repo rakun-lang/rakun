@@ -1,7 +1,31 @@
 ---
 source: compiler-core/src/erlang/tests/guards.rs
+assertion_line: 473
 expression: "\npub record A {\n  A(b: B)\n}\n\npub record B {\n  B(c: C)\n}\n\npub record C {\n  C(d: Bool)\n}\n\npub fn a(a: A) {\n  case a {\n    _ if a.b.c.d -> 1\n    _ -> 0\n  }\n}\n"
 ---
+----- SOURCE CODE
+
+pub record A {
+  A(b: B)
+}
+
+pub record B {
+  B(c: C)
+}
+
+pub record C {
+  C(d: Bool)
+}
+
+pub fn a(a: A) {
+  case a {
+    _ if a.b.c.d -> 1
+    _ -> 0
+  }
+}
+
+
+----- COMPILED ERLANG
 -module(my@mod).
 -compile([no_auto_import, nowarn_unused_vars, nowarn_unused_function, nowarn_nomatch]).
 

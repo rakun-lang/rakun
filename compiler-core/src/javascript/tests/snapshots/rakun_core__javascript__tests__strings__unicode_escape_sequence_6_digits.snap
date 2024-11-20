@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/javascript/tests/strings.rs
+assertion_line: 38
 expression: "\npub fn unicode_escape_sequence_6_digits() -> String {\n  \"\\u{10abcd}\"\n}\n"
 ---
+----- SOURCE CODE
+
+pub fn unicode_escape_sequence_6_digits() -> String {
+  "\u{10abcd}"
+}
+
+
+----- COMPILED JAVASCRIPT
 export function unicode_escape_sequence_6_digits() {
   return "\u{10abcd}";
 }

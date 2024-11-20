@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/type_/tests/type_alias.rs
+assertion_line: 80
 expression: "\ntype A<a, a> =\n  List<a>\n"
 ---
+----- SOURCE CODE
+
+type A<a, a> =
+  List<a>
+
+
+----- ERROR
 error: Duplicate type parameter
   ┌─ /src/one/two.rakun:2:11
   │

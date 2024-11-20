@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 2132
 expression: "\nfn() {\n  let a = True\n  let b = -a\n}\n"
 ---
+----- SOURCE CODE
+
+fn() {
+  let a = True
+  let b = -a
+}
+
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:4:12
   │

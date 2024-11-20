@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/type_/tests/type_alias.rs
+assertion_line: 90
 expression: "\ntype A<a> =\n  Int\n"
 ---
+----- SOURCE CODE
+
+type A<a> =
+  Int
+
+
+----- ERROR
 error: Unused type parameter
   ┌─ /src/one/two.rakun:2:1
   │  

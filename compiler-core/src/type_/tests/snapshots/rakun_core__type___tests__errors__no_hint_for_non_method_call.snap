@@ -1,7 +1,24 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 2051
 expression: "\npub record User {\n  User(id: Int, name: String)\n}\n\nfn login(user: User) {\n  user\n}\n\npub fn main(user: User) {\n  login(user.wibble)\n}\n"
 ---
+----- SOURCE CODE
+
+pub record User {
+  User(id: Int, name: String)
+}
+
+fn login(user: User) {
+  user
+}
+
+pub fn main(user: User) {
+  login(user.wibble)
+}
+
+
+----- ERROR
 error: Unknown record field
    ┌─ /src/one/two.rakun:11:13
    │
@@ -12,7 +29,7 @@ The value being accessed has this type:
 
     User
 
-It has these fields:
+It has these accessible fields:
 
     .id
     .name

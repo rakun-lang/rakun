@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/signature_help.rs
+assertion_line: 172
 expression: "\npub fn wibble(a: Int, b: String) { 1.0 }\nconst wobble = wibble\n\npub fn main() {\n  wobble()\n}\n"
 ---
 pub fn wibble(a: Int, b: String) { 1.0 }

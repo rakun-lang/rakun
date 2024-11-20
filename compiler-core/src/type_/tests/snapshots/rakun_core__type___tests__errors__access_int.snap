@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 400
 expression: let x = 1 x.whatever
 ---
+----- SOURCE CODE
+let x = 1 x.whatever
+
+----- ERROR
 error: Unknown record field
   ┌─ /src/one/two.rakun:1:12
   │

@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 530
 expression: "case [1] { [x] | x -> 1 }"
 ---
+----- SOURCE CODE
+case [1] { [x] | x -> 1 }
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:18
   │
@@ -14,4 +19,4 @@ Expected type:
 
 Found type:
 
-    List<Int>
+    List(Int)

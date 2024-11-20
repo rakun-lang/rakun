@@ -475,7 +475,6 @@ fn locked_nested_are_removed_too() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1754
 #[test]
 fn locked_unlock_new() {
     let mut config = PackageConfig::default();
@@ -751,29 +750,35 @@ pub enum Repository {
     GitHub {
         user: String,
         repo: String,
+        path: Option<String>,
     },
     GitLab {
         user: String,
         repo: String,
+        path: Option<String>,
     },
     BitBucket {
         user: String,
         repo: String,
+        path: Option<String>,
     },
     Codeberg {
         user: String,
         repo: String,
+        path: Option<String>,
     },
     #[serde(alias = "forgejo")]
     Gitea {
         user: String,
         repo: String,
+        path: Option<String>,
         #[serde(with = "uri_serde_default_https")]
         host: Uri,
     },
     SourceHut {
         user: String,
         repo: String,
+        path: Option<String>,
     },
     Custom {
         url: String,
@@ -784,20 +789,39 @@ pub enum Repository {
 impl Repository {
     pub fn url(&self) -> Option<String> {
         match self {
-            Repository::GitHub { repo, user } => Some(format!("https://github.com/{user}/{repo}")),
-            Repository::GitLab { repo, user } => Some(format!("https://gitlab.com/{user}/{repo}")),
-            Repository::BitBucket { repo, user } => {
+            Repository::GitHub { repo, user, .. } => {
+                Some(format!("https://github.com/{user}/{repo}"))
+            }
+            Repository::GitLab { repo, user, .. } => {
+                Some(format!("https://gitlab.com/{user}/{repo}"))
+            }
+            Repository::BitBucket { repo, user, .. } => {
                 Some(format!("https://bitbucket.com/{user}/{repo}"))
             }
-            Repository::Codeberg { repo, user } => {
+            Repository::Codeberg { repo, user, .. } => {
                 Some(format!("https://codeberg.org/{user}/{repo}"))
             }
-            Repository::SourceHut { repo, user } => {
+            Repository::SourceHut { repo, user, .. } => {
                 Some(format!("https://git.sr.ht/~{user}/{repo}"))
             }
-            Repository::Gitea { repo, user, host } => Some(format!("{host}/{user}/{repo}")),
+            Repository::Gitea {
+                repo, user, host, ..
+            } => Some(format!("{host}/{user}/{repo}")),
             Repository::Custom { url } => Some(url.clone()),
             Repository::None => None,
+        }
+    }
+
+    pub fn path(&self) -> Option<&String> {
+        match self {
+            Repository::GitHub { path, .. }
+            | Repository::GitLab { path, .. }
+            | Repository::BitBucket { path, .. }
+            | Repository::Codeberg { path, .. }
+            | Repository::SourceHut { path, .. }
+            | Repository::Gitea { path, .. } => path.as_ref(),
+
+            Repository::Custom { .. } | Repository::None => None,
         }
     }
 }
@@ -879,7 +903,7 @@ mod uri_serde_default_https {
             return Err(D::Error::custom("uri without host"));
         }
         match uri.scheme().is_none() {
-            true => format!("https://{}", string)
+            true => format!("https://{string}")
                 .parse()
                 .map_err(|err: InvalidUri| D::Error::custom(err.to_string())),
             false => Ok(uri),

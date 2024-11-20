@@ -1,0 +1,48 @@
+---
+source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 2504
+expression: "\npub record Wibble {\n  Wibble(a: Int, b: Int)\n  Wobble(a: Int, c: Int)\n}\n\npub fn main(wibble) {\n  case wibble {\n    Wibble(..) -> wibble.b\n    Wobble(..) -> wibble.c\n  }\n}\n"
+---
+----- SOURCE CODE
+
+pub record Wibble {
+  Wibble(a: Int, b: Int)
+  Wobble(a: Int, c: Int)
+}
+
+pub fn main(wibble) {
+  case wibble {
+    Wibble(..) -> wibble.b
+    Wobble(..) -> wibble.c
+  }
+}
+
+
+----- WARNING
+warning: Incompatible rakun version range
+  ┌─ /src/warning/wrn.rakun:9:25
+  │
+9 │     Wibble(..) -> wibble.b
+  │                         ^^ This requires a Rakun version >= 1.6.0
+
+Field access on custom types when the variant is known was introduced in
+version v1.6.0. But the Rakun version range specified in your `rakun.toml`
+would allow this code to run on an earlier version like v1.0.0, resulting
+in compilation errors!
+Hint: Remove the version constraint from your `rakun.toml` or update it to be:
+
+    rakun = ">= 1.6.0"
+
+warning: Incompatible rakun version range
+   ┌─ /src/warning/wrn.rakun:10:25
+   │
+10 │     Wobble(..) -> wibble.c
+   │                         ^^ This requires a Rakun version >= 1.6.0
+
+Field access on custom types when the variant is known was introduced in
+version v1.6.0. But the Rakun version range specified in your `rakun.toml`
+would allow this code to run on an earlier version like v1.0.0, resulting
+in compilation errors!
+Hint: Remove the version constraint from your `rakun.toml` or update it to be:
+
+    rakun = ">= 1.6.0"

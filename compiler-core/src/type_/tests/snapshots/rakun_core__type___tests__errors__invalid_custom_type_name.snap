@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1271
 expression: "record Boxed_value { Box(Int) }"
 ---
+----- SOURCE CODE
+record Boxed_value { Box(Int) }
+
+----- ERROR
 error: Invalid type name
   ┌─ /src/one/two.rakun:1:8
   │

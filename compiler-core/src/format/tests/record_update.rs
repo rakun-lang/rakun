@@ -37,7 +37,7 @@ fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1872
+
 #[test]
 fn comment_before_spread() {
     assert_format!(
@@ -53,7 +53,7 @@ fn comment_before_spread() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1872
+
 #[test]
 fn comment_before_update_label() {
     assert_format!(
@@ -69,7 +69,7 @@ fn comment_before_update_label() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1872
+
 #[test]
 fn multiple_line_custom_type_field_comments() {
     assert_format!(

@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1756
 expression: "fn inc(x: a) { x + 1 }"
 ---
+----- SOURCE CODE
+fn inc(x: a) { x + 1 }
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:16
   │

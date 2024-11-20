@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/javascript/tests/modules.rs
+assertion_line: 204
 expression: "\nimport rocket_ship\npub const variable = rocket_ship.class\n"
 ---
+----- SOURCE CODE
+
+import rocket_ship
+pub const variable = rocket_ship.class
+
+
+----- COMPILED JAVASCRIPT
 import * as $rocket_ship from "../rocket_ship.mjs";
 
 export const variable = $rocket_ship.class$;

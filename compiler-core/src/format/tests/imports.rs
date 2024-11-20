@@ -192,7 +192,7 @@ import f
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2915
+
 #[test]
 fn white_lines_between_comments_in_import_groups_are_preserved() {
     assert_format!(
@@ -205,7 +205,7 @@ import b
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2915
+
 #[test]
 fn import_sorting_doesnt_add_spurious_white_line() {
     assert_format!(

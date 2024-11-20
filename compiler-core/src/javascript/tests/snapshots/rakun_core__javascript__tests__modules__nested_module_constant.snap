@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/javascript/tests/modules.rs
+assertion_line: 81
 expression: "\nimport rocket_ship/launcher\npub fn go() { launcher.x }\n"
 ---
+----- SOURCE CODE
+
+import rocket_ship/launcher
+pub fn go() { launcher.x }
+
+
+----- COMPILED JAVASCRIPT
 import * as $launcher from "../rocket_ship/launcher.mjs";
 
 export function go() {

@@ -192,7 +192,7 @@ fn nested_breakable_tuples_in_function_calls() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2435
+
 #[test]
 fn only_last_argument_can_be_broken() {
     assert_format!(
@@ -237,7 +237,7 @@ fn function_that_is_a_little_over_the_limit() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2571
+
 #[test]
 fn expr_function_as_last_argument() {
     assert_format!(

@@ -1,7 +1,14 @@
 ---
 source: compiler-core/src/type_/tests/type_alias.rs
+assertion_line: 58
 expression: "\ntype A = #(A, A)\n"
 ---
+----- SOURCE CODE
+
+type A = #(A, A)
+
+
+----- ERROR
 error: Type cycle
   ┌─ /src/one/two.rakun:2:1
   │

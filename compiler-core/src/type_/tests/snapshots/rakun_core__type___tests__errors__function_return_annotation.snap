@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 296
 expression: "fn() -> Int { 2.0 }"
 ---
+----- SOURCE CODE
+fn() -> Int { 2.0 }
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:15
   │

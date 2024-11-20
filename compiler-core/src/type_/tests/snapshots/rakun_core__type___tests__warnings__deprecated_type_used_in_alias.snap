@@ -1,7 +1,19 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 919
 expression: "\n@deprecated(\"Don't use this!\")\npub record Cat {\n    Cat(name: String)\n}\n\npub type Dog = Cat\n        "
 ---
+----- SOURCE CODE
+
+@deprecated("Don't use this!")
+pub record Cat {
+    Cat(name: String)
+}
+
+pub type Dog = Cat
+        
+
+----- WARNING
 warning: Deprecated type used
   ┌─ /src/warning/wrn.rakun:7:16
   │

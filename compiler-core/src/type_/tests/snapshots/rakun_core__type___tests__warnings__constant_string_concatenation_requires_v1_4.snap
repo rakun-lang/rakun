@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 2441
 expression: "pub const string = \"wibble\" ++ \"wobble\""
 ---
+----- SOURCE CODE
+pub const string = "wibble" ++ "wobble"
+
+----- WARNING
 warning: Incompatible rakun version range
   ┌─ /src/warning/wrn.rakun:1:20
   │

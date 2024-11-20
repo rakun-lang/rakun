@@ -1,7 +1,14 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 1599
 expression: "pub fn main() {\n          panic(1, Nil)\n        }"
 ---
+----- SOURCE CODE
+pub fn main() {
+          panic(1, Nil)
+        }
+
+----- WARNING
 warning: Panic used as a function
   ┌─ /src/warning/wrn.rakun:2:17
   │

@@ -1,0 +1,16 @@
+---
+source: compiler-core/src/language_server/tests/definition.rs
+assertion_line: 587
+expression: output
+---
+----- Jumping from `src/app.rakun`
+
+import example_module.{type MyType}
+                              ↑    
+fn main() -> MyType {
+  0
+}
+
+----- Jumped to `src/example_module.rakun`
+pub type MyType = Int
+↑▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔

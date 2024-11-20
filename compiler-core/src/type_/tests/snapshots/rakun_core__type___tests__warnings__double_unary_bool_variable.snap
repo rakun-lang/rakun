@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 489
 expression: "\n        pub fn main() {\n            let x = True\n            let _ = !!x\n        }\n        "
 ---
+----- SOURCE CODE
+
+        pub fn main() {
+            let x = True
+            let _ = !!x
+        }
+        
+
+----- WARNING
 warning: Unnecessary double negation (!!) on bool
   ┌─ /src/warning/wrn.rakun:4:21
   │

@@ -1,4 +1,4 @@
-//// https://github.com/rakun-lang/otp/pull/22
+
 
 // No warning should be emitted about this imported type. The compiler does not
 // confuse it for the value constructor defined below.

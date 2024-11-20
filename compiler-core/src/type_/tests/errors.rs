@@ -301,7 +301,7 @@ fn function_arg_and_return_annotation() {
     assert_error!("fn(x: Int) -> Float { x }");
 }
 
-// https://github.com/rakun-lang/rakun/issues/1378
+
 #[test]
 fn function_return_annotation_mismatch_with_pipe() {
     assert_module_error!(
@@ -327,6 +327,23 @@ fn pipe_mismatch_error() {
         "pub fn main() -> String {
             Orange
             |> eat_veggie
+         }
+
+         record Fruit{ Orange }
+         record Veg{ Lettuce }
+
+         fn eat_veggie(v: Veg) -> String {
+            \"Ok\"
+         }"
+    );
+}
+
+#[test]
+fn pipe_value_type_mismatch_error() {
+    assert_module_error!(
+        "pub fn main() -> String {
+            eat_veggie
+            |> Orange
          }
 
          record Fruit{ Orange }
@@ -535,7 +552,7 @@ fn extra_var_inalternative3() {
 
 #[test]
 fn tuple_arity() {
-    // https://github.com/rakun-lang/rakun/issues/714
+    
     assert_error!("case #(1, 2) { #(1, _, _, _) -> 1 }");
 }
 
@@ -641,6 +658,23 @@ pub record Person {
 }
 pub fn get_name(person: Person) { person.name }
 pub fn get_age(person: Person) { person.age }"
+    );
+}
+
+#[test]
+fn record_access_on_inferred_variant_when_field_is_in_other_variants() {
+    assert_module_error!(
+        "
+pub record Wibble {
+  Wibble(wibble: Int)
+  Wobble(wobble: Int)
+}
+
+pub fn main() {
+  let always_wibble = Wibble(10)
+  always_wibble.wobble
+}
+"
     );
 }
 
@@ -814,7 +848,7 @@ pub record LeakType { Variant(PrivateType) }"#
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3387
+
 // Private types should not leak even in internal modules
 #[test]
 fn module_private_type_leak_6() {
@@ -1082,7 +1116,7 @@ pub const duplicate = 1"
 #[test]
 fn duplicate_const_and_function_names_const_fn() {
     // We cannot declare const and functions with the same name in a module
-    // https://github.com/rakun-lang/rakun/issues/2069
+    
     assert_module_error!(
         "const duplicate = 1
 fn duplicate() { 2 }"
@@ -1364,7 +1398,7 @@ fn invalid_function_type_parameter_name() {
 
 #[test]
 fn correct_pipe_arity_error_location() {
-    // https://github.com/rakun-lang/rakun/issues/672
+    
     assert_module_error!(
         "fn x(x, y) { x }
 fn main() { 1 |> x() }"
@@ -1670,7 +1704,7 @@ pub fn update_box(box: Box<a>, value: b) {
 
 #[test]
 fn type_vars_must_be_declared() {
-    // https://github.com/rakun-lang/rakun/issues/734
+    
     assert_module_error!(
         r#"record A<a> { A }
 type B = a"#
@@ -1711,7 +1745,7 @@ fn type_holes4() {
     assert_module_error!(r#"type X = List<_>"#);
 }
 
-// https://github.com/rakun-lang/rakun/issues/1263
+
 #[test]
 fn missing_variable_in_alternative_pattern() {
     assert_error!("case [] { [x] | [] -> x _ -> 0 }");
@@ -1722,7 +1756,7 @@ fn type_annotations() {
     assert_module_error!("fn inc(x: a) { x + 1 }");
 }
 
-// https://github.com/rakun-lang/rakun/issues/892
+
 #[test]
 fn case_clause_pipe_diagnostic() {
     assert_module_error!(
@@ -1981,7 +2015,7 @@ fn same_imports_multiple_times_7() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1705
+
 #[test]
 fn update_multi_variant_record() {
     assert_module_error!(
@@ -2117,7 +2151,7 @@ fn() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2371
+
 #[test]
 fn list() {
     assert_error!("[1, 2.0]");
@@ -2251,5 +2285,357 @@ pub fn main() {
   woble.wubble()
 }
 ",
+    );
+}
+
+#[test]
+fn qualified_type_mismatched_type_error() {
+    assert_with_module_error!(
+        ("wibble", "pub type Wobble"),
+        "
+import wibble
+const my_wobble: wibble.Wobble = Nil
+"
+    );
+}
+
+#[test]
+fn qualified_type_similar_type_name() {
+    assert_with_module_error!(
+        ("wibble", "pub type Int"),
+        "
+import wibble
+const value: wibble.Int = 20
+"
+    );
+}
+
+#[test]
+fn qualified_type_not_a_function() {
+    assert_with_module_error!(
+        ("wibble", "pub record Function { Function(fn() -> Nil) }"),
+        "
+import wibble.{type Function as FuncWrapper}
+pub fn main(f: FuncWrapper) {
+  f()
+}
+"
+    );
+}
+
+#[test]
+fn qualified_type_unknown_field() {
+    assert_module_error!(
+        "
+import rakun
+record Int {
+  Int(bit_size: rakun.Int, bits: BitArray)
+}
+
+pub fn main(not_a_record: rakun.Int) {
+  not_a_record.bits
+}
+"
+    );
+}
+
+#[test]
+fn qualified_type_invalid_operands() {
+    assert_with_module_error!(
+        ("maths", "pub record Vector { Vector(x: Float, y: Float) }"),
+        "
+import maths as math
+pub fn add_two_vectors(a: math.Vector, b: math.Vector) {
+  a + b
+}
+"
+    );
+}
+
+#[test]
+fn qualified_type_invalid_pipe_argument() {
+    assert_with_module_error!(
+        (
+            "mod",
+            "pub type Wibble pub fn takes_wibble(value: Wibble) { value }"
+        ),
+        "
+import mod
+pub fn main() {
+  Nil |> mod.takes_wibble
+}
+"
+    );
+}
+
+#[test]
+fn qualified_type_unification_error() {
+    assert_module_error!(
+        "
+import rakun
+
+record Bool {
+  True
+  False
+}
+
+const list_of_bools = [True, False, rakun.False]
+"
+    );
+}
+
+#[test]
+fn qualified_type_not_a_tuple() {
+    assert_with_module_error!(
+        ("mod", "pub record Pair<a, b> { Pair(a, b) }"),
+        "
+import mod.{type Pair as Duo}
+pub fn first(pair: Duo<a, b>) {
+  pair.0
+}
+"
+    );
+}
+
+#[test]
+fn qualified_type_not_fn_in_use() {
+    assert_with_module_error!(
+        ("some_mod", "pub type Function<param1, param2, return>"),
+        "
+import some_mod as sm
+pub fn main(func: sm.Function<Int, String, Float>) {
+  use <- func()
+}
+"
+    );
+}
+
+#[test]
+fn qualified_type_use_fn_without_callback() {
+    assert_with_module_error!(
+        (
+            "some_mod",
+            "pub type NotACallback pub fn do_a_thing(a: Int, _b: NotACallback) { a }"
+        ),
+        "
+import some_mod
+pub fn main() {
+  use value <- some_mod.do_a_thing(10)
+}
+"
+    );
+}
+
+#[test]
+fn suggest_unwrapping_a_result_when_types_match() {
+    assert_module_error!(
+        "
+pub fn main() {
+  let value = Ok(1)
+  add_1(value)
+}
+
+fn add_1(to x) { x + 1 }
+"
+    );
+}
+
+#[test]
+fn unknown_field_that_appears_in_an_imported_variant_has_note() {
+    assert_with_module_error!(
+        (
+            "some_mod",
+            "pub record Wibble {
+              Wibble(field: Int)
+              Wobble(not_field: String, field: Int)
+            }"
+        ),
+        "
+import some_mod
+pub fn main(wibble: some_mod.Wibble) {
+  wibble.field
+}
+"
+    );
+}
+
+#[test]
+fn unknown_field_that_appears_in_a_variant_has_note() {
+    assert_module_error!(
+        "
+pub record Wibble {
+  Wibble(field: Int)
+  Wobble(not_field: String, field: Int)
+}
+
+pub fn main(wibble: Wibble) {
+  wibble.field
+}
+"
+    );
+}
+
+#[test]
+fn unknown_field_that_does_not_appear_in_variant_has_no_note() {
+    assert_module_error!(
+        "
+pub record Wibble {
+  Wibble(field: Int)
+  Wobble(not_field: String, field: Int)
+}
+
+pub fn main(wibble: Wibble) {
+  wibble.wibble
+}
+"
+    );
+}
+
+#[test]
+fn no_note_about_reliable_access_if_the_accessed_type_has_a_single_variant() {
+    assert_module_error!(
+        "
+pub record User {
+  User(name: String)
+}
+
+pub fn main() {
+  User(\"Jak\").nam
+}
+"
+    );
+}
+
+#[test]
+fn no_crash_on_duplicate_record_fields() {
+    
+    assert_module_error!(
+        "
+pub record X {
+  A
+  B(e0: Int, e0: Int)
+}
+
+fn compiler_crash(x: X) {
+  case x {
+    A -> todo
+    _ -> todo
+  }
+}
+  "
+    );
+}
+
+#[test]
+fn record_update_unknown_variant() {
+    assert_module_error!(
+        r#"
+pub record Wibble {
+  Wibble(wibble: Int, wubble: Bool)
+  Wobble(wobble: Int, wubble: Bool)
+}
+
+pub fn wibble(value: Wibble) {
+  Wibble(..value, wubble: True)
+}
+"#
+    );
+}
+
+#[test]
+fn record_update_wrong_variant() {
+    assert_module_error!(
+        r#"
+pub record MyRecord {
+  A(common: Int, other: String)
+  B(common: Int, different: Float)
+}
+
+pub fn b_to_a(value: MyRecord) {
+  case value {
+    A(..) -> value
+    B(..) as b -> A(..b, other: "Hi")
+  }
+}
+"#
+    );
+}
+
+#[test]
+fn record_update_wrong_variant_imported_type() {
+    assert_with_module_error!(
+        (
+            "wibble",
+            "
+pub record Wibble {
+  Wibble(wibble: Int, wobble: Int)
+  Wobble(wobble: Int, wubble: Int)
+}"
+        ),
+        "
+import wibble
+
+pub fn main(wibble: wibble.Wibble) {
+  case wibble {
+    wibble.Wibble(..) as w -> wibble.Wobble(..w, wubble: 10)
+    _ -> panic
+  }
+}
+"
+    );
+}
+
+#[test]
+fn inferred_variant_record_update_change_type_parameter() {
+    assert_module_error!(
+        r#"
+pub record Box<a> {
+  Locked(password: String, value: a)
+  Unlocked(password: String, value: a)
+}
+
+pub fn main() {
+  let box = Locked("ungu€$$4bLe", 11)
+  case box {
+    Locked(..) as box -> Locked(..box, value: True)
+    Unlocked(..) as box -> Unlocked(..box, value: False)
+  }
+}
+"#
+    );
+}
+
+#[test]
+fn inferred_variant_record_update_change_type_parameter_different_branches() {
+    assert_module_error!(
+        r#"
+pub record Box<a> {
+  Locked(password: String, value: a)
+  Unlocked(password: String, value: a)
+}
+
+pub fn main() {
+  let box = Locked("ungu€$$4bLe", 11)
+  case box {
+    Locked(..) as box -> Locked(..box, value: True)
+    Unlocked(..) as box -> Unlocked(..box, password: "pwd")
+  }
+}
+"#
+    );
+}
+
+#[test]
+
+fn duplicate_fields_in_record_update_reports_error() {
+    assert_module_error!(
+        "
+pub record Wibble { Wibble(thing: Int, other: Int) }
+
+pub fn main() {
+  let wibble = Wibble(1, 2)
+  let wobble = Wibble(..wibble, thing: 1, thing: 2)
+}
+"
     );
 }

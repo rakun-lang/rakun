@@ -1,7 +1,13 @@
 ---
 source: compiler-core/src/javascript/tests/results.rs
+assertion_line: 81
 expression: "import rakun.{Error as Thing}\npub fn main() { Thing }"
 ---
+----- SOURCE CODE
+import rakun.{Error as Thing}
+pub fn main() { Thing }
+
+----- COMPILED JAVASCRIPT
 import * as $rakun from "../rakun.mjs";
 import { Error as Thing } from "../rakun.mjs";
 

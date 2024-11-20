@@ -9,6 +9,7 @@ pub enum TypedExpr {
         location: SrcSpan,
         type_: Arc<Type>,
         value: EcoString,
+        int_value: BigInt,
     },
 
     Float {
@@ -48,7 +49,7 @@ pub enum TypedExpr {
     Fn {
         location: SrcSpan,
         type_: Arc<Type>,
-        is_capture: bool,
+        kind: FunctionLiteralKind,
         args: Vec<TypedArg>,
         body: Vec1<TypedStatement>,
         return_annotation: Option<TypeAst>,
@@ -62,6 +63,13 @@ pub enum TypedExpr {
     },
 
     Call {
+        location: SrcSpan,
+        type_: Arc<Type>,
+        fun: Box<Self>,
+        args: Vec<CallArg<Self>>,
+    },
+
+    Html {
         location: SrcSpan,
         type_: Arc<Type>,
         fun: Box<Self>,
@@ -135,7 +143,7 @@ pub enum TypedExpr {
     RecordUpdate {
         location: SrcSpan,
         type_: Arc<Type>,
-        spread: Box<Self>,
+        record: Box<Self>,
         args: Vec<TypedRecordUpdateArg>,
     },
 
@@ -221,10 +229,6 @@ impl TypedExpr {
             // beyond the index under search.
             Self::Tuple {
                 elems: expressions, ..
-            }
-            | Self::List {
-                elements: expressions,
-                ..
             } => {
                 for expression in expressions {
                     if expression.location().start > byte_index {
@@ -239,6 +243,29 @@ impl TypedExpr {
                 self.self_if_contains_location(byte_index)
             }
 
+            Self::List {
+                elements: expressions,
+                tail,
+                ..
+            } => {
+                for expression in expressions {
+                    if expression.location().start > byte_index {
+                        break;
+                    }
+
+                    if let Some(located) = expression.find_node(byte_index) {
+                        return Some(located);
+                    }
+                }
+
+                if let Some(tail) = tail {
+                    if let Some(node) = tail.find_node(byte_index) {
+                        return Some(node);
+                    }
+                }
+                self.self_if_contains_location(byte_index)
+            }
+
             Self::NegateBool { value, .. } | Self::NegateInt { value, .. } => value
                 .find_node(byte_index)
                 .or_else(|| self.self_if_contains_location(byte_index)),
@@ -250,6 +277,11 @@ impl TypedExpr {
                 .or_else(|| self.self_if_contains_location(byte_index)),
 
             Self::Call { fun, args, .. } => args
+                .iter()
+                .find_map(|arg| arg.find_node(byte_index))
+                .or_else(|| fun.find_node(byte_index))
+                .or_else(|| self.self_if_contains_location(byte_index)),
+            Self::Html { fun, args, .. } => args
                 .iter()
                 .find_map(|arg| arg.find_node(byte_index))
                 .or_else(|| fun.find_node(byte_index))
@@ -281,10 +313,10 @@ impl TypedExpr {
                 .find_map(|arg| arg.find_node(byte_index))
                 .or_else(|| self.self_if_contains_location(byte_index)),
 
-            Self::RecordUpdate { spread, args, .. } => args
+            Self::RecordUpdate { record, args, .. } => args
                 .iter()
                 .find_map(|arg| arg.find_node(byte_index))
-                .or_else(|| spread.find_node(byte_index))
+                .or_else(|| record.find_node(byte_index))
                 .or_else(|| self.self_if_contains_location(byte_index)),
         }
     }
@@ -318,6 +350,7 @@ impl TypedExpr {
             | Self::Todo { location, .. }
             | Self::Case { location, .. }
             | Self::Call { location, .. }
+            | Self::Html { location, .. }
             | Self::List { location, .. }
             | Self::Float { location, .. }
             | Self::BinOp { location, .. }
@@ -345,6 +378,7 @@ impl TypedExpr {
             | Self::Todo { location, .. }
             | Self::Case { location, .. }
             | Self::Call { location, .. }
+            | Self::Html { location, .. }
             | Self::List { location, .. }
             | Self::Float { location, .. }
             | Self::BinOp { location, .. }
@@ -370,6 +404,7 @@ impl TypedExpr {
             | TypedExpr::Int { .. }
             | TypedExpr::List { .. }
             | TypedExpr::Call { .. }
+            | TypedExpr::Html { .. }
             | TypedExpr::Case { .. }
             | TypedExpr::Todo { .. }
             | TypedExpr::Panic { .. }
@@ -416,6 +451,7 @@ impl TypedExpr {
             | Self::Case { type_, .. }
             | Self::List { type_, .. }
             | Self::Call { type_, .. }
+            | Self::Html { type_, .. }
             | Self::Float { type_, .. }
             | Self::Panic { type_, .. }
             | Self::BinOp { type_, .. }
@@ -468,6 +504,7 @@ impl TypedExpr {
             | TypedExpr::Fn { .. }
             | TypedExpr::List { .. }
             | TypedExpr::Call { .. }
+            | TypedExpr::Html { .. }
             | TypedExpr::BinOp { .. }
             | TypedExpr::Case { .. }
             | TypedExpr::Tuple { .. }
@@ -524,16 +561,10 @@ impl TypedExpr {
                 value.is_pure_value_constructor()
             }
 
-            // A module select is a pure value constructor only if it is a
-            // record, in all other cases it could be a side-effecting function.
-            // For example `option.Some(1)` is pure but `io.println("a")` is
-            // not.
-            TypedExpr::ModuleSelect { constructor, .. } => match constructor {
-                ModuleValueConstructor::Record { .. } => true,
-                ModuleValueConstructor::Fn { .. } | ModuleValueConstructor::Constant { .. } => {
-                    false
-                }
-            },
+            // Just selecting a value from a module never has any effects. The
+            // selected thing might be a function but it has no side effects as
+            // long as it's not called!
+            TypedExpr::ModuleSelect { .. } => true,
 
             // A pipeline is a pure value constructor if its last step is a record builder.
             // For example `wibble() |> wobble() |> Ok`
@@ -547,7 +578,7 @@ impl TypedExpr {
             // in the future we might want to do something a bit smarter and inspect
             // their content to see if they end up returning something that is a
             // pure value constructor and raise a warning for those as well.
-            TypedExpr::Block { .. } | TypedExpr::Case { .. } => false,
+            TypedExpr::Html { .. } | TypedExpr::Block { .. } | TypedExpr::Case { .. } => false,
 
             // `panic`, `todo`, and placeholders are never considered pure value constructors,
             // we don't want to raise a warning for an unused value if it's one

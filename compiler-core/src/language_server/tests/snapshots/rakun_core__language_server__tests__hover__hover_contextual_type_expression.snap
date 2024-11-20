@@ -1,0 +1,19 @@
+---
+source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 956
+expression: "\nimport wibble/wobble\n\npub fn main() {\n  let wibble = wobble.Wibble\n}\n"
+---
+import wibble/wobble
+
+pub fn main() {
+  let wibble = wobble.Wibble
+                     ▔▔▔▔▔↑▔
+}
+
+
+----- Hover content -----
+Scalar(
+    String(
+        "```rakun\nwobble.Wibble\n```\n\nView on [HexDocs](https://hexdocs.pm/hex/wibble/wobble.html#Wibble)",
+    ),
+)

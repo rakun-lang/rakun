@@ -1,7 +1,19 @@
 ---
 source: compiler-core/src/javascript/tests/functions.rs
+assertion_line: 72
 expression: "\npub fn math(x, y) {\n  fn() {\n    x + y\n    x - y\n    2 * x\n  }\n}"
 ---
+----- SOURCE CODE
+
+pub fn math(x, y) {
+  fn() {
+    x + y
+    x - y
+    2 * x
+  }
+}
+
+----- COMPILED JAVASCRIPT
 export function math(x, y) {
   return () => {
     x + y;

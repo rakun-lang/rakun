@@ -278,7 +278,7 @@ window.Rakun = (function () {
         }, batchMillis);
       }
 
-      function addResult(resultsList, result) {
+      function addResult<resultsList, result> {
         const doc = docs[result.ref];
         const resultsListItem = document.createElement("li");
         resultsListItem.classList.add("search-results-list-item");

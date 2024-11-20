@@ -1,0 +1,27 @@
+---
+source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 2315
+expression: "\nimport wibble.{type Function as FuncWrapper}\npub fn main(f: FuncWrapper) {\n  f()\n}\n"
+---
+----- SOURCE CODE
+-- wibble.rakun
+pub record Function { Function(fn() -> Nil) }
+
+-- main.rakun
+
+import wibble.{type Function as FuncWrapper}
+pub fn main(f: FuncWrapper) {
+  f()
+}
+
+
+----- ERROR
+error: Type mismatch
+  ┌─ /src/one/two.rakun:4:3
+  │
+4 │   f()
+  │   ^
+
+This value is being called as a function but its type is:
+
+    FuncWrapper

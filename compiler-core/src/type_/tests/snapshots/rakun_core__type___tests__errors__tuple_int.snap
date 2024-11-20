@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 415
 expression: "let #(a, b) = 1"
 ---
+----- SOURCE CODE
+let #(a, b) = 1
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:5
   │

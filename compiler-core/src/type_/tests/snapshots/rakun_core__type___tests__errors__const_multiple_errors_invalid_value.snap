@@ -1,7 +1,13 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1446
 expression: "const invalid_value: String = MyInvalidValue\nconst invalid_unannotated_value = [1, 2.0]"
 ---
+----- SOURCE CODE
+const invalid_value: String = MyInvalidValue
+const invalid_unannotated_value = [1, 2.0]
+
+----- ERROR
 error: Unknown variable
   ┌─ /src/one/two.rakun:1:31
   │

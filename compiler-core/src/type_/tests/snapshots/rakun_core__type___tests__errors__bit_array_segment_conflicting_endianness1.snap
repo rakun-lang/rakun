@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 90
 expression: "let x = <<1:big-little>> x"
 ---
+----- SOURCE CODE
+let x = <<1:big-little>> x
+
+----- ERROR
 error: Invalid bit array segment
   ┌─ /src/one/two.rakun:1:17
   │

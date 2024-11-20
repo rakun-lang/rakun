@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 992
 expression: "\nfn main() {\n    let <<b1, pub>> = <<24, 3>>\n}\n"
 ---
+----- SOURCE CODE
+
+fn main() {
+    let <<b1, pub>> = <<24, 3>>
+}
+
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:3:15
   │

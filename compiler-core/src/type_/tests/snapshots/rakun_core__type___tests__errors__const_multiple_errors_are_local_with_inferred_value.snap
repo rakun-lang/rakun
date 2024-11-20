@@ -1,7 +1,13 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1480
 expression: "const str: MyInvalidType = \"str\"\nconst assignment: String = str"
 ---
+----- SOURCE CODE
+const str: MyInvalidType = "str"
+const assignment: String = str
+
+----- ERROR
 error: Unknown type
   ┌─ /src/one/two.rakun:1:12
   │

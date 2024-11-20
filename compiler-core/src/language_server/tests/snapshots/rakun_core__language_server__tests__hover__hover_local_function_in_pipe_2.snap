@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 151
 expression: "\nfn add1(num: Int) -> Int {\n  num + 1\n}\n\npub fn main() {\n  add1(1)\n\n  1\n  |> add1\n  |> add1\n  |> add1\n}\n"
 ---
 fn add1(num: Int) -> Int {

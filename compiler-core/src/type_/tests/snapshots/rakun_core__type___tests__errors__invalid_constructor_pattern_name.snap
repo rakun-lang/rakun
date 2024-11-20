@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1327
 expression: "pub record Box { Box(Int) } pub fn main() { let Box(innerValue) = Box(203) }"
 ---
+----- SOURCE CODE
+pub record Box { Box(Int) } pub fn main() { let Box(innerValue) = Box(203) }
+
+----- ERROR
 error: Invalid variable name
   ┌─ /src/one/two.rakun:1:53
   │

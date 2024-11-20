@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 246
 expression: "case 1 { x -> 1 1 -> x }"
 ---
+----- SOURCE CODE
+case 1 { x -> 1 1 -> x }
+
+----- ERROR
 error: Unknown variable
   ┌─ /src/one/two.rakun:1:22
   │

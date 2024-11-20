@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 394
 expression: "\n/// Exciting documentation\n/// Maybe even multiple lines\nfn append(x, y) {\n  x ++ y\n}\n"
 ---
 /// Exciting documentation

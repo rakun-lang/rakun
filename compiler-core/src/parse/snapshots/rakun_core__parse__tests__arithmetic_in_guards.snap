@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 1207
 expression: "\ncase 2, 3 {\n    x, y if x + y == 1 -> True\n}"
 ---
 [
@@ -16,6 +17,7 @@ expression: "\ncase 2, 3 {\n    x, y if x + y == 1 -> True\n}"
                         end: 7,
                     },
                     value: "2",
+                    int_value: 2,
                 },
                 Int {
                     location: SrcSpan {
@@ -23,6 +25,7 @@ expression: "\ncase 2, 3 {\n    x, y if x + y == 1 -> True\n}"
                         end: 10,
                     },
                     value: "3",
+                    int_value: 3,
                 },
             ],
             clauses: [
@@ -85,6 +88,7 @@ expression: "\ncase 2, 3 {\n    x, y if x + y == 1 -> True\n}"
                                         end: 35,
                                     },
                                     value: "1",
+                                    int_value: 1,
                                 },
                             ),
                         },

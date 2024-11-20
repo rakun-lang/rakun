@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 227
 expression: "record X { X }"
 ---
+----- SOURCE CODE
+record X { X }
+
+----- WARNING
 warning: Unused private constructor
   ┌─ /src/warning/wrn.rakun:1:12
   │

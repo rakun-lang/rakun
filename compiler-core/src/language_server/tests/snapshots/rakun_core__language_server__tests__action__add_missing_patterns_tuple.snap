@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 1464
 expression: "\npub fn main() {\n  let two_at_once = #(True, Ok(1))\n  case two_at_once {\n    #(False, Error(_)) -> Nil\n  }\n}\n"
 ---
 ----- BEFORE ACTION

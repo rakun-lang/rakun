@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1322
 expression: "let assert [_elemOne] = [False]"
 ---
+----- SOURCE CODE
+let assert [_elemOne] = [False]
+
+----- ERROR
 error: Invalid discard name
   ┌─ /src/one/two.rakun:1:13
   │

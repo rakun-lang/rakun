@@ -63,7 +63,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1863
+
 #[test]
 fn pipeline_that_returns_fn() {
     assert_erl!(

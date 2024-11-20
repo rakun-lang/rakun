@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 604
 expression: "pub fn main() {\n    let assert \"prefix\" ++ _boringSuffix = \"prefix-suffix\"\n}"
 ---
 ----- BEFORE ACTION

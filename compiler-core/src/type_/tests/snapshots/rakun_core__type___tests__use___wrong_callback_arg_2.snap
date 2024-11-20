@@ -1,7 +1,22 @@
 ---
 source: compiler-core/src/type_/tests/use_.rs
-expression: "\npub record Box {\n  Box(Int)\n}\n\npub fn main() {\n  let x = fn(f) { \"Hello, \" ++ f(Box(1)) }\n  use Box(\"hi\") <- x()\n  \"Giacomo!\"\n}\n"
+assertion_line: 312
+expression: "\npub record Box {\n  Box<Int>\n}\n\npub fn main() {\n  let x = fn(f) { \"Hello, \" ++ f(Box(1)) }\n  use Box(\"hi\") <- x()\n  \"Giacomo!\"\n}\n"
 ---
+----- SOURCE CODE
+
+pub record Box {
+  Box(Int)
+}
+
+pub fn main() {
+  let x = fn(f) { "Hello, " ++ f(Box(1)) }
+  use Box("hi") <- x()
+  "Giacomo!"
+}
+
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:8:11
   │

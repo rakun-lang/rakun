@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 1635
 expression: "pub fn main() {\n          panic\n          1\n        }"
 ---
+----- SOURCE CODE
+pub fn main() {
+          panic
+          1
+        }
+
+----- WARNING
 warning: Unreachable code
   ┌─ /src/warning/wrn.rakun:3:11
   │

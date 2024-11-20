@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1745
 expression: type X = List<_>
 ---
+----- SOURCE CODE
+type X = List<_>
+
+----- ERROR
 error: Unexpected type hole
   ┌─ /src/one/two.rakun:1:15
   │

@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/javascript/tests/results.rs
+assertion_line: 15
 expression: "pub fn main() { Ok }"
 ---
+----- SOURCE CODE
+pub fn main() { Ok }
+
+----- COMPILED JAVASCRIPT
 import { Ok } from "../rakun.mjs";
 
 export function main() {

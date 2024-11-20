@@ -1,7 +1,19 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 2337
 expression: "\npub fn main() {\n  case Nil {\n  _ if 1.0 *. 1.0 == 0.0 -> Nil\n  _ -> Nil\n  }\n}\n"
 ---
+----- SOURCE CODE
+
+pub fn main() {
+  case Nil {
+  _ if 1.0 *. 1.0 == 0.0 -> Nil
+  _ -> Nil
+  }
+}
+
+
+----- WARNING
 warning: Incompatible rakun version range
   ┌─ /src/warning/wrn.rakun:4:8
   │

@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 1014
 expression: "\npub fn main() {\n  1 |> wibble()\n}\n\npub fn wibble(not_labelled, arg1 arg1, arg2 arg2) { Nil }\n "
 ---
 ----- BEFORE ACTION

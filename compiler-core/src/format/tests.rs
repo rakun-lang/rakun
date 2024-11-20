@@ -10,6 +10,7 @@ mod external_fn;
 mod external_types;
 mod function;
 mod guards;
+mod html;
 mod imports;
 mod pipeline;
 mod record_update;
@@ -769,7 +770,7 @@ fn statement_fn4() {
 
 #[test]
 fn statement_fn5() {
-    // https://github.com/rakun-lang/rakun/issues/613
+    
     assert_format!(
         r#"fn main() {
   Nil
@@ -2354,7 +2355,7 @@ fn expr_pipe() {
 "#
     );
 
-    // https://github.com/rakun-lang/rakun/issues/618
+    
 
     assert_format!(
         r#"fn main() {
@@ -2378,7 +2379,7 @@ fn expr_pipe() {
 "#
     );
 
-    // https://github.com/rakun-lang/rakun/issues/658
+    
     assert_format!(
         r#"fn main() {
   { os.system_time(os.Millisecond) < june_12_2020 * 1_000_000 }
@@ -3166,7 +3167,7 @@ fn tuple_access2() {
 fn tuple_access3() {
     assert_format!(
         r#"fn main() {
-  { tup.1 }.2
+  tup.1.2
 }
 "#
     );
@@ -3868,7 +3869,7 @@ fn main() {
 "
     );
 
-    // https://github.com/rakun-lang/rakun/issues/776
+    
     assert_format!(
         "fn main() {
   let Triple(..) = triple()
@@ -4047,7 +4048,7 @@ fn binary_operator_precedence() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/868
+
 #[test]
 fn precedence_rhs() {
     assert_format!(
@@ -4240,7 +4241,7 @@ fn main() {
 
 // TODO: improve. This is too wide
 #[test]
-// https://github.com/rakun-lang/rakun/issues/748
+
 fn assignments_break_value_first_test() {
     assert_format!(
         r#"fn main() {
@@ -4402,7 +4403,7 @@ fn case_in_call() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1390
+
 #[test]
 fn list_spread_pattern() {
     assert_format!(
@@ -4416,7 +4417,7 @@ fn list_spread_pattern() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1431
+
 #[test]
 fn first_argument_capture_special_case_list() {
     assert_format!(
@@ -4429,7 +4430,7 @@ fn first_argument_capture_special_case_list() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1431
+
 #[test]
 fn first_argument_capture_special_case_fn() {
     assert_format!(
@@ -4674,7 +4675,7 @@ fn single_empty_line_between_comments4() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1640
+
 #[test]
 fn no_newline_before_comments() {
     assert_format!(
@@ -4684,7 +4685,7 @@ fn no_newline_before_comments() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1647
+
 #[test]
 fn list_at_end_of_long_expr_line() {
     assert_format!(
@@ -4699,7 +4700,7 @@ fn list_at_end_of_long_expr_line() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1647
+
 #[test]
 fn list_at_end_of_long_pattern_line() {
     assert_format!(
@@ -4711,7 +4712,7 @@ fn list_at_end_of_long_pattern_line() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1647
+
 #[test]
 fn list_at_end_of_long_constant_line() {
     assert_format!(
@@ -4720,7 +4721,7 @@ fn list_at_end_of_long_constant_line() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1649
+
 #[test]
 fn dont_remove_braces_when_accessing_tuple() {
     assert_format!(
@@ -4731,7 +4732,7 @@ fn dont_remove_braces_when_accessing_tuple() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1681
+
 #[test]
 fn wrap_case_subjects() {
     assert_format!(
@@ -4893,7 +4894,7 @@ world",
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1724
+
 #[test]
 fn case_subject_block() {
     assert_format!(
@@ -4936,7 +4937,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1757
+
 #[test]
 fn multiple_line_custom_type_constructor_field_doc_comments() {
     assert_format!(
@@ -4954,7 +4955,7 @@ fn multiple_line_custom_type_constructor_field_doc_comments() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1872
+
 #[test]
 fn multiple_line_spread_list_comments() {
     assert_format!(
@@ -4972,7 +4973,7 @@ fn multiple_line_spread_list_comments() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1872
+
 #[test]
 fn list_spread_comment_pattern() {
     assert_format!(
@@ -4988,7 +4989,7 @@ fn list_spread_comment_pattern() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1872
+
 #[test]
 fn list_spread_discard_comment_pattern() {
     assert_format!(
@@ -5004,7 +5005,7 @@ fn list_spread_discard_comment_pattern() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1786
+
 #[test]
 fn multiple_line_documentation_comment_statement_grouping() {
     assert_format!(
@@ -5250,7 +5251,7 @@ fn wrap_long_line_with_bool_negation() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1977
+
 #[test]
 fn preserve_single_expression_blocks() {
     assert_format!(
@@ -5318,7 +5319,7 @@ fn calling_pipeline_1_list() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2119
+
 #[test]
 fn empty_line_after_fn_with_return_annotation() {
     assert_format!(
@@ -5331,7 +5332,7 @@ fn empty_line_after_fn_with_return_annotation() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2174
+
 #[test]
 fn empty_line_after_crash() {
     assert_format_rewrite!(
@@ -5349,7 +5350,7 @@ fn empty_line_after_crash() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2196
+
 #[test]
 fn comment_at_end_of_type() {
     assert_format!(
@@ -5382,7 +5383,7 @@ pub type Tiger =
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2423
+
 #[test]
 fn prefix_as() {
     assert_format!(
@@ -5411,7 +5412,7 @@ fn case_splits_function_on_newline() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2442
+
 #[test]
 fn single_argument_list() {
     assert_format!(
@@ -5426,7 +5427,7 @@ fn single_argument_list() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2442
+
 #[test]
 fn single_argument_function() {
     assert_format!(
@@ -5441,7 +5442,7 @@ fn single_argument_function() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2442
+
 #[test]
 fn single_argument_tuple() {
     assert_format!(
@@ -5456,7 +5457,7 @@ fn single_argument_tuple() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2442
+
 #[test]
 fn single_argument_call() {
     assert_format!(
@@ -5471,7 +5472,7 @@ fn single_argument_call() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2442
+
 #[test]
 fn single_argument_call_nested() {
     assert_format!(
@@ -5488,7 +5489,7 @@ fn single_argument_call_nested() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2442
+
 #[test]
 fn single_argument_call_nested_nested() {
     assert_format!(
@@ -5507,7 +5508,7 @@ fn single_argument_call_nested_nested() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2512
+
 #[test]
 fn list_with_pipe_format() {
     assert_format!(
@@ -5754,7 +5755,7 @@ fn comments_are_not_moved_out_of_function_calls() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2607
+
 #[test]
 fn function_arguments_after_comment_are_not_indented() {
     assert_format!(
@@ -5769,7 +5770,7 @@ fn function_arguments_after_comment_are_not_indented() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2607
+
 #[test]
 fn tuple_items_after_comment_are_not_indented() {
     assert_format!(
@@ -5784,7 +5785,7 @@ fn tuple_items_after_comment_are_not_indented() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2607
+
 #[test]
 fn list_items_after_comment_are_not_indented() {
     assert_format!(
@@ -5799,7 +5800,7 @@ fn list_items_after_comment_are_not_indented() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2990
+
 #[test]
 fn comments_are_not_moved_out_of_empty_list() {
     assert_format!(
@@ -5831,7 +5832,7 @@ fn empty_lists_with_comment_inside_are_indented_properly() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2890
+
 #[test]
 fn piped_blocks_are_not_needlessly_indented() {
     assert_format!(
@@ -5849,7 +5850,7 @@ fn piped_blocks_are_not_needlessly_indented() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2924
+
 #[test]
 fn record_update_fields_are_not_needlessly_broken() {
     assert_format!(
@@ -5864,7 +5865,7 @@ fn record_update_fields_are_not_needlessly_broken() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2890
+
 #[test]
 fn piped_lists_are_not_needlessly_indented() {
     assert_format!(
@@ -6125,7 +6126,7 @@ fn multiline_comment_in_case_block() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3190
+
 #[test]
 fn trailing_comments_inside_non_empty_bit_arrays_are_not_moved() {
     assert_format!(
@@ -6139,7 +6140,7 @@ fn trailing_comments_inside_non_empty_bit_arrays_are_not_moved() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3210
+
 #[test]
 fn newlines_are_not_stripped_if_two_consecutive_anonymous_function_are_passed_as_arguments() {
     assert_format!(
@@ -6198,7 +6199,7 @@ fn const_concat_long_including_list() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3397
+
 #[test]
 fn comment_after_case_branch() {
     assert_format!(
@@ -6213,7 +6214,7 @@ fn comment_after_case_branch() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3397
+
 #[test]
 fn comment_after_case_branch_case() {
     assert_format!(
@@ -6307,7 +6308,7 @@ fn function_without_label_shorthand() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2015
+
 #[test]
 fn doc_comments_are_split_by_regular_comments() {
     assert_format!(
@@ -6323,7 +6324,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2015
+
 #[test]
 fn it_is_easy_to_tell_two_different_doc_comments_apart_when_a_regular_comment_is_separating_those()
 {
@@ -6346,7 +6347,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2015
+
 #[test]
 fn multiple_commented_definitions_in_a_row_2() {
     assert_format!(
@@ -6364,7 +6365,7 @@ pub fn wibble() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2015
+
 #[test]
 fn only_stray_comments_and_definition_with_no_doc_comments() {
     assert_format!(
@@ -6381,7 +6382,7 @@ pub fn wibble() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2015
+
 #[test]
 fn only_stray_comments_and_definition_with_no_doc_comments_2() {
     assert_format_rewrite!(
@@ -6420,6 +6421,17 @@ pub fn init(
   start: #(SupervisorFlags, List<ChildSpecification>),
 ) -> Result<#(Dynamic, Dynamic), never> {
   todo
+}
+"#
+    );
+}
+
+
+#[test]
+fn big_grapheme_cluster() {
+    assert_format!(
+        r#"pub fn main() {
+  sw("👩‍👩‍👧‍👦👩‍👩‍👧‍👦👩‍👩‍👧‍👦", [])
 }
 "#
     );

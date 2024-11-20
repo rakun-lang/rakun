@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/javascript/tests/bit_arrays.rs
+assertion_line: 611
 expression: "\nfn go() {\n  let x = 4\n  <<256:size(x)>>\n}\n"
 ---
+----- SOURCE CODE
+
+fn go() {
+  let x = 4
+  <<256:size(x)>>
+}
+
+
+----- COMPILED JAVASCRIPT
 import { toBitArray, sizedInt } from "../rakun.mjs";
 
 function go() {

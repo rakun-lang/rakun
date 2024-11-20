@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1167
 expression: "fn wibble() { 1 }\n\n@external(erlang, \"module2\", \"function2\")\nfn wibble() -> Float\n"
 ---
+----- SOURCE CODE
+fn wibble() { 1 }
+
+@external(erlang, "module2", "function2")
+fn wibble() -> Float
+
+
+----- ERROR
 error: Duplicate definition
   ┌─ /src/one/two.rakun:1:1
   │

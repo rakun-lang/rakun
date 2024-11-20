@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/completion.rs
+assertion_line: 189
 expression: "\n\npub fn main() {\n  0\n}"
 ---
 |

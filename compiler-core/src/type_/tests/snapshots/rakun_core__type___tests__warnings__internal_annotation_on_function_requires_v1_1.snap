@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 2227
 expression: "\n@internal\npub fn wibble() { Nil }\n"
 ---
+----- SOURCE CODE
+
+@internal
+pub fn wibble() { Nil }
+
+
+----- WARNING
 warning: Incompatible rakun version range
   ┌─ /src/warning/wrn.rakun:2:1
   │

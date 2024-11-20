@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/javascript/tests/lists.rs
+assertion_line: 77
 expression: "\nfn go() {\n  [] == [1]\n  [] != [1]\n}\n"
 ---
+----- SOURCE CODE
+
+fn go() {
+  [] == [1]
+  [] != [1]
+}
+
+
+----- COMPILED JAVASCRIPT
 import { toList, isEqual } from "../rakun.mjs";
 
 function go() {

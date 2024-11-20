@@ -1,0 +1,86 @@
+---
+source: compiler-core/src/javascript/tests/html.rs
+assertion_line: 81
+expression: "\nimport rakun/rkx\n    \n\npub fn main() {\n    <rkx.div class=\"container\">\n        <rkx.h1 class=\"title\">Título do Conteúdo</rkx.h1>\n        <rkx.p class=\"description\">Descrição breve sobre o conteúdo apresentado.</rkx.p>\n        <rkx.div class=\"nested-container\">\n            <rkx.h2 class=\"subtitle\">Subtítulo</rkx.h2>\n            <rkx.p class=\"nested-content\">Informação adicional sobre o conteúdo.</rkx.p>\n        </rkx.div>\n    </rkx.div>\n}\n"
+---
+----- SOURCE CODE
+
+import rakun/rkx
+    
+
+pub fn main() {
+    <rkx.div class="container">
+        <rkx.h1 class="title">Título do Conteúdo</rkx.h1>
+        <rkx.p class="description">Descrição breve sobre o conteúdo apresentado.</rkx.p>
+        <rkx.div class="nested-container">
+            <rkx.h2 class="subtitle">Subtítulo</rkx.h2>
+            <rkx.p class="nested-content">Informação adicional sobre o conteúdo.</rkx.p>
+        </rkx.div>
+    </rkx.div>
+}
+
+
+----- COMPILED JAVASCRIPT
+import * as $rkx from "../../package/rakun/rkx.mjs";
+import { toList } from "../rakun.mjs";
+
+export function main() {
+  return $rkx.component_init(
+    $rkx.div(
+      new $rkx.DivProps(
+        "container",
+        toList([
+          $rkx.component_init(
+            $rkx.h1(
+              new $rkx.H1Props(
+                "title",
+                toList([$rkx.html_text("Título do Conteúdo")]),
+              ),
+            ),
+          ),
+          $rkx.component_init(
+            $rkx.p(
+              new $rkx.ParagraphProps(
+                "description",
+                toList([
+                  $rkx.html_text(
+                    "Descrição breve sobre o conteúdo apresentado.",
+                  ),
+                ]),
+              ),
+            ),
+          ),
+          $rkx.component_init(
+            $rkx.div(
+              new $rkx.DivProps(
+                "nested-container",
+                toList([
+                  $rkx.component_init(
+                    $rkx.h2(
+                      new $rkx.H1Props(
+                        "subtitle",
+                        toList([$rkx.html_text("Subtítulo")]),
+                      ),
+                    ),
+                  ),
+                  $rkx.component_init(
+                    $rkx.p(
+                      new $rkx.ParagraphProps(
+                        "nested-content",
+                        toList([
+                          $rkx.html_text(
+                            "Informação adicional sobre o conteúdo.",
+                          ),
+                        ]),
+                      ),
+                    ),
+                  ),
+                ]),
+              ),
+            ),
+          ),
+        ]),
+      ),
+    ),
+  );
+}

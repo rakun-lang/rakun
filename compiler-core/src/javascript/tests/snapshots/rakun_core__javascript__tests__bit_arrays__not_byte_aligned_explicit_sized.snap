@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/javascript/tests/bit_arrays.rs
+assertion_line: 597
 expression: "\nfn go() {\n  <<256:size(4)>>\n}\n"
 ---
+----- SOURCE CODE
+
+fn go() {
+  <<256:size(4)>>
+}
+
+
+----- ERROR
 error: Unsupported feature for compilation target
   ┌─ /src/javascript/error.rakun:3:5
   │

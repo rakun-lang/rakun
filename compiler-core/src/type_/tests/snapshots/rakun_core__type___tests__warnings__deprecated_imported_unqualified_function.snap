@@ -1,7 +1,18 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 901
 expression: "\nimport module.{a}\n\npub fn b() {\n  a\n}\n"
 ---
+----- SOURCE CODE
+
+import module.{a}
+
+pub fn b() {
+  a
+}
+
+
+----- WARNING
 warning: Deprecated value used
   ┌─ /src/warning/wrn.rakun:5:3
   │

@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 581
 expression: Nil.2
 ---
+----- SOURCE CODE
+Nil.2
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:1
   │

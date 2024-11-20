@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 1044
 expression: "\npub opaque record User {\n    name\n}\n"
 ---
+----- SOURCE CODE
+
+pub opaque record User {
+    name
+}
+
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:3:5
   │

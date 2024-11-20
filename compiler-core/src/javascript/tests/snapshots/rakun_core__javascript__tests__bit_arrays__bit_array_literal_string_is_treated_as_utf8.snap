@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/javascript/tests/bit_arrays.rs
+assertion_line: 628
 expression: "\npub fn main() {\n  <<\"hello\", \" \", \"world\">>\n}"
 ---
+----- SOURCE CODE
+
+pub fn main() {
+  <<"hello", " ", "world">>
+}
+
+----- COMPILED JAVASCRIPT
 import { toBitArray, stringBits } from "../rakun.mjs";
 
 export function main() {

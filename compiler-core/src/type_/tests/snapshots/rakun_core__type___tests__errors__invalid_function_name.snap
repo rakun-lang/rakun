@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1281
 expression: "fn doStuff() {}"
 ---
+----- SOURCE CODE
+fn doStuff() {}
+
+----- ERROR
 error: Invalid function name
   ┌─ /src/one/two.rakun:1:4
   │

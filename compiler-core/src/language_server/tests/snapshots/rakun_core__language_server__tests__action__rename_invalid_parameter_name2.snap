@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 325
 expression: "fn pass(label paramName: Bool) { paramName }"
 ---
 ----- BEFORE ACTION

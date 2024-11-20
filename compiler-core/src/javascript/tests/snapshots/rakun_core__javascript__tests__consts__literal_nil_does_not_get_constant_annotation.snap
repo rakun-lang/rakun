@@ -1,5 +1,10 @@
 ---
 source: compiler-core/src/javascript/tests/consts.rs
+assertion_line: 121
 expression: pub const a = Nil
 ---
+----- SOURCE CODE
+pub const a = Nil
+
+----- COMPILED JAVASCRIPT
 export const a = undefined;

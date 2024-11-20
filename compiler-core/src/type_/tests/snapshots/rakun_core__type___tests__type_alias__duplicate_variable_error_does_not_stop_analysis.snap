@@ -1,7 +1,18 @@
 ---
 source: compiler-core/src/type_/tests/type_alias.rs
+assertion_line: 115
 expression: "\ntype Two<a, a> =\n  #(a, a)\n\ntype UnknownType =\n  Dunno\n"
 ---
+----- SOURCE CODE
+
+type Two<a, a> =
+  #(a, a)
+
+type UnknownType =
+  Dunno
+
+
+----- ERROR
 error: Duplicate type parameter
   ┌─ /src/one/two.rakun:2:13
   │

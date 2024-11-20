@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 267
 expression: const a = 1
 ---
+----- SOURCE CODE
+const a = 1
+
+----- WARNING
 warning: Unused private constant
   ┌─ /src/warning/wrn.rakun:1:1
   │

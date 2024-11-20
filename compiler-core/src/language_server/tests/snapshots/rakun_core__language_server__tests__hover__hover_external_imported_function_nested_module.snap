@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 281
 expression: "\nimport my/nested/example_module\nfn main() {\n    example_module.my_fn\n}\n"
 ---
 import my/nested/example_module

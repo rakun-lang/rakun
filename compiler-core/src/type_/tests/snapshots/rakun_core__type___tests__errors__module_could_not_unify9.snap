@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 753
 expression: "fn main() { let assert [1, 2, ..x]: List<String> = [1,2,3] x }"
 ---
+----- SOURCE CODE
+fn main() { let assert [1, 2, ..x]: List<String> = [1,2,3] x }
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:52
   │
@@ -10,8 +15,8 @@ error: Type mismatch
 
 Expected type:
 
-    List<String>
+    List(String)
 
 Found type:
 
-    List<Int>
+    List(Int)

@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/type_/tests/custom_types.rs
+assertion_line: 66
 expression: "import wibble.{type A} record A { C }"
 ---
+----- SOURCE CODE
+-- wibble.rakun
+pub record A { B }
+
+-- main.rakun
+import wibble.{type A} record A { C }
+
+----- ERROR
 error: Duplicate type definition
   ┌─ /src/one/two.rakun:1:16
   │

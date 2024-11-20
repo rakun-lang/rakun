@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/type_/tests/use_.rs
+assertion_line: 94
 expression: "\nuse <- 123\n123\n"
 ---
+----- SOURCE CODE
+
+use <- 123
+123
+
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:2:8
   │

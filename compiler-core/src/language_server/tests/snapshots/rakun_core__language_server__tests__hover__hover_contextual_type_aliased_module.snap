@@ -1,0 +1,16 @@
+---
+source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 821
+expression: "\nimport wibble/wobble as wubble\nconst value = wubble.Wobble\n"
+---
+import wibble/wobble as wubble
+const value = wubble.Wobble
+▔▔▔▔▔▔↑▔▔▔▔                
+
+
+----- Hover content -----
+Scalar(
+    String(
+        "```rakun\nwubble.Wibble\n```\n",
+    ),
+)

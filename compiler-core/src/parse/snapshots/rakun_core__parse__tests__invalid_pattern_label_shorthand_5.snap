@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 1368
 expression: "\npub fn main() {\n  let Wibble(arg1: arg2:) = todo\n}\n"
 ---
+----- SOURCE CODE
+
+pub fn main() {
+  let Wibble(arg1: arg2:) = todo
+}
+
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:3:24
   │

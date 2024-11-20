@@ -1,7 +1,13 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1462
 expression: "const invalid_everything: MyInvalidType = MyInvalidValue\nconst mismatched_types: String = 7"
 ---
+----- SOURCE CODE
+const invalid_everything: MyInvalidType = MyInvalidValue
+const mismatched_types: String = 7
+
+----- ERROR
 error: Unknown type
   ┌─ /src/one/two.rakun:1:27
   │

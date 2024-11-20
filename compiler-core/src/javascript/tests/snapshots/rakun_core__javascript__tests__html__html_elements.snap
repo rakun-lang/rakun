@@ -1,0 +1,174 @@
+---
+source: compiler-core/src/javascript/tests/html.rs
+assertion_line: 5
+expression: "\nimport rakun/rkx\n    \npub record DivProps {\n    DivProps(class: String, children: List<rkx.Element>)\n}\n\npub record HeaderProps {\n    HeaderProps(class: String, children: List<rkx.Element>)\n}\n\npub record ParagraphProps {\n    ParagraphProps(class: String, children: List<rkx.Element>)\n}\n\npub record H1Props {\n    H1Props(class: String, children: List<rkx.Element>)\n}\n\npub fn div(props: DivProps) {\n     rkx.Element\n}\n\npub fn header(props: HeaderProps) {\n     rkx.Element\n}\n\npub fn p(props: ParagraphProps) {\n     rkx.Element\n}\n\npub fn h1(props: H1Props) {\n     rkx.Element\n}\n\npub fn h2(props: H1Props) {\n    rkx.Element\n}\n    \n\npub fn main() {\n    <div class=\"container\">\n        <h1 class=\"title\">Título do Conteúdo</h1>\n        <p class=\"description\">Descrição breve sobre o conteúdo apresentado.</p>\n        <div class=\"nested-container\">\n            <h2 class=\"subtitle\">Subtítulo</h2>\n            <p class=\"nested-content\">Informação adicional sobre o conteúdo.</p>\n        </div>\n    </div>\n}\n"
+---
+----- SOURCE CODE
+
+import rakun/rkx
+    
+pub record DivProps {
+    DivProps(class: String, children: List<rkx.Element>)
+}
+
+pub record HeaderProps {
+    HeaderProps(class: String, children: List<rkx.Element>)
+}
+
+pub record ParagraphProps {
+    ParagraphProps(class: String, children: List<rkx.Element>)
+}
+
+pub record H1Props {
+    H1Props(class: String, children: List<rkx.Element>)
+}
+
+pub fn div(props: DivProps) {
+     rkx.Element
+}
+
+pub fn header(props: HeaderProps) {
+     rkx.Element
+}
+
+pub fn p(props: ParagraphProps) {
+     rkx.Element
+}
+
+pub fn h1(props: H1Props) {
+     rkx.Element
+}
+
+pub fn h2(props: H1Props) {
+    rkx.Element
+}
+    
+
+pub fn main() {
+    <div class="container">
+        <h1 class="title">Título do Conteúdo</h1>
+        <p class="description">Descrição breve sobre o conteúdo apresentado.</p>
+        <div class="nested-container">
+            <h2 class="subtitle">Subtítulo</h2>
+            <p class="nested-content">Informação adicional sobre o conteúdo.</p>
+        </div>
+    </div>
+}
+
+
+----- COMPILED JAVASCRIPT
+import * as $rkx from "../../package/rakun/rkx.mjs";
+import { toList, CustomType as $CustomType } from "../rakun.mjs";
+
+export class DivProps extends $CustomType {
+  constructor(class$, children) {
+    super();
+    this.class = class$;
+    this.children = children;
+  }
+}
+
+export class HeaderProps extends $CustomType {
+  constructor(class$, children) {
+    super();
+    this.class = class$;
+    this.children = children;
+  }
+}
+
+export class ParagraphProps extends $CustomType {
+  constructor(class$, children) {
+    super();
+    this.class = class$;
+    this.children = children;
+  }
+}
+
+export class H1Props extends $CustomType {
+  constructor(class$, children) {
+    super();
+    this.class = class$;
+    this.children = children;
+  }
+}
+
+export function div(props) {
+  return new $rkx.Element();
+}
+
+export function header(props) {
+  return new $rkx.Element();
+}
+
+export function p(props) {
+  return new $rkx.Element();
+}
+
+export function h1(props) {
+  return new $rkx.Element();
+}
+
+export function h2(props) {
+  return new $rkx.Element();
+}
+
+export function main() {
+  return $rkx.component_init(
+    div(
+      new DivProps(
+        "container",
+        toList([
+          $rkx.component_init(
+            h1(
+              new H1Props(
+                "title",
+                toList([$rkx.html_text("Título do Conteúdo")]),
+              ),
+            ),
+          ),
+          $rkx.component_init(
+            p(
+              new ParagraphProps(
+                "description",
+                toList([
+                  $rkx.html_text(
+                    "Descrição breve sobre o conteúdo apresentado.",
+                  ),
+                ]),
+              ),
+            ),
+          ),
+          $rkx.component_init(
+            div(
+              new DivProps(
+                "nested-container",
+                toList([
+                  $rkx.component_init(
+                    h2(
+                      new H1Props(
+                        "subtitle",
+                        toList([$rkx.html_text("Subtítulo")]),
+                      ),
+                    ),
+                  ),
+                  $rkx.component_init(
+                    p(
+                      new ParagraphProps(
+                        "nested-content",
+                        toList([
+                          $rkx.html_text(
+                            "Informação adicional sobre o conteúdo.",
+                          ),
+                        ]),
+                      ),
+                    ),
+                  ),
+                ]),
+              ),
+            ),
+          ),
+        ]),
+      ),
+    ),
+  );
+}

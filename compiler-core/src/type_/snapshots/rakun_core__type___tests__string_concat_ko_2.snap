@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests.rs
+assertion_line: 2501
 expression: " 1 ++ \"2\" "
 ---
+----- SOURCE CODE
+ 1 ++ "2" 
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:2
   │

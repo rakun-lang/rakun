@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1256
 expression: "fn ignore(thisIsALabel _ignore: Int) { 25 }"
 ---
+----- SOURCE CODE
+fn ignore(thisIsALabel _ignore: Int) { 25 }
+
+----- ERROR
 error: Invalid label name
   ┌─ /src/one/two.rakun:1:11
   │

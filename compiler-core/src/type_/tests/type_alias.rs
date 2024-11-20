@@ -123,7 +123,7 @@ type UnknownType =
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3191
+
 #[test]
 fn both_errors_are_shown() {
     // The alias has an error, and it causes the function to have an error as it

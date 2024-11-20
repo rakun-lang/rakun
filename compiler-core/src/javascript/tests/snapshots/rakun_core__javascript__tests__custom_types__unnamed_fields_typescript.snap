@@ -1,7 +1,19 @@
 ---
 source: compiler-core/src/javascript/tests/custom_types.rs
-expression: "\npub type Ip{\n    Ip(String)\n}\n\npub const local = Ip(\"0.0.0.0\")\n\n"
+assertion_line: 195
+expression: "\npub record Ip{\n    Ip(String)\n}\n\npub const local = Ip(\"0.0.0.0\")\n\n"
 ---
+----- SOURCE CODE
+
+pub record Ip{
+    Ip(String)
+}
+
+pub const local = Ip("0.0.0.0")
+
+
+
+----- TYPESCRIPT DEFINITIONS
 import type * as _ from "../rakun.d.mts";
 
 export class Ip extends _.CustomType {

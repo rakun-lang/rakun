@@ -1,0 +1,16 @@
+---
+source: compiler-core/src/language_server/tests/definition.rs
+assertion_line: 540
+expression: output
+---
+----- Jumping from `src/app.rakun`
+
+import example_module as example
+                          ↑     
+fn main() {
+  example.my_num
+}
+
+----- Jumped to `src/example_module.rakun`
+pub const my_num = 1
+↑

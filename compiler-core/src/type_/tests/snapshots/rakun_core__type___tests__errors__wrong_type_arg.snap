@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1554
 expression: "\nfn wibble(x: List<Int>) { x }\nfn main(y: List<something>) {\n  wibble(y)\n}"
 ---
+----- SOURCE CODE
+
+fn wibble(x: List<Int>) { x }
+fn main(y: List<something>) {
+  wibble(y)
+}
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:4:10
   │
@@ -10,8 +19,8 @@ error: Type mismatch
 
 Expected type:
 
-    List<Int>
+    List(Int)
 
 Found type:
 
-    List<something>
+    List(something)

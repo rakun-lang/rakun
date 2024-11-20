@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 913
 expression: "type IntMap = Map<Inf, Int>"
 ---
+----- SOURCE CODE
+type IntMap = Map<Inf, Int>
+
+----- ERROR
 error: Unknown type
   ┌─ /src/one/two.rakun:1:19
   │

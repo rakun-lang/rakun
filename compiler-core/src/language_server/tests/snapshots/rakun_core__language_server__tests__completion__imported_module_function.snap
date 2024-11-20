@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/completion.rs
+assertion_line: 273
 expression: "\nimport dep\n"
 ---
 |

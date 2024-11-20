@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 766
 expression: "pub fn main() {\n  let assert \"_\" ++ thing = \"_Hello\"\n}"
 ---
 ----- BEFORE ACTION

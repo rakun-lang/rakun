@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1291
 expression: let _boringNumber = 72
 ---
+----- SOURCE CODE
+let _boringNumber = 72
+
+----- ERROR
 error: Invalid discard name
   ┌─ /src/one/two.rakun:1:5
   │

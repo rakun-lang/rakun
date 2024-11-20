@@ -312,7 +312,7 @@ mod tests {
         );
     }
 
-    // https://github.com/rakun-lang/rakun/issues/2093
+    
     #[test]
     fn successful_compilation_removes_error_diagnostic() {
         // It is possible for a compile error to be fixed but the module that
@@ -367,7 +367,7 @@ mod tests {
         );
     }
 
-    // https://github.com/rakun-lang/rakun/issues/2122
+    
     #[test]
     fn second_failure_unsets_previous_error() {
         let mut book_keeper = FeedbackBookKeeper::default();
@@ -411,7 +411,7 @@ mod tests {
         );
     }
 
-    // https://github.com/rakun-lang/rakun/issues/2105
+    
     #[test]
     fn successful_non_compilation_does_not_remove_error_diagnostic() {
         let mut book_keeper = FeedbackBookKeeper::default();

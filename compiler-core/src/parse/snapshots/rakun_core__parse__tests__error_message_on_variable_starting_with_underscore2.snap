@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 1492
 expression: "\n  pub fn main() {\n    case 1 {\n      1 -> _with_underscore(1)\n    }\n  }"
 ---
+----- SOURCE CODE
+
+  pub fn main() {
+    case 1 {
+      1 -> _with_underscore(1)
+    }
+  }
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:4:12
   │

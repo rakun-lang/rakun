@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 25
 expression: "let <<x:utf16>> = <<1>>"
 ---
+----- SOURCE CODE
+let <<x:utf16>> = <<1>>
+
+----- ERROR
 error: Invalid bit array segment
   ┌─ /src/one/two.rakun:1:7
   │

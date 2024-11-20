@@ -1,0 +1,179 @@
+---
+source: compiler-core/src/parse/tests.rs
+assertion_line: 1717
+expression: "\npub fn main() {\n   <c.parent_component>\n       <c.child_component>\n           Child content goes here.\n       </c.child_component>\n       <c.child_component>\n           Another child content.\n       </c.child_component>\n   </c.parent_component>\n}\n"
+---
+Parsed {
+    module: Module {
+        name: "",
+        documentation: [],
+        type_info: (),
+        definitions: [
+            TargetedDefinition {
+                definition: Function(
+                    Function {
+                        location: SrcSpan {
+                            start: 1,
+                            end: 14,
+                        },
+                        end_position: 247,
+                        name: Some(
+                            (
+                                SrcSpan {
+                                    start: 8,
+                                    end: 12,
+                                },
+                                "main",
+                            ),
+                        ),
+                        arguments: [],
+                        body: [
+                            Expression(
+                                Html {
+                                    location: SrcSpan {
+                                        start: 20,
+                                        end: 245,
+                                    },
+                                    tag: Some(
+                                        FieldAccess {
+                                            location: SrcSpan {
+                                                start: 21,
+                                                end: 39,
+                                            },
+                                            label_location: SrcSpan {
+                                                start: 22,
+                                                end: 39,
+                                            },
+                                            label: "parent_component",
+                                            container: Var {
+                                                location: SrcSpan {
+                                                    start: 21,
+                                                    end: 22,
+                                                },
+                                                name: "c",
+                                            },
+                                        },
+                                    ),
+                                    children: Some(
+                                        [
+                                            Html {
+                                                location: SrcSpan {
+                                                    start: 48,
+                                                    end: 131,
+                                                },
+                                                tag: Some(
+                                                    FieldAccess {
+                                                        location: SrcSpan {
+                                                            start: 49,
+                                                            end: 66,
+                                                        },
+                                                        label_location: SrcSpan {
+                                                            start: 50,
+                                                            end: 66,
+                                                        },
+                                                        label: "child_component",
+                                                        container: Var {
+                                                            location: SrcSpan {
+                                                                start: 49,
+                                                                end: 50,
+                                                            },
+                                                            name: "c",
+                                                        },
+                                                    },
+                                                ),
+                                                children: Some(
+                                                    [
+                                                        HtmlText {
+                                                            location: SrcSpan {
+                                                                start: 67,
+                                                                end: 111,
+                                                            },
+                                                            value: "Child content goes here.",
+                                                        },
+                                                    ],
+                                                ),
+                                                attributes: [],
+                                            },
+                                            Html {
+                                                location: SrcSpan {
+                                                    start: 139,
+                                                    end: 220,
+                                                },
+                                                tag: Some(
+                                                    FieldAccess {
+                                                        location: SrcSpan {
+                                                            start: 140,
+                                                            end: 157,
+                                                        },
+                                                        label_location: SrcSpan {
+                                                            start: 141,
+                                                            end: 157,
+                                                        },
+                                                        label: "child_component",
+                                                        container: Var {
+                                                            location: SrcSpan {
+                                                                start: 140,
+                                                                end: 141,
+                                                            },
+                                                            name: "c",
+                                                        },
+                                                    },
+                                                ),
+                                                children: Some(
+                                                    [
+                                                        HtmlText {
+                                                            location: SrcSpan {
+                                                                start: 158,
+                                                                end: 200,
+                                                            },
+                                                            value: "Another child content.",
+                                                        },
+                                                    ],
+                                                ),
+                                                attributes: [],
+                                            },
+                                        ],
+                                    ),
+                                    attributes: [],
+                                },
+                            ),
+                        ],
+                        publicity: Public,
+                        deprecation: NotDeprecated,
+                        return_annotation: None,
+                        return_type: (),
+                        documentation: None,
+                        external_erlang: None,
+                        external_javascript: None,
+                        implementations: Implementations {
+                            rakun: true,
+                            can_run_on_erlang: true,
+                            can_run_on_javascript: true,
+                            uses_erlang_externals: false,
+                            uses_javascript_externals: false,
+                        },
+                    },
+                ),
+                target: None,
+            },
+        ],
+        names: Names {
+            local_types: {},
+            imported_modules: {},
+            type_variables: {},
+            local_value_constructors: {},
+        },
+    },
+    extra: ModuleExtra {
+        module_comments: [],
+        doc_comments: [],
+        comments: [],
+        empty_lines: [],
+        new_lines: [
+            0,
+            16,
+            245,
+            247,
+        ],
+    },
+}

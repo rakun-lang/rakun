@@ -1,6 +1,6 @@
 use crate::{assert_infer_with_module, assert_module_error, assert_with_module_error};
 
-// https://github.com/rakun-lang/rakun/issues/1760
+
 #[test]
 fn import_value_with_same_name_as_imported_module() {
     assert_infer_with_module!(
@@ -246,7 +246,7 @@ pub type X = One
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2379
+
 #[test]
 fn deprecated_type_import_conflict() {
     assert_infer_with_module!(

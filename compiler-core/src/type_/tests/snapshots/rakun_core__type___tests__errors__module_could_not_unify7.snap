@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 743
 expression: "fn main() { let assert 5 = \"\" }"
 ---
+----- SOURCE CODE
+fn main() { let assert 5 = "" }
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:24
   │

@@ -1,12 +1,13 @@
 ---
 source: compiler-core/src/language_server/tests/document_symbols.rs
+assertion_line: 127
 expression: "doc_symbols(TestProject::for_source(code))"
 ---
 [
     DocumentSymbol {
         name: "FFF",
         detail: Some(
-            "Int",
+            "rakun.Int",
         ),
         kind: Class,
         tags: None,
@@ -36,7 +37,7 @@ expression: "doc_symbols(TestProject::for_source(code))"
     DocumentSymbol {
         name: "FFFF",
         detail: Some(
-            "List<Int>",
+            "rakun.List(rakun.Int)",
         ),
         kind: Class,
         tags: None,

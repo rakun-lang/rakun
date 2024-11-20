@@ -1,7 +1,21 @@
 ---
 source: compiler-core/src/type_/tests/functions.rs
+assertion_line: 430
 expression: "\npub fn main() {\n  let wibble = True\n  case wibble {\n    a if a == Wibble -> 0\n    b if b == Wibble -> 0\n    _ -> 1\n  }\n}\n"
 ---
+----- SOURCE CODE
+
+pub fn main() {
+  let wibble = True
+  case wibble {
+    a if a == Wibble -> 0
+    b if b == Wibble -> 0
+    _ -> 1
+  }
+}
+
+
+----- ERROR
 error: Unknown variable
   ┌─ /src/one/two.rakun:5:15
   │

@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 827
 expression: "\nlet tup = #(#(#(#(4))))\n{{{tup.0}.0}.0}.0\n"
 ---
 [
@@ -39,6 +40,7 @@ expression: "\nlet tup = #(#(#(#(4))))\n{{{tup.0}.0}.0}.0\n"
                                                     end: 20,
                                                 },
                                                 value: "4",
+                                                int_value: 4,
                                             },
                                         ],
                                     },

@@ -1,7 +1,7 @@
 ---
 source: compiler-core/src/language_server/tests/completion.rs
+assertion_line: 222
 expression: "\npub record Direction {\n  Left\n  Right\n}\n"
-
 ---
 |
 pub record Direction {

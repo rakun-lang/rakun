@@ -1,5 +1,6 @@
 ---
 source: test-package-compiler/src/generated_tests.rs
+assertion_line: 217
 expression: "./cases/javascript_import"
 ---
 //// /out/lib/the_package/_rakun_artefacts/one@two.cache
@@ -30,7 +31,8 @@ export class A extends $CustomType {}
 
 
 //// /out/lib/the_package/rakun.d.mts
-export * from "../prelude.d.mts";
+export * from "../prelude.mjs";
+export type * from "../prelude.d.mts";
 
 
 //// /out/lib/the_package/rakun.mjs

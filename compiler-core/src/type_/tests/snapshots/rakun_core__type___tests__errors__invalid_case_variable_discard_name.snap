@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1381
 expression: "case 21 { _twentyOne -> {Nil} }"
 ---
+----- SOURCE CODE
+case 21 { _twentyOne -> {Nil} }
+
+----- ERROR
 error: Invalid discard name
   ┌─ /src/one/two.rakun:1:11
   │

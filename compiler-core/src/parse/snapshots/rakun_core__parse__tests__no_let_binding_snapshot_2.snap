@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 477
 expression: "wibble:Int = 4"
 ---
+----- SOURCE CODE
+wibble:Int = 4
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:1:7
   │

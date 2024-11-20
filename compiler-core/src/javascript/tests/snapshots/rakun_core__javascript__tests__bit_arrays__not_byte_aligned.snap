@@ -1,7 +1,20 @@
 ---
 source: compiler-core/src/javascript/tests/bit_arrays.rs
+assertion_line: 582
 expression: "\nfn thing() {\n  4\n}\n\nfn go() {\n  <<256:4>>\n}\n"
 ---
+----- SOURCE CODE
+
+fn thing() {
+  4
+}
+
+fn go() {
+  <<256:4>>
+}
+
+
+----- ERROR
 error: Unsupported feature for compilation target
   ┌─ /src/javascript/error.rakun:7:5
   │

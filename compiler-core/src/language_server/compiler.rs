@@ -6,7 +6,7 @@ use crate::{
     analyse::TargetSupport,
     build::{self, Mode, Module, NullTelemetry, Outcome, ProjectCompiler},
     config::PackageConfig,
-    io::{CommandExecutor, FileSystemReader, FileSystemWriter, Stdio},
+    io::{BeamCompiler, CommandExecutor, FileSystemReader, FileSystemWriter, Stdio},
     language_server::Locker,
     line_numbers::LineNumbers,
     manifest::Manifest,
@@ -15,7 +15,7 @@ use crate::{
     warning::VectorWarningEmitterIO,
     Error, Result, Warning,
 };
-use std::{collections::HashMap, sync::Arc};
+use std::{collections::HashMap, rc::Rc};
 
 use camino::Utf8PathBuf;
 
@@ -32,7 +32,7 @@ pub struct LspProjectCompiler<IO> {
     pub sources: HashMap<EcoString, ModuleSourceInformation>,
 
     /// The storage for the warning emitter.
-    pub warnings: Arc<VectorWarningEmitterIO>,
+    pub warnings: Rc<VectorWarningEmitterIO>,
 
     /// A lock to ensure that multiple instances of the LSP don't try and use
     /// build directory at the same time.
@@ -41,7 +41,7 @@ pub struct LspProjectCompiler<IO> {
 
 impl<IO> LspProjectCompiler<IO>
 where
-    IO: CommandExecutor + FileSystemWriter + FileSystemReader + Clone,
+    IO: CommandExecutor + FileSystemWriter + FileSystemReader + BeamCompiler + Clone,
 {
     pub fn new(
         manifest: Manifest,
@@ -52,7 +52,7 @@ where
     ) -> Result<Self> {
         let target = config.target;
         let name = config.name.clone();
-        let warnings = Arc::new(VectorWarningEmitterIO::default());
+        let warnings = Rc::new(VectorWarningEmitterIO::default());
 
         // The build caches do not contain all the information we need in the
         // LSP (e.g. the typed AST) so delete the caches for the top level

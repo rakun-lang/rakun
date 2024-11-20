@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 591
 expression: "fn(a) { a.field }"
 ---
+----- SOURCE CODE
+fn(a) { a.field }
+
+----- ERROR
 error: Unknown type for record access
   ┌─ /src/one/two.rakun:1:9
   │

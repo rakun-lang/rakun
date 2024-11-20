@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 566
 expression: "case [3.33], 1 { x, x -> 1 }"
 ---
+----- SOURCE CODE
+case [3.33], 1 { x, x -> 1 }
+
+----- ERROR
 error: Duplicate variable in pattern
   ┌─ /src/one/two.rakun:1:21
   │

@@ -1,7 +1,13 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1110
 expression: "const duplicate = 1\npub const duplicate = 1"
 ---
+----- SOURCE CODE
+const duplicate = 1
+pub const duplicate = 1
+
+----- ERROR
 error: Duplicate definition
   ┌─ /src/one/two.rakun:1:1
   │

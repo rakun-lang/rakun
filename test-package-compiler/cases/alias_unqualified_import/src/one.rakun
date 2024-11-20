@@ -1,4 +1,4 @@
-// https://github.com/rakun-lang/rakun/issues/303
+
 pub fn id(x) {
   x
 }

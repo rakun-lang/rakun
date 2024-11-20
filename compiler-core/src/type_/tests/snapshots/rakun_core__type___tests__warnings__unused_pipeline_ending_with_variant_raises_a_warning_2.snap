@@ -1,7 +1,21 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 1339
 expression: "\nimport wibble\n\npub fn wobble(a) { a }\n\npub fn main() {\n  1 |> wobble |> wibble.Wibble\n  1\n}\n"
 ---
+----- SOURCE CODE
+
+import wibble
+
+pub fn wobble(a) { a }
+
+pub fn main() {
+  1 |> wobble |> wibble.Wibble
+  1
+}
+
+
+----- WARNING
 warning: Unused value
   ┌─ /src/warning/wrn.rakun:7:3
   │

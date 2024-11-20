@@ -1,7 +1,13 @@
 ---
 source: compiler-core/src/javascript/tests/generics.rs
-expression: "pub type Promise(value)\n    pub type Task<a>= fn() -> Promise(a)"
+assertion_line: 52
+expression: "pub type Promise<value>\n    pub type Task<a>= fn() -> Promise<a>"
 ---
+----- SOURCE CODE
+pub type Promise<value>
+    pub type Task<a>= fn() -> Promise<a>
+
+----- TYPESCRIPT DEFINITIONS
 export type Promise$<I> = any;
 
 export type Task = () => Promise$<any>;

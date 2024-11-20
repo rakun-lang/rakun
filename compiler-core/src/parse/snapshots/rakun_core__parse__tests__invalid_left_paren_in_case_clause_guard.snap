@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 1258
 expression: "\nlet my_string = \"hello\"\ncase my_string {\n    _ if string.length( > 2 -> io.debug(\"doesn't work')\n}"
 ---
+----- SOURCE CODE
+
+let my_string = "hello"
+case my_string {
+    _ if string.length( > 2 -> io.debug("doesn't work')
+}
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:4:23
   │

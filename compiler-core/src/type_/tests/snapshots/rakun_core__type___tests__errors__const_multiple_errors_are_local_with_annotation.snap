@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1470
 expression: "const num: String = 7\nconst tpl: String = #(Ok(1), MyInvalidType, 3)\nconst assignment1: String = num\nconst assignment2: String = tpl"
 ---
+----- SOURCE CODE
+const num: String = 7
+const tpl: String = #(Ok(1), MyInvalidType, 3)
+const assignment1: String = num
+const assignment2: String = tpl
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:21
   │
@@ -28,7 +36,7 @@ Expected type:
 
 Found type:
 
-    #(Result<Int, a>, b, Int)
+    #(Result(Int, a), b, Int)
 
 error: Unknown variable
   ┌─ /src/one/two.rakun:2:30

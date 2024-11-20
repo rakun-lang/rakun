@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 743
 expression: const test = 1
 ---
+----- SOURCE CODE
+const test = 1
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:1:7
   │

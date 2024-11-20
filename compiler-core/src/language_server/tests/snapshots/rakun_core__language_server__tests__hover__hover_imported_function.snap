@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 205
 expression: "\nimport example_module\nfn main() {\n  example_module.my_fn\n}\n"
 ---
 import example_module

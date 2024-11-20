@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 2251
 expression: "\n@external(javascript, \"module@module\", \"func\")\npub fn main() { Nil }\n"
 ---
+----- SOURCE CODE
+
+@external(javascript, "module@module", "func")
+pub fn main() { Nil }
+
+
+----- WARNING
 warning: Incompatible rakun version range
   ┌─ /src/warning/wrn.rakun:2:1
   │

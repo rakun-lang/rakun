@@ -1,7 +1,13 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1430
 expression: "const mismatched_types: String = 7\nconst invalid_annotation: MyInvalidType = \"str\""
 ---
+----- SOURCE CODE
+const mismatched_types: String = 7
+const invalid_annotation: MyInvalidType = "str"
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:34
   │

@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1221
 expression: "fn add(numA: Int, num_b: Int) { numA + num_b }"
 ---
+----- SOURCE CODE
+fn add(numA: Int, num_b: Int) { numA + num_b }
+
+----- ERROR
 error: Invalid argument name
   ┌─ /src/one/two.rakun:1:8
   │

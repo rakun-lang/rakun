@@ -1,0 +1,18 @@
+---
+source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 987
+expression: "\nfn main(value: Result<ok, error>) {\n  let v = value\n  v\n}\n"
+---
+fn main(value: Result<ok, error>) {
+  let v = value
+      ↑        
+  v
+}
+
+
+----- Hover content -----
+Scalar(
+    String(
+        "```rakun\nResult(ok, error)\n```\n",
+    ),
+)

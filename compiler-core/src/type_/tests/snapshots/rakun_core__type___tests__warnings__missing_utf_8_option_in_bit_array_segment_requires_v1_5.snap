@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 2449
 expression: "\npub fn main() {\n  <<\"hello\">>\n}\n"
 ---
+----- SOURCE CODE
+
+pub fn main() {
+  <<"hello">>
+}
+
+
+----- WARNING
 warning: Incompatible rakun version range
   ┌─ /src/warning/wrn.rakun:3:5
   │

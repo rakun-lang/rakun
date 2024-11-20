@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1391
 expression: "type RakunOption<okType>= Result<okType, Nil>"
 ---
+----- SOURCE CODE
+type RakunOption<okType>= Result<okType, Nil>
+
+----- ERROR
 error: Invalid type variable name
   ┌─ /src/one/two.rakun:1:18
   │

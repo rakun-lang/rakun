@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/type_/tests/pretty.rs
+assertion_line: 38
 expression: "print(tuple(vec![custom_bool(), bool()]))"
 ---
 #(Bool, rakun.Bool)

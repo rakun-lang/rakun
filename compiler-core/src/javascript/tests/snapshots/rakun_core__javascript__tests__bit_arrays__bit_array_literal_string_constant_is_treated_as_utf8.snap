@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/javascript/tests/bit_arrays.rs
+assertion_line: 623
 expression: "const a = <<\"hello\", \" \", \"world\">>"
 ---
+----- SOURCE CODE
+const a = <<"hello", " ", "world">>
+
+----- COMPILED JAVASCRIPT
 import { toBitArray, stringBits } from "../rakun.mjs";
 
 const a = /* @__PURE__ */ toBitArray([

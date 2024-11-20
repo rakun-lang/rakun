@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 2461
 expression: "pub const bits = <<\"hello\">>"
 ---
+----- SOURCE CODE
+pub const bits = <<"hello">>
+
+----- WARNING
 warning: Incompatible rakun version range
   ┌─ /src/warning/wrn.rakun:1:20
   │

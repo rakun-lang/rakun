@@ -1,7 +1,13 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1402
 expression: "fn x(x, y) { x }\nfn main() { 1 |> x() }"
 ---
+----- SOURCE CODE
+fn x(x, y) { x }
+fn main() { 1 |> x() }
+
+----- ERROR
 error: Incorrect arity
   ┌─ /src/one/two.rakun:2:18
   │

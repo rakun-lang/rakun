@@ -1,7 +1,14 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 1608
 expression: "pub fn main() {\n          todo()\n        }"
 ---
+----- SOURCE CODE
+pub fn main() {
+          todo()
+        }
+
+----- WARNING
 warning: Todo found
   ┌─ /src/warning/wrn.rakun:2:11
   │

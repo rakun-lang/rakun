@@ -1,7 +1,20 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
-expression: "\n        pub record Box<inner> {\n            Box(inner)\n        }\n\n        pub fn create_int_box(value: Int) {\n            let x: Box(Float) = Box(value)\n            x\n        }"
+assertion_line: 768
+expression: "\n        pub record Box<inner> {\n            Box(inner)\n        }\n\n        pub fn create_int_box(value: Int) {\n            let x: Box<Float> = Box(value)\n            x\n        }"
 ---
+----- SOURCE CODE
+
+        pub record Box<inner> {
+            Box(inner)
+        }
+
+        pub fn create_int_box(value: Int) {
+            let x: Box<Float> = Box(value)
+            x
+        }
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:7:33
   │
@@ -10,8 +23,8 @@ error: Type mismatch
 
 Expected type:
 
-    Box<Float>
+    Box(Float)
 
 Found type:
 
-    Box<Int>
+    Box(Int)

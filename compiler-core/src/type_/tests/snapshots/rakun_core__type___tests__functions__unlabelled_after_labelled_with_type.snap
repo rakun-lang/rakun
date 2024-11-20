@@ -1,7 +1,14 @@
 ---
 source: compiler-core/src/type_/tests/functions.rs
+assertion_line: 16
 expression: "fn main(wibble wibber, wobber: Int) {\n  Nil\n}"
 ---
+----- SOURCE CODE
+fn main(wibble wibber, wobber: Int) {
+  Nil
+}
+
+----- ERROR
 error: Unlabelled argument after labelled argument
   ┌─ /src/one/two.rakun:1:24
   │

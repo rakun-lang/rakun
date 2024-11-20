@@ -246,13 +246,13 @@ fn tail_call_optimisation_tests() -> List<Test> {
   [
     "10 million recursions doesn't overflow the stack"
     |> example(fn() { assert_equal(Nil, count_down(from: 10_000_000)) }),
-    // https://github.com/rakun-lang/rakun/issues/1214
-    // https://github.com/rakun-lang/rakun/issues/1380
+    
+    
     "Arguments correctly reassigned"
     |> example(fn() {
       assert_equal([1, 2, 3], tail_recursive_accumulate_down(3, []))
     }),
-    // https://github.com/rakun-lang/rakun/issues/2400
+    
     "not recursion, the function is shadowed its argument"
     |> example(fn() {
       assert_equal(function_shadowed_by_own_argument(fn() { 1 }), 1)
@@ -972,6 +972,14 @@ fn bit_array_tests() -> List<Test> {
     |> example(fn() { assert_equal(True, <<<<1>>:bits, 2>> == <<1, 2>>) }),
     "<<1>> == <<1:int>>"
     |> example(fn() { assert_equal(True, <<1>> == <<1:int>>) }),
+    "<<80_000:16>> == <<56, 128>>"
+    |> example(fn() { assert_equal(True, <<80_000:16>> == <<56, 128>>) }),
+    "<<-80_000:16>> == <<199, 128>>"
+    |> example(fn() { assert_equal(True, <<-80_000:16>> == <<199, 128>>) }),
+    "<<-1:64>> == <<255, 255, 255, 255, 255, 255, 255, 255>>"
+    |> example(fn() { assert_equal(True, <<-1:64>> == <<255, 255, 255, 255, 255, 255, 255, 255>>) }),
+    "<<-489_391_639_457_909_760:56>> == <<53, 84, 229, 150, 16, 180, 0>>"
+    |> example(fn() { assert_equal(True, <<-489_391_639_457_909_760:56>> == <<53, 84, 229, 150, 16, 180, 0>>) }),
     "<<63, 240, 0, 0, 0, 0, 0, 0>> == <<1.0:float>>"
     |> example(fn() {
       assert_equal(True, <<63, 240, 0, 0, 0, 0, 0, 0>> == <<1.0:float>>)
@@ -1212,7 +1220,7 @@ fn record_update_tests() {
       let updated = record_update.Box(..module_box, value: 6)
       assert_equal(record_update.Box("a", 6), updated)
     }),
-    // https://github.com/rakun-lang/rakun/issues/1379
+    
     "pipe in record update"
     |> example(fn() {
       let module_box = record_update.Box("a", 5)
@@ -1234,7 +1242,7 @@ fn record_access_tests() {
     |> example(fn() { assert_equal(person.name, "Quinn") }),
     "record access 2"
     |> example(fn() { assert_equal(person.age, 27) }),
-    // https://github.com/rakun-lang/rakun/issues/1093
+    
     "contextual info for access"
     |> example(fn() {
       let apply = fn(a, f) { f(a) }
@@ -1269,8 +1277,8 @@ fn id(x) {
   x
 }
 
-// https://github.com/rakun-lang/rakun/issues/1214
-// https://github.com/rakun-lang/rakun/issues/1380
+
+
 fn tail_recursive_accumulate_down(x, y) {
   case x {
     0 -> y
@@ -1387,6 +1395,13 @@ fn bit_array_match_tests() {
         #(a, b)
       })
     }),
+    "let <<a:64-signed>> = <<255, 255, 255, 255, 255, 255, 255, 255>>"
+    |> example(fn() {
+      assert_equal(-1, {
+        let assert <<a:64-signed>> = <<255, 255, 255, 255, 255, 255, 255, 255>>
+        a
+      })
+    }),
     "let <<a:float, b:int>> = <<63,240,0,0,0,0,0,0,1>>"
     |> example(fn() {
       assert_equal(#(1.0, 1), {
@@ -1475,7 +1490,7 @@ fn bit_array_match_tests() {
 
 fn anonymous_function_tests() {
   [
-    // https://github.com/rakun-lang/rakun/issues/1637
+    
     "fn(x) { let x = x x }(1)"
     |> example(fn() {
       assert_equal(1, {
@@ -1614,7 +1629,7 @@ fn mixed_arg_match_tests() {
 
 fn block_tests() {
   [
-    // https://github.com/rakun-lang/rakun/issues/1991
+    
     "let x = 1 let _ = { let x = 2 x } x"
     |> example(fn() {
       assert_equal(
@@ -1639,7 +1654,7 @@ record ContainsTuple {
 
 fn tuple_access_tests() {
   [
-    // https://github.com/rakun-lang/rakun/issues/1980
+    
     "access regular tuple item"
     |> example(fn() {
       assert_equal(

@@ -60,7 +60,7 @@ fn go(x, y) {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1112
+
 // differentiate between prelude constructors and custom type constructors
 #[test]
 fn shadowed_bools_and_nil() {

@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 674
 expression: "\nfn invalid() { 1 + Nil }\nfn valid() { Nil }\n"
 ---
 fn invalid() { 1 + Nil }

@@ -1,0 +1,12 @@
+---
+source: compiler-core/src/language_server/tests/completion.rs
+assertion_line: 1023
+expression: "\nfn wibble() {\n  let assert \"a\" <> j = \"ab\"\n\n}\n"
+---
+fn wibble() {
+  let assert "a" <> j = "ab"
+|
+}
+
+
+----- Completion content -----

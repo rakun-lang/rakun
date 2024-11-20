@@ -1,7 +1,13 @@
 ---
 source: compiler-core/src/javascript/tests/results.rs
+assertion_line: 57
 expression: "import rakun.{Ok as Thing}\npub fn main() { Thing(1) }"
 ---
+----- SOURCE CODE
+import rakun.{Ok as Thing}
+pub fn main() { Thing(1) }
+
+----- COMPILED JAVASCRIPT
 import * as $rakun from "../rakun.mjs";
 import { Ok as Thing } from "../rakun.mjs";
 

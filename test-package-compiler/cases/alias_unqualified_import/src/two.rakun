@@ -1,4 +1,4 @@
-// https://github.com/rakun-lang/rakun/issues/303
+
 import one.{Empty as E, id as i}
 
 pub fn make() {

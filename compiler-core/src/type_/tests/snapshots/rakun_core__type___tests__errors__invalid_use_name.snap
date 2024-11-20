@@ -1,7 +1,13 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1296
 expression: "fn use_test(f) { f(Nil) }\npub fn main() { use useVar <- use_test() }"
 ---
+----- SOURCE CODE
+fn use_test(f) { f(Nil) }
+pub fn main() { use useVar <- use_test() }
+
+----- ERROR
 error: Invalid argument name
   ┌─ /src/one/two.rakun:2:21
   │

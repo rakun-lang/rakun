@@ -1,0 +1,16 @@
+---
+source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 1068
+expression: "\nimport numbers.{type Int}\nconst number = 100\n"
+---
+import numbers.{type Int}
+const number = 100
+▔▔▔▔▔▔▔▔▔↑▔▔      
+
+
+----- Hover content -----
+Scalar(
+    String(
+        "```rakun\nrakun.Int\n```\n",
+    ),
+)

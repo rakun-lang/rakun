@@ -1,7 +1,22 @@
 ---
 source: compiler-core/src/type_/tests/imports.rs
+assertion_line: 237
 expression: "import one.{\n          type One as MyOne,\n          type One as MyOne\n        }\n\npub type X = One\n"
 ---
+----- SOURCE CODE
+-- one.rakun
+pub type One = Int
+
+-- main.rakun
+import one.{
+          type One as MyOne,
+          type One as MyOne
+        }
+
+pub type X = One
+
+
+----- ERROR
 error: Duplicate type definition
   ┌─ /src/one/two.rakun:2:11
   │

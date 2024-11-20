@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 316
 expression: "fn add(numA: Int, num_b: Int) { numA + num_b }"
 ---
 ----- BEFORE ACTION

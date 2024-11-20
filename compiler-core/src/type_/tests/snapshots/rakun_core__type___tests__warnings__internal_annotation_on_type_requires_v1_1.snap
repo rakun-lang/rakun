@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 2216
 expression: "\n@internal\npub type Wibble\n"
 ---
+----- SOURCE CODE
+
+@internal
+pub type Wibble
+
+
+----- WARNING
 warning: Incompatible rakun version range
   ┌─ /src/warning/wrn.rakun:2:1
   │

@@ -36,7 +36,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2176
+
 #[test]
 fn piped() {
     assert_erl!(

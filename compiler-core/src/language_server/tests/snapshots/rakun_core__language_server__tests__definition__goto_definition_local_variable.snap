@@ -1,0 +1,20 @@
+---
+source: compiler-core/src/language_server/tests/definition.rs
+assertion_line: 69
+expression: output
+---
+----- Jumping from `src/app.rakun`
+
+pub fn main() {
+  let x = 1
+  x
+  ↑
+}
+
+----- Jumped to `src/app.rakun`
+
+pub fn main() {
+  let x = 1
+      ↑    
+  x
+}

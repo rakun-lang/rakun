@@ -1,7 +1,20 @@
 ---
 source: compiler-core/src/type_/tests/imports.rs
+assertion_line: 43
 expression: "import one\n\npub fn main(x) {\n  let one.Two = x\n}"
 ---
+----- SOURCE CODE
+-- one.rakun
+record Two { Two }
+
+-- main.rakun
+import one
+
+pub fn main(x) {
+  let one.Two = x
+}
+
+----- ERROR
 error: Unknown module value
   ┌─ /src/one/two.rakun:4:7
   │

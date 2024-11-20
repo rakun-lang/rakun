@@ -1,7 +1,19 @@
 ---
 source: compiler-core/src/javascript/tests/numbers.rs
+assertion_line: 74
 expression: "\nfn go() {\n  case 1 >= 0 {\n    True -> 2\n    False -> 4\n  } / 2\n}\n"
 ---
+----- SOURCE CODE
+
+fn go() {
+  case 1 >= 0 {
+    True -> 2
+    False -> 4
+  } / 2
+}
+
+
+----- COMPILED JAVASCRIPT
 import { divideInt } from "../rakun.mjs";
 
 function go() {

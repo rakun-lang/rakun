@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 768
 expression: "\npub fn main() -> Nil {\n  let xs = [1, 2, 3]\n  [1, 2, .., 3 + 3, 4]\n}\n"
 ---
+----- SOURCE CODE
+
+pub fn main() -> Nil {
+  let xs = [1, 2, 3]
+  [1, 2, .., 3 + 3, 4]
+}
+
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:4:10
   │

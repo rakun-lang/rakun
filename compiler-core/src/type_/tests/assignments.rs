@@ -139,7 +139,7 @@ fn let_25() {
     assert_infer!("let assert \"hello\" as a ++ _ = \"\" a", "String");
 }
 
-// // https://github.com/rakun-lang/rakun/issues/1991
+// 
 // #[test]
 // fn block() {
 //     assert_infer!("let x = 1 { let x = 1.0 } x", "Int");

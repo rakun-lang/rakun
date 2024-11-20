@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 140
 expression: "\n    pub fn main() {\n        [1, 2, 3]\n\t\t\t\t2\n    }"
 ---
+----- SOURCE CODE
+
+    pub fn main() {
+        [1, 2, 3]
+				2
+    }
+
+----- WARNING
 warning: Unused literal
   ┌─ /src/warning/wrn.rakun:3:9
   │

@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 185
 expression: "let a = 2.0 case <<1>> { <<1:size(a)>> -> a }"
 ---
+----- SOURCE CODE
+let a = 2.0 case <<1>> { <<1:size(a)>> -> a }
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:35
   │

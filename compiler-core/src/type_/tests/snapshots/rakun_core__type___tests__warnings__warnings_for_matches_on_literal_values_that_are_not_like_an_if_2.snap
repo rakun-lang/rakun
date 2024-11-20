@@ -1,7 +1,19 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 1963
 expression: "\n    pub fn main() {\n        case True {\n          True -> 1\n          _ -> 2\n        }\n    }\n        "
 ---
+----- SOURCE CODE
+
+    pub fn main() {
+        case True {
+          True -> 1
+          _ -> 2
+        }
+    }
+        
+
+----- WARNING
 warning: Match on a literal value
   ┌─ /src/warning/wrn.rakun:3:14
   │

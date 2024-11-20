@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1266
 expression: "record IntWrapper { IntWrapper(innerInt: Int) }"
 ---
+----- SOURCE CODE
+record IntWrapper { IntWrapper(innerInt: Int) }
+
+----- ERROR
 error: Invalid label name
   ┌─ /src/one/two.rakun:1:32
   │

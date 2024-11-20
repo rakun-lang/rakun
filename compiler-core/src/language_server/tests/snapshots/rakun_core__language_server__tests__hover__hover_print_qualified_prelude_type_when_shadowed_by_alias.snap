@@ -1,0 +1,16 @@
+---
+source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 1244
+expression: "\ntype Result = #(Bool, String)\nconst ok = Ok(10)\n"
+---
+type Result = #(Bool, String)
+const ok = Ok(10)
+▔▔▔▔▔▔▔↑         
+
+
+----- Hover content -----
+Scalar(
+    String(
+        "```rakun\nrakun.Result(Int, a)\n```\n",
+    ),
+)

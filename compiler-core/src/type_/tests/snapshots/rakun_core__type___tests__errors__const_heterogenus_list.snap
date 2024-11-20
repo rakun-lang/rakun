@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1506
 expression: "const pair = [1, 1.0]"
 ---
+----- SOURCE CODE
+const pair = [1, 1.0]
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:18
   │

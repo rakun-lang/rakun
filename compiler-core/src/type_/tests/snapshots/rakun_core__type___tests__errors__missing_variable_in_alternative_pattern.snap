@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1751
 expression: "case [] { [x] | [] -> x _ -> 0 }"
 ---
+----- SOURCE CODE
+case [] { [x] | [] -> x _ -> 0 }
+
+----- ERROR
 error: Missing alternative pattern variable
   ┌─ /src/one/two.rakun:1:11
   │

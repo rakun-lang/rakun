@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 283
 expression: "pub fn a(b) { 1 }"
 ---
+----- SOURCE CODE
+pub fn a(b) { 1 }
+
+----- WARNING
 warning: Unused variable
   ┌─ /src/warning/wrn.rakun:1:10
   │

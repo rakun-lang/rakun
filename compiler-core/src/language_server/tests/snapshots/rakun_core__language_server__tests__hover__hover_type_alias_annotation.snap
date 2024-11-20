@@ -1,6 +1,7 @@
 ---
 source: compiler-core/src/language_server/tests/hover.rs
-expression: "\ntype Wibble = Int\n"
+assertion_line: 571
+expression: type Wibble = Int
 ---
 type Wibble = Int
               ▔↑▔
@@ -9,6 +10,6 @@ type Wibble = Int
 ----- Hover content -----
 Scalar(
     String(
-        "```rakun\nInt\n```\n",
+        "```rakun\nrakun.Int\n```\n",
     ),
 )

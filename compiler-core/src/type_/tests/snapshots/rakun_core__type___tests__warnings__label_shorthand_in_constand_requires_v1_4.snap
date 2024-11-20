@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 2397
 expression: "\npub record Wibble { Wibble(wibble: Int) }\n\npub const wibble = 1\npub const wobble = Wibble(wibble:)\n"
 ---
+----- SOURCE CODE
+
+pub record Wibble { Wibble(wibble: Int) }
+
+pub const wibble = 1
+pub const wobble = Wibble(wibble:)
+
+
+----- WARNING
 warning: Incompatible rakun version range
   ┌─ /src/warning/wrn.rakun:5:27
   │

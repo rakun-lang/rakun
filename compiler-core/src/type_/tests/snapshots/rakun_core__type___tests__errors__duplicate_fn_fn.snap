@@ -1,7 +1,13 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1136
 expression: "fn wibble() { 1 }\nfn wibble() { 2 }"
 ---
+----- SOURCE CODE
+fn wibble() { 1 }
+fn wibble() { 2 }
+
+----- ERROR
 error: Duplicate definition
   ┌─ /src/one/two.rakun:1:1
   │

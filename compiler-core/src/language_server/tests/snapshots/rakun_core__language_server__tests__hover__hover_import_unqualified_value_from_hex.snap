@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 637
 expression: "\nimport example_module.{my_num}\nfn main() {\n  my_num\n}\n"
 ---
 import example_module.{my_num}

@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 200
 expression: type X
 ---
+----- SOURCE CODE
+type X
+
+----- WARNING
 warning: Unused private type
   ┌─ /src/warning/wrn.rakun:1:1
   │

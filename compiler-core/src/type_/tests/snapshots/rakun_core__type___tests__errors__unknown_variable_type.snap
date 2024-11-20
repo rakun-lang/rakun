@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 236
 expression: Int
 ---
+----- SOURCE CODE
+Int
+
+----- ERROR
 error: Unknown variable
   ┌─ /src/one/two.rakun:1:1
   │

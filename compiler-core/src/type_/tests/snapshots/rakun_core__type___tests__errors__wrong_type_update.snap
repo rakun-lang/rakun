@@ -1,7 +1,21 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1577
 expression: "\n pub record Person {\n   Person(name: String, age: Int)\n }\n pub record Box<a> {\n   Box(a)\n }\n pub fn update_person(person: Person, box: Box<a>) {\n   Person(..box)\n }"
 ---
+----- SOURCE CODE
+
+ pub record Person {
+   Person(name: String, age: Int)
+ }
+ pub record Box<a> {
+   Box(a)
+ }
+ pub fn update_person(person: Person, box: Box<a>) {
+   Person(..box)
+ }
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:9:13
   │
@@ -14,4 +28,4 @@ Expected type:
 
 Found type:
 
-    Box<a>
+    Box(a)

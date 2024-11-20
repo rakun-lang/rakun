@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/javascript/tests/externals.rs
+assertion_line: 239
 expression: "\n@external(javascript, \"one\", \"one\")\npub fn one(x: Int) -> Int\n"
 ---
+----- SOURCE CODE
+
+@external(javascript, "one", "one")
+pub fn one(x: Int) -> Int
+
+
+----- COMPILED JAVASCRIPT
 import { one } from "one";
 
 export { one };

@@ -1,0 +1,17 @@
+---
+source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 879
+expression: "\nimport wibble/wobble\ntype MyInt = Int\nfn func(value: wobble.Wibble) -> MyInt { 1 }\n"
+---
+import wibble/wobble
+type MyInt = Int
+fn func(value: wobble.Wibble) -> MyInt { 1 }
+▔▔▔↑▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔      
+
+
+----- Hover content -----
+Scalar(
+    String(
+        "```rakun\nfn(wobble.Wibble) -> MyInt\n```\n",
+    ),
+)

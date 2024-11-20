@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 1280
 expression: "\npub fn main() {\n  io.println(\"Hello, world!\")\n}\n"
 ---
 ----- BEFORE ACTION

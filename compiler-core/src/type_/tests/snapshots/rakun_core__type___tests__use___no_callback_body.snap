@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/type_/tests/use_.rs
+assertion_line: 192
 expression: "\npub fn main() {\n  let thingy = fn(f) { f() }\n  use <- thingy()\n}\n"
 ---
+----- SOURCE CODE
+
+pub fn main() {
+  let thingy = fn(f) { f() }
+  use <- thingy()
+}
+
+
+----- WARNING
 warning: Incomplete use expression
   ┌─ /src/warning/wrn.rakun:4:3
   │

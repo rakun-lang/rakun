@@ -1,7 +1,25 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1829
 expression: "\n        import wibble/sub\n        import wibble2/sub.{wobble}\n        pub fn main() {\n            sub.wobble()\n        }\n        "
 ---
+----- SOURCE CODE
+-- wibble/sub.rakun
+pub fn wobble() { 1 }
+
+-- wibble2/sub.rakun
+pub fn wobble() { 1 }
+
+-- main.rakun
+
+        import wibble/sub
+        import wibble2/sub.{wobble}
+        pub fn main() {
+            sub.wobble()
+        }
+        
+
+----- ERROR
 error: Duplicate import
   ┌─ /src/one/two.rakun:2:9
   │

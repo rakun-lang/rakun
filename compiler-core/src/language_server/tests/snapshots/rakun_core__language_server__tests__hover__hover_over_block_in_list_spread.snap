@@ -1,0 +1,20 @@
+---
+source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 1275
+expression: "\npub fn main() {\n  [1, 2, ..{\n    let x = 1\n    [x]\n  }]\n}\n"
+---
+pub fn main() {
+  [1, 2, ..{
+    let x = 1
+        ↑    
+    [x]
+  }]
+}
+
+
+----- Hover content -----
+Scalar(
+    String(
+        "```rakun\nInt\n```\n",
+    ),
+)

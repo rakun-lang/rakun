@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 798
 expression: "fn go(x: List<a, b>) -> Int { 1 }"
 ---
+----- SOURCE CODE
+fn go(x: List<a, b>) -> Int { 1 }
+
+----- ERROR
 error: Incorrect arity
   ┌─ /src/one/two.rakun:1:10
   │

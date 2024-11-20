@@ -1,7 +1,13 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1044
 expression: "fn dupe() { 1 }\nfn dupe(x) { x }"
 ---
+----- SOURCE CODE
+fn dupe() { 1 }
+fn dupe(x) { x }
+
+----- ERROR
 error: Duplicate definition
   ┌─ /src/one/two.rakun:1:1
   │

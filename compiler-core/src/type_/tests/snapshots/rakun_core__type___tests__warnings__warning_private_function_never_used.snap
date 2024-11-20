@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 61
 expression: "fn main() { 5 }"
 ---
+----- SOURCE CODE
+fn main() { 5 }
+
+----- WARNING
 warning: Unused private function
   ┌─ /src/warning/wrn.rakun:1:1
   │

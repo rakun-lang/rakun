@@ -1,0 +1,205 @@
+---
+source: compiler-core/src/parse/tests.rs
+assertion_line: 1565
+expression: "\npub fn main() {\n   let a = \"nested\"\n\n   <div>\n       <div>\n           <span>{a}</span>\n           <p>Some text</p>\n       </div>\n   </div>\n}\n"
+---
+Parsed {
+    module: Module {
+        name: "",
+        documentation: [],
+        type_info: (),
+        definitions: [
+            TargetedDefinition {
+                definition: Function(
+                    Function {
+                        location: SrcSpan {
+                            start: 1,
+                            end: 14,
+                        },
+                        end_position: 141,
+                        name: Some(
+                            (
+                                SrcSpan {
+                                    start: 8,
+                                    end: 12,
+                                },
+                                "main",
+                            ),
+                        ),
+                        arguments: [],
+                        body: [
+                            Assignment(
+                                Assignment {
+                                    location: SrcSpan {
+                                        start: 20,
+                                        end: 36,
+                                    },
+                                    value: String {
+                                        location: SrcSpan {
+                                            start: 28,
+                                            end: 36,
+                                        },
+                                        value: "nested",
+                                    },
+                                    pattern: Variable {
+                                        location: SrcSpan {
+                                            start: 24,
+                                            end: 25,
+                                        },
+                                        name: "a",
+                                        type_: (),
+                                    },
+                                    kind: Let,
+                                    annotation: None,
+                                },
+                            ),
+                            Expression(
+                                Html {
+                                    location: SrcSpan {
+                                        start: 41,
+                                        end: 139,
+                                    },
+                                    tag: Some(
+                                        Var {
+                                            location: SrcSpan {
+                                                start: 42,
+                                                end: 45,
+                                            },
+                                            name: "div",
+                                        },
+                                    ),
+                                    children: Some(
+                                        [
+                                            Html {
+                                                location: SrcSpan {
+                                                    start: 54,
+                                                    end: 129,
+                                                },
+                                                tag: Some(
+                                                    Var {
+                                                        location: SrcSpan {
+                                                            start: 55,
+                                                            end: 58,
+                                                        },
+                                                        name: "div",
+                                                    },
+                                                ),
+                                                children: Some(
+                                                    [
+                                                        Html {
+                                                            location: SrcSpan {
+                                                                start: 71,
+                                                                end: 87,
+                                                            },
+                                                            tag: Some(
+                                                                Var {
+                                                                    location: SrcSpan {
+                                                                        start: 72,
+                                                                        end: 76,
+                                                                    },
+                                                                    name: "span",
+                                                                },
+                                                            ),
+                                                            children: Some(
+                                                                [
+                                                                    Block {
+                                                                        location: SrcSpan {
+                                                                            start: 77,
+                                                                            end: 80,
+                                                                        },
+                                                                        statements: [
+                                                                            Expression(
+                                                                                Var {
+                                                                                    location: SrcSpan {
+                                                                                        start: 78,
+                                                                                        end: 79,
+                                                                                    },
+                                                                                    name: "a",
+                                                                                },
+                                                                            ),
+                                                                        ],
+                                                                    },
+                                                                ],
+                                                            ),
+                                                            attributes: [],
+                                                        },
+                                                        Html {
+                                                            location: SrcSpan {
+                                                                start: 99,
+                                                                end: 115,
+                                                            },
+                                                            tag: Some(
+                                                                Var {
+                                                                    location: SrcSpan {
+                                                                        start: 100,
+                                                                        end: 101,
+                                                                    },
+                                                                    name: "p",
+                                                                },
+                                                            ),
+                                                            children: Some(
+                                                                [
+                                                                    HtmlText {
+                                                                        location: SrcSpan {
+                                                                            start: 102,
+                                                                            end: 111,
+                                                                        },
+                                                                        value: "Some text",
+                                                                    },
+                                                                ],
+                                                            ),
+                                                            attributes: [],
+                                                        },
+                                                    ],
+                                                ),
+                                                attributes: [],
+                                            },
+                                        ],
+                                    ),
+                                    attributes: [],
+                                },
+                            ),
+                        ],
+                        publicity: Public,
+                        deprecation: NotDeprecated,
+                        return_annotation: None,
+                        return_type: (),
+                        documentation: None,
+                        external_erlang: None,
+                        external_javascript: None,
+                        implementations: Implementations {
+                            rakun: true,
+                            can_run_on_erlang: true,
+                            can_run_on_javascript: true,
+                            uses_erlang_externals: false,
+                            uses_javascript_externals: false,
+                        },
+                    },
+                ),
+                target: None,
+            },
+        ],
+        names: Names {
+            local_types: {},
+            imported_modules: {},
+            type_variables: {},
+            local_value_constructors: {},
+        },
+    },
+    extra: ModuleExtra {
+        module_comments: [],
+        doc_comments: [],
+        comments: [],
+        empty_lines: [
+            37,
+        ],
+        new_lines: [
+            0,
+            16,
+            36,
+            37,
+            139,
+            141,
+        ],
+    },
+}

@@ -1,7 +1,13 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1708
 expression: "record A<a> { A }\ntype B = a"
 ---
+----- SOURCE CODE
+record A<a> { A }
+type B = a
+
+----- ERROR
 error: Unknown type
   ┌─ /src/one/two.rakun:2:10
   │

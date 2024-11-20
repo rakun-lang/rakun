@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 75
 expression: "\npub fn wibble() { Ok(5) }\npub fn main() {\n  wibble()\n  5\n}"
 ---
+----- SOURCE CODE
+
+pub fn wibble() { Ok(5) }
+pub fn main() {
+  wibble()
+  5
+}
+
+----- WARNING
 warning: Unused result value
   ┌─ /src/warning/wrn.rakun:4:3
   │

@@ -1,7 +1,13 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 482
 expression: "let wobble:Int = 32\n        wobble = 42"
 ---
+----- SOURCE CODE
+let wobble:Int = 32
+        wobble = 42
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:2:16
   │

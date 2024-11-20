@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/javascript/tests/bools.rs
+assertion_line: 40
 expression: "\nfn go() {\n    True && True\n    False || False\n}\n"
 ---
+----- SOURCE CODE
+
+fn go() {
+    True && True
+    False || False
+}
+
+
+----- COMPILED JAVASCRIPT
 function go() {
   true && true;
   return false || false;

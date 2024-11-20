@@ -1,5 +1,7 @@
 use camino::{Utf8Path, Utf8PathBuf};
 use flate2::{write::GzEncoder, Compression};
+use hexpm::version::{Range, Version};
+use itertools::Itertools;
 use rakun_core::{
     analyse::TargetSupport,
     build::{Codegen, Compile, Mode, Options, Package, Target},
@@ -11,8 +13,6 @@ use rakun_core::{
     requirement::Requirement,
     Error, Result,
 };
-use hexpm::version::{Range, Version};
-use itertools::Itertools;
 use sha2::Digest;
 use std::{io::Write, path::PathBuf, time::Instant};
 
@@ -73,7 +73,7 @@ impl PublishCommand {
         }
         println!("\nSource files:");
         for file in src_files_added.iter().sorted() {
-            println!("  - {}", file);
+            println!("  - {file}");
         }
         println!("\nName: {}", config.name);
         println!("Version: {}", config.version);
@@ -276,6 +276,11 @@ fn do_build_hex_tarball(paths: &ProjectPaths, config: &mut PackageConfig) -> Res
         // correct and folks getting the package from Hex won't have unpleasant
         // surprises if the author forgot to manualy write it down.
         None => {
+            // If we're automatically adding the minimum required version
+            // constraint we want it to at least be `>= 1.0.0`, even if the
+            // inferred lower bound could be lower.
+            let minimum_required_version =
+                std::cmp::max(minimum_required_version, Version::new(1, 0, 0));
             let inferred_version_range =
                 pubgrub::range::Range::higher_than(minimum_required_version);
             config.rakun_version = Some(inferred_version_range);
@@ -697,8 +702,10 @@ fn release_metadata_as_erlang() {
 
 #[test]
 fn prevent_publish_local_dependency() {
-    let mut config = PackageConfig::default();
-    config.dependencies = [("provided".into(), Requirement::path("./path/to/package"))].into();
+    let config = PackageConfig {
+        dependencies: [("provided".into(), Requirement::path("./path/to/package"))].into(),
+        ..Default::default()
+    };
     assert_eq!(
         metadata_config(&config, &[], &[]),
         Err(Error::PublishNonHexDependencies {
@@ -709,12 +716,14 @@ fn prevent_publish_local_dependency() {
 
 #[test]
 fn prevent_publish_git_dependency() {
-    let mut config = PackageConfig::default();
-    config.dependencies = [(
-        "provided".into(),
-        Requirement::git("https://github.com/rakun-lang/rakun.git"),
-    )]
-    .into();
+    let config = PackageConfig {
+        dependencies: [(
+            "provided".into(),
+            Requirement::git("https://github.com/rakun-lang/rakun.git"),
+        )]
+        .into(),
+        ..Default::default()
+    };
     assert_eq!(
         metadata_config(&config, &[], &[]),
         Err(Error::PublishNonHexDependencies {

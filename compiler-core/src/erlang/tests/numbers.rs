@@ -88,7 +88,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2356
+
 #[test]
 fn zero_b_in_hex() {
     assert_erl!(

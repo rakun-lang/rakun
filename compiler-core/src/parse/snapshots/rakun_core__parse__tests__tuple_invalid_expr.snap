@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 922
 expression: "\nfn main() {\n    #(1, 2, const)\n}\n"
 ---
+----- SOURCE CODE
+
+fn main() {
+    #(1, 2, const)
+}
+
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:3:13
   │

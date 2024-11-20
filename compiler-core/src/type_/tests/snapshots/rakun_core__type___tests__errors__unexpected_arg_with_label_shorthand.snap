@@ -1,7 +1,18 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 868
 expression: "\n    fn id(x) { x }\n    fn y() {\n        let x = 4\n        id(x:)\n    }\n"
 ---
+----- SOURCE CODE
+
+    fn id(x) { x }
+    fn y() {
+        let x = 4
+        id(x:)
+    }
+
+
+----- ERROR
 error: Unexpected labelled argument
   ┌─ /src/one/two.rakun:5:12
   │

@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1386
 expression: "record Wrapper<innerType> {}"
 ---
+----- SOURCE CODE
+record Wrapper<innerType> {}
+
+----- ERROR
 error: Invalid type variable name
   ┌─ /src/one/two.rakun:1:16
   │

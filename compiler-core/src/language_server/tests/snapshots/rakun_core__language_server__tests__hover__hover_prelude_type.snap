@@ -1,0 +1,15 @@
+---
+source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 1042
+expression: "\nconst number = 100\n"
+---
+const number = 100
+▔▔▔▔▔▔▔▔▔↑▔▔      
+
+
+----- Hover content -----
+Scalar(
+    String(
+        "```rakun\nInt\n```\n",
+    ),
+)

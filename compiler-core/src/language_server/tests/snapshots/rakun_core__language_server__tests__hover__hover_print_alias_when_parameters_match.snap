@@ -1,0 +1,19 @@
+---
+source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 1200
+expression: "\ntype MyResult<a, b> = Result<a, b>\n\nfn do_thing() -> MyResult<Int, Int> {\n  Error(1)\n}\n"
+---
+type MyResult<a, b> = Result<a, b>
+
+fn do_thing() -> MyResult<Int, Int> {
+▔▔▔↑▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔  
+  Error(1)
+}
+
+
+----- Hover content -----
+Scalar(
+    String(
+        "```rakun\nfn() -> MyResult(Int, Int)\n```\n",
+    ),
+)

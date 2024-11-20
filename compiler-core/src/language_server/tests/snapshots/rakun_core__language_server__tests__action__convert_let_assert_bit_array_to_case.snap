@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 755
 expression: "pub fn main() {\n  let assert <<bits1, bits2>> = <<73, 98>>\n}"
 ---
 ----- BEFORE ACTION

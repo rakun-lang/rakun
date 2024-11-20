@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 889
 expression: "record X { X(a: Int, b: Int, c: Int) }\nfn x() {\n  let b = 1\n  let a = 1\n  X(b:, a:, 1)\n}"
 ---
+----- SOURCE CODE
+record X { X(a: Int, b: Int, c: Int) }
+fn x() {
+  let b = 1
+  let a = 1
+  X(b:, a:, 1)
+}
+
+----- ERROR
 error: Unexpected positional argument
   ┌─ /src/one/two.rakun:5:13
   │

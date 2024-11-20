@@ -1,7 +1,20 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 168
 expression: "\n        pub record Person {\n            Person(name: String, age: Int)\n        }\n        pub fn update_person() {\n            let past = Person(\"Quinn\", 27)\n            let present = Person(..past)\n            present\n        }"
 ---
+----- SOURCE CODE
+
+        pub record Person {
+            Person(name: String, age: Int)
+        }
+        pub fn update_person() {
+            let past = Person("Quinn", 27)
+            let present = Person(..past)
+            present
+        }
+
+----- WARNING
 warning: Fieldless record update
   ┌─ /src/warning/wrn.rakun:7:27
   │

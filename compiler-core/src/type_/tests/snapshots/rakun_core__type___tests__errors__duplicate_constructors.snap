@@ -1,7 +1,13 @@
 ---
-source: compiler-core/src/type_/tests/errors.r
+source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1074
 expression: "record Box { Box(x: Int) }\nrecord Boxy { Box(Int) }"
 ---
+----- SOURCE CODE
+record Box { Box(x: Int) }
+record Boxy { Box(Int) }
+
+----- ERROR
 error: Duplicate definition
   ┌─ /src/one/two.rakun:1:14
   │

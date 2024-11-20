@@ -1,4 +1,4 @@
-// https://github.com/rakun-lang/rakun/issues/340
+
 import one.{receive}
 
 pub fn qualified_call() {

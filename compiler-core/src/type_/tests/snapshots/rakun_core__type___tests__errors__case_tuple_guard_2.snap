@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 370
 expression: "case #(1, 2) { x if x == #(1, 1.0) -> 1 }"
 ---
+----- SOURCE CODE
+case #(1, 2) { x if x == #(1, 1.0) -> 1 }
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:21
   │

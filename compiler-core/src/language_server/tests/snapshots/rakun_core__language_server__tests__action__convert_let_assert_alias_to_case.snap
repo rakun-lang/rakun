@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 732
 expression: "pub fn main() {\n  let assert 10 as ten = 10\n}"
 ---
 ----- BEFORE ACTION

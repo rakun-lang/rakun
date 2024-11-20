@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 2200
 expression: "\npub record Wibble { Wibble(arg: Int) }\npub fn main() {\n  let Wibble(not_a_label:) = Wibble(1)\n}\n"
 ---
+----- SOURCE CODE
+
+pub record Wibble { Wibble(arg: Int) }
+pub fn main() {
+  let Wibble(not_a_label:) = Wibble(1)
+}
+
+
+----- ERROR
 error: Unknown label
   ┌─ /src/one/two.rakun:4:14
   │

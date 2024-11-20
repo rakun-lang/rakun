@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 637
 expression: "pub fn main() {\n    case 21 { _twentyOne -> {Nil} }\n}"
 ---
 ----- BEFORE ACTION

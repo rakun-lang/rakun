@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 251
 expression: "let add = fn(x, y) { x + y } 1 |> add(unknown)"
 ---
+----- SOURCE CODE
+let add = fn(x, y) { x + y } 1 |> add(unknown)
+
+----- ERROR
 error: Unknown variable
   ┌─ /src/one/two.rakun:1:39
   │

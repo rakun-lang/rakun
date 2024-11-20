@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 738
 expression: "fn main() { let x: String = 5 x }"
 ---
+----- SOURCE CODE
+fn main() { let x: String = 5 x }
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:29
   │

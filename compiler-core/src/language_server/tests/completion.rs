@@ -22,6 +22,33 @@ pub fn show_complete(code: &str, position: Position) -> String {
     str
 }
 
+fn apply_conversion(src: &str, completions: Vec<CompletionItem>, value: &str) -> String {
+    let completion = completions
+        .iter()
+        .find(|c| c.label == value.to_string())
+        .expect(&format!("no completion with value `{value}`"));
+
+    let mut edits = vec![];
+    if let Some(lsp_types::CompletionTextEdit::Edit(edit)) = &completion.text_edit {
+        edits.push(edit.clone());
+    }
+    apply_code_edit(src, edits)
+}
+
+#[macro_export]
+macro_rules! assert_apply_completion {
+    ($project:expr, $name:literal, $position:expr) => {
+        let src = $project.src;
+        let completions = completion($project, $position);
+        let output = format!(
+            "{}\n\n----- After applying completion -----\n{}",
+            show_complete(src, $position),
+            apply_conversion(src, completions, $name)
+        );
+        insta::assert_snapshot!(insta::internals::AutoName, output, src);
+    };
+}
+
 #[macro_export]
 macro_rules! assert_completion {
     ($project:expr) => {
@@ -100,27 +127,27 @@ fn format_completion_results(completions: Vec<CompletionItem>) -> EcoString {
         buffer.push_str(&label);
 
         if let Some(kind) = kind {
-            write!(buffer, "\n  kind:   {:?}", kind).unwrap();
+            write!(buffer, "\n  kind:   {kind:?}").unwrap();
         }
 
         if let Some(detail) = detail {
-            write!(buffer, "\n  detail: {}", detail).unwrap();
+            write!(buffer, "\n  detail: {detail}").unwrap();
         }
 
         if let Some(sort_text) = sort_text {
-            write!(buffer, "\n  sort:   {}", sort_text).unwrap();
+            write!(buffer, "\n  sort:   {sort_text}").unwrap();
         }
 
         if let Some(label_details) = label_details {
             assert!(label_details.detail.is_none());
             if let Some(desc) = label_details.description {
-                write!(buffer, "\n  desc:   {}", desc).unwrap();
+                write!(buffer, "\n  desc:   {desc}").unwrap();
             }
         }
 
         if let Some(documentation) = documentation {
             let lsp_types::Documentation::MarkupContent(m) = documentation else {
-                panic!("unexpected docs in test {:?}", documentation);
+                panic!("unexpected docs in test {documentation:?}");
             };
             match m.kind {
                 lsp_types::MarkupKind::Markdown => (),
@@ -141,7 +168,7 @@ fn format_completion_results(completions: Vec<CompletionItem>) -> EcoString {
 
         if let Some(text_edit) = text_edit {
             let lsp_types::CompletionTextEdit::Edit(e) = text_edit else {
-                panic!("unexpected text edit in test {:?}", text_edit);
+                panic!("unexpected text edit in test {text_edit:?}");
             };
             buffer.push_str("\n  edits:");
             edit(&mut buffer, e);
@@ -809,6 +836,231 @@ pub fn wibble(
 }
 
 #[test]
+fn local_variable() {
+    let code = "
+pub fn main(wibble: Int) {
+  let wobble = 1
+  w
+
+  let wabble = 2
+}
+";
+
+    assert_completion!(TestProject::for_source(code), Position::new(3, 3));
+}
+
+#[test]
+fn local_variable_anonymous_function() {
+    let code = "
+pub fn main() {
+  let add_one = fn(wibble: Int) { wibble + 1 }
+  add_one(1)
+}
+";
+
+    assert_completion!(TestProject::for_source(code), Position::new(2, 40));
+}
+
+#[test]
+fn local_variable_nested_anonymous_function() {
+    let code = "
+pub fn main() {
+  let add_one = fn(wibble: Int) {
+    let wabble = 1
+    let add_two = fn(wobble: Int) { wobble + 2 }
+    wibble + add_two(1)
+  }
+  add_one(1)
+}
+";
+
+    assert_completion!(TestProject::for_source(code), Position::new(4, 42));
+}
+
+#[test]
+fn local_variable_ignore_anonymous_function_args() {
+    let code = "
+pub fn main() {
+  let add_one = fn(wibble: Int) { wibble + 1 }
+  let wobble = 1
+  w
+}
+";
+
+    assert_completion!(TestProject::for_source(code), Position::new(4, 3));
+}
+
+#[test]
+fn local_variable_ignore_anonymous_function_args_nested() {
+    let code = "
+pub fn main() {
+  let add_one = fn(wibble: Int) {
+    let wabble = 1
+    let add_two = fn(wobble: Int) { wobble + 2 }
+    wibble + add_two(1)
+  }
+  add_one(1)
+}
+";
+
+    assert_completion!(TestProject::for_source(code), Position::new(5, 10));
+}
+
+#[test]
+fn local_variable_ignore_anonymous_function_returned() {
+    let code = "
+pub fn main() {
+  fn(wibble: Int) {
+    let wabble = 1
+    let add_two = fn(wobble: Int) { wobble + 2 }
+    wibble + add_two(1)
+  }
+}
+";
+
+    assert_completion!(TestProject::for_source(code), Position::new(5, 10));
+}
+
+#[test]
+fn local_variable_case_expression() {
+    let code = "
+pub fn main() {
+  case True {
+    True as wibble -> { todo }
+    False -> { todo }
+  }
+}
+";
+
+    assert_completion!(TestProject::for_source(code), Position::new(3, 25));
+}
+
+#[test]
+fn local_variable_inside_nested_exprs() {
+    let code = r#"
+record Foo { Bar(List(#(Bool))) }
+fn wibble() {
+  Bar([#(!{
+    let foo = True
+    foo
+  })])
+  todo
+}
+"#;
+
+    assert_completion!(TestProject::for_source(code), Position::new(5, 7));
+}
+
+#[test]
+fn local_variable_pipe() {
+    let code = "
+pub fn main() {
+  let add_one = fn(wibble: Int) { wibble + 1 }
+  let wobble = 1
+  wobble |> add_one
+}
+";
+
+    assert_completion!(TestProject::for_source(code), Position::new(4, 19));
+}
+
+#[test]
+fn local_variable_pipe_with_args() {
+    let code = "
+pub fn main() {
+  let add_one = fn(wibble: Int, wobble: Int) { wibble + wobble }
+  let wobble = 1
+  let wibble = 2
+  wobble |> add_one(1, wibble)
+}
+";
+
+    assert_completion!(TestProject::for_source(code), Position::new(5, 29));
+}
+
+#[test]
+fn local_variable_function_call() {
+    let code = "
+fn add_one(wibble: Int) -> Int {
+  wibble + 1
+}
+
+pub fn main() {
+  let wobble = 1
+  add_one(wobble)
+}
+";
+
+    assert_completion!(TestProject::for_source(code), Position::new(7, 16));
+}
+
+#[test]
+fn local_variable_ignored() {
+    let code = "
+fn wibble() {
+  let a = 1
+  let _b = 2
+
+}
+";
+    assert_completion!(TestProject::for_source(code), Position::new(4, 0));
+}
+
+#[test]
+fn local_variable_as() {
+    let code = "
+fn wibble() {
+  let b as c = 5
+
+}
+";
+    assert_completion!(TestProject::for_source(code), Position::new(3, 0));
+}
+
+#[test]
+fn local_variable_tuple() {
+    let code = "
+fn wibble() {
+  let assert #([d, e] as f, g) = #([0, 1], 2)
+
+}
+";
+    assert_completion!(TestProject::for_source(code), Position::new(3, 0));
+}
+
+#[test]
+fn local_variable_bit_array() {
+    let code = "
+fn wibble() {
+  let assert <<h:1>> as i = <<1:1>>
+
+}
+";
+    assert_completion!(TestProject::for_source(code), Position::new(3, 0));
+}
+
+#[test]
+fn local_variable_string() {
+    let code = r#"
+fn wibble() {
+  let assert "a" <> j = "ab"
+
+}
+"#;
+    assert_completion!(TestProject::for_source(code), Position::new(3, 0));
+}
+
+#[test]
+fn local_variable_ignore_within_function() {
+    let code = "
+fn main(a, b, z) {
+    Nil
+}
+";
+    assert_completion!(TestProject::for_source(code), Position::new(1, 14));
+}
+
+#[test]
 fn internal_values_from_root_package_are_in_the_completions() {
     let dep = r#"
 @external(erlang, "rand", "uniform")
@@ -1125,7 +1377,7 @@ fn internal_modules_from_same_package_are_included() {
 pub fn main() {
   0
 }";
-    let internal_name = format!("{}/internal", LSP_TEST_ROOT_PACKAGE_NAME);
+    let internal_name = format!("{LSP_TEST_ROOT_PACKAGE_NAME}/internal");
 
     assert_completion!(
         TestProject::for_source(code)
@@ -1389,6 +1641,41 @@ fn fun() {
 }
 
 #[test]
+fn completions_for_record_access_known_variant() {
+    let code = "
+record Wibble {
+  Wibble(a: Int, b: Int, c: Int, d: Int)
+  Wobble(z: Bool)
+}
+
+fn fun(some_wibble: Wibble) {
+  case some_wibble {
+    Wibble(..) as w -> w.a
+    Wobble(..) -> panic
+  }
+}
+";
+
+    assert_completion!(TestProject::for_source(code), Position::new(8, 26));
+}
+
+#[test]
+fn completions_for_record_access_unknown_variant() {
+    let code = "
+record Wibble {
+  Wibble(a: Int, b: Int, c: Int, d: Int)
+  Wobble(a: Int, z: Bool)
+}
+
+fn fun(some_wibble: Wibble) {
+  some_wibble.a
+}
+";
+
+    assert_completion!(TestProject::for_source(code), Position::new(7, 15));
+}
+
+#[test]
 fn completions_for_record_labels() {
     let code = "
 pub record Wibble {
@@ -1489,4 +1776,83 @@ pub fn main() {
 ";
 
     assert_completion!(TestProject::for_source(code), Position::new(2, 17));
+}
+
+#[test]
+fn variable_shadowing() {
+    let code = "
+pub fn main() {
+  let x = 1
+  let x = [1, 2]
+
+}
+";
+
+    assert_completion!(TestProject::for_source(code), Position::new(4, 0));
+}
+
+#[test]
+fn argument_shadowing() {
+    let code = "
+pub fn main(x: Int) {
+  fn(x: Float) {
+
+  }
+}
+";
+
+    assert_completion!(TestProject::for_source(code), Position::new(3, 0));
+}
+
+#[test]
+fn argument_variable_shadowing() {
+    let code = "
+pub fn main(x: Int) {
+  let x = [1, 2]
+
+}
+";
+
+    assert_completion!(TestProject::for_source(code), Position::new(3, 0));
+}
+
+
+#[test]
+fn autocomplete_doesnt_delete_the_piece_of_code_that_comes_after() {
+    let code = "
+import list
+pub fn main(x: Int) {
+  list.list.filter([1, 2, 3], todo)
+}
+";
+    let list = "
+pub fn filter(_, _) { [] }
+pub fn map(_, _) { [] }
+";
+
+    assert_apply_completion!(
+        TestProject::for_source(code).add_dep_module("list", list),
+        "list.map",
+        Position::new(3, 7)
+    );
+}
+
+#[test]
+fn autocomplete_doesnt_delete_the_piece_of_code_that_comes_after_2() {
+    let code = "
+import list
+pub fn main(x: Int) {
+  list.mlist.filter([1, 2, 3], todo)
+}
+";
+    let list = "
+pub fn filter(_, _) { [] }
+pub fn map(_, _) { [] }
+";
+
+    assert_apply_completion!(
+        TestProject::for_source(code).add_dep_module("list", list),
+        "list.map",
+        Position::new(3, 8)
+    );
 }

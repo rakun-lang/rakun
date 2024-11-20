@@ -1,7 +1,20 @@
 ---
 source: compiler-core/src/type_/tests/use_.rs
+assertion_line: 370
 expression: "\npub fn main() {\n  use <- wibble()\n}\n\nfn wibble(f) {\n  f()\n}\n"
 ---
+----- SOURCE CODE
+
+pub fn main() {
+  use <- wibble()
+}
+
+fn wibble(f) {
+  f()
+}
+
+
+----- WARNING
 warning: Incomplete use expression
   ┌─ /src/warning/wrn.rakun:3:3
   │

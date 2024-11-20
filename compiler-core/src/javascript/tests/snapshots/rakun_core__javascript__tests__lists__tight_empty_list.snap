@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/javascript/tests/lists.rs
+assertion_line: 106
 expression: "\nfn go(func) {\n  let huuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuge_variable = []\n}\n"
 ---
+----- SOURCE CODE
+
+fn go(func) {
+  let huuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuge_variable = []
+}
+
+
+----- COMPILED JAVASCRIPT
 import { toList } from "../rakun.mjs";
 
 function go(func) {

@@ -1,7 +1,18 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 583
 expression: "\n@external(javascript, \"one\", \"two\")\n@external(javascript, \"three\", \"four\")\npub fn one(x: Int) -> Int {\n  todo\n}\n"
 ---
+----- SOURCE CODE
+
+@external(javascript, "one", "two")
+@external(javascript, "three", "four")
+pub fn one(x: Int) -> Int {
+  todo
+}
+
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:3:1
   │

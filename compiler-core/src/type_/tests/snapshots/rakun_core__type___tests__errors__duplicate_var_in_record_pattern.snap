@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 969
 expression: "record X { X(a: Int, b: Int, c: Int) }\nfn x() {\n  case X(1,2,3) { X(x, y, x) -> 1 }\n}"
 ---
+----- SOURCE CODE
+record X { X(a: Int, b: Int, c: Int) }
+fn x() {
+  case X(1,2,3) { X(x, y, x) -> 1 }
+}
+
+----- ERROR
 error: Duplicate variable in pattern
   ┌─ /src/one/two.rakun:3:27
   │

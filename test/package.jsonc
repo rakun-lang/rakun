@@ -30,7 +30,7 @@
             "One"
           ]
         },
-        // pub type MyType4(a, b)
+        // pub record MyType4<a, b>
         "MyType4": {
           "documentation": "...",
           "parameters": 2,

@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 304
 expression: "pub fn a() { let b = 1 let b = 2 b }"
 ---
+----- SOURCE CODE
+pub fn a() { let b = 1 let b = 2 b }
+
+----- WARNING
 warning: Unused variable
   ┌─ /src/warning/wrn.rakun:1:18
   │

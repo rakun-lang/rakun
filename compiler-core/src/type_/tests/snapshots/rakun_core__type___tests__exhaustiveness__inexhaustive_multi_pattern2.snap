@@ -1,7 +1,18 @@
 ---
 source: compiler-core/src/type_/tests/exhaustiveness.rs
+assertion_line: 1224
 expression: "\nlet a = Ok(1)\nlet b = True\ncase a, b {\n  Ok(1), True -> Nil\n}\n"
 ---
+----- SOURCE CODE
+
+let a = Ok(1)
+let b = True
+case a, b {
+  Ok(1), True -> Nil
+}
+
+
+----- ERROR
 error: Inexhaustive patterns
   ┌─ /src/one/two.rakun:4:1
   │  

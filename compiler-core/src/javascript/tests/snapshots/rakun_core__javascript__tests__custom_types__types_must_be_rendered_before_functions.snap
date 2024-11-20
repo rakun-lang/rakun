@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/javascript/tests/custom_types.rs
+assertion_line: 674
 expression: "\npub fn one() { One }\npub record One { One }\n"
 ---
+----- SOURCE CODE
+
+pub fn one() { One }
+pub record One { One }
+
+
+----- COMPILED JAVASCRIPT
 import { CustomType as $CustomType } from "../rakun.mjs";
 
 export class One extends $CustomType {}

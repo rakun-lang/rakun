@@ -1,0 +1,21 @@
+---
+source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 1416
+expression: "\nimport wibble\n\npub fn main() {\n  wibble.a\n  1\n}\n"
+---
+----- SOURCE CODE
+
+import wibble
+
+pub fn main() {
+  wibble.a
+  1
+}
+
+
+----- WARNING
+warning: Unused value
+  ┌─ /src/warning/wrn.rakun:5:9
+  │
+5 │   wibble.a
+  │         ^^ This value is never used

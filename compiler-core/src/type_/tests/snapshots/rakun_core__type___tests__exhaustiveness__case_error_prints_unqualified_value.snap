@@ -1,11 +1,27 @@
 ---
 source: compiler-core/src/type_/tests/exhaustiveness.rs
-expression: "\nimport wibble.{Wibble, Wobble}\npub fn main() {\n    case Wobble {\n        Wibble -> Nil\n    }\n}\n"
+assertion_line: 1025
+expression: "\nimport wibble.{Wibble, Wobble}\npub fn main(wibble) {\n    case wibble {\n        Wibble -> Nil\n    }\n}\n"
 ---
+----- SOURCE CODE
+-- wibble.rakun
+pub record Wibble { Wibble Wobble }
+
+-- main.rakun
+
+import wibble.{Wibble, Wobble}
+pub fn main(wibble) {
+    case wibble {
+        Wibble -> Nil
+    }
+}
+
+
+----- ERROR
 error: Inexhaustive patterns
   ┌─ /src/one/two.rakun:4:5
   │  
-4 │ ╭     case Wobble {
+4 │ ╭     case wibble {
 5 │ │         Wibble -> Nil
 6 │ │     }
   │ ╰─────^

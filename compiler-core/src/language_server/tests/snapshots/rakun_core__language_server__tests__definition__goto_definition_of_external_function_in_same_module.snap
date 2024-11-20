@@ -1,0 +1,24 @@
+---
+source: compiler-core/src/language_server/tests/definition.rs
+assertion_line: 605
+expression: output
+---
+----- Jumping from `src/app.rakun`
+
+@external(erlang, "wibble", "wobble")
+fn external_function() -> Nil
+
+fn main() {
+  external_function()
+         ↑           
+}
+
+----- Jumped to `src/app.rakun`
+
+@external(erlang, "wibble", "wobble")
+fn external_function() -> Nil
+↑▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔       
+
+fn main() {
+  external_function()
+}

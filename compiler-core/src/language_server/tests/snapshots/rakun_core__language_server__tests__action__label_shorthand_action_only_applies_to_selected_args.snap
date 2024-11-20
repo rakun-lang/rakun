@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 872
 expression: "\npub fn main() {\n    let arg1 = 1\n    let arg2 = 2\n    Wibble(arg2: arg2, arg1: arg1)\n}\n\npub record Wibble { Wibble(arg1: Int, arg2: Int) }\n"
 ---
 ----- BEFORE ACTION

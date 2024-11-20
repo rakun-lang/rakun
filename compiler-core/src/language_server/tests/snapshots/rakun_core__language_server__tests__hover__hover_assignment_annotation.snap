@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 576
 expression: "\nfn wibble() {\n    let wobble: Int = 7\n    wobble\n}\n"
 ---
 fn wibble() {
@@ -12,6 +13,6 @@ fn wibble() {
 ----- Hover content -----
 Scalar(
     String(
-        "```rakun\nInt\n```\n",
+        "```rakun\nrakun.Int\n```\n",
     ),
 )

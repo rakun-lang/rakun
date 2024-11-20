@@ -23,7 +23,7 @@ expression: "./cases/erlang_nested_qualified_constant"
 <.cache binary>
 
 //// /out/lib/the_package/_rakun_artefacts/two.cache_meta
-<100 byte binary>
+<96 byte binary>
 
 //// /out/lib/the_package/_rakun_artefacts/two.erl
 -module(two).

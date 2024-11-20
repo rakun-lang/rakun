@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 74
 expression: "\nfn add_2(x) {\n  x + 2\n}\n"
 ---
 fn add_2(x) {

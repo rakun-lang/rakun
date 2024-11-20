@@ -1,0 +1,79 @@
+---
+source: compiler-core/src/erlang/tests/html.rs
+assertion_line: 81
+expression: "\nimport rakun/rkx\n    \n\npub fn main() {\n    <rkx.div class=\"container\">\n        <rkx.h1 class=\"title\">Título do Conteúdo</rkx.h1>\n        <rkx.p class=\"description\">Descrição breve sobre o conteúdo apresentado.</rkx.p>\n        <rkx.div class=\"nested-container\">\n            <rkx.h2 class=\"subtitle\">Subtítulo</rkx.h2>\n            <rkx.p class=\"nested-content\">Informação adicional sobre o conteúdo.</rkx.p>\n        </rkx.div>\n    </rkx.div>\n}\n"
+---
+----- SOURCE CODE
+
+import rakun/rkx
+    
+
+pub fn main() {
+    <rkx.div class="container">
+        <rkx.h1 class="title">Título do Conteúdo</rkx.h1>
+        <rkx.p class="description">Descrição breve sobre o conteúdo apresentado.</rkx.p>
+        <rkx.div class="nested-container">
+            <rkx.h2 class="subtitle">Subtítulo</rkx.h2>
+            <rkx.p class="nested-content">Informação adicional sobre o conteúdo.</rkx.p>
+        </rkx.div>
+    </rkx.div>
+}
+
+
+----- COMPILED ERLANG
+-module(my@mod).
+-compile([no_auto_import, nowarn_unused_vars, nowarn_unused_function, nowarn_nomatch]).
+
+-export([main/0]).
+
+-file("/root/project/test/my/mod.rakun", 5).
+-spec main() -> rakun@rkx:element().
+main() ->
+    rakun@rkx:component_init(
+        rakun@rkx:'div'(
+            {div_props,
+                <<"container"/utf8>>,
+                [rakun@rkx:component_init(
+                        rakun@rkx:h1(
+                            {h1_props,
+                                <<"title"/utf8>>,
+                                [rakun@rkx:html_text(
+                                        <<"Título do Conteúdo"/utf8>>
+                                    )]}
+                        )
+                    ),
+                    rakun@rkx:component_init(
+                        rakun@rkx:p(
+                            {paragraph_props,
+                                <<"description"/utf8>>,
+                                [rakun@rkx:html_text(
+                                        <<"Descrição breve sobre o conteúdo apresentado."/utf8>>
+                                    )]}
+                        )
+                    ),
+                    rakun@rkx:component_init(
+                        rakun@rkx:'div'(
+                            {div_props,
+                                <<"nested-container"/utf8>>,
+                                [rakun@rkx:component_init(
+                                        rakun@rkx:h2(
+                                            {h1_props,
+                                                <<"subtitle"/utf8>>,
+                                                [rakun@rkx:html_text(
+                                                        <<"Subtítulo"/utf8>>
+                                                    )]}
+                                        )
+                                    ),
+                                    rakun@rkx:component_init(
+                                        rakun@rkx:p(
+                                            {paragraph_props,
+                                                <<"nested-content"/utf8>>,
+                                                [rakun@rkx:html_text(
+                                                        <<"Informação adicional sobre o conteúdo."/utf8>>
+                                                    )]}
+                                        )
+                                    )]}
+                        )
+                    )]}
+        )
+    ).

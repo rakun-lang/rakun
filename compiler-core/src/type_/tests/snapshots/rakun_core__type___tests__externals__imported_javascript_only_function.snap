@@ -1,7 +1,20 @@
 ---
 source: compiler-core/src/type_/tests/externals.rs
+assertion_line: 163
 expression: "import module\npub fn main() {\n  module.javascript_only()\n}"
 ---
+----- SOURCE CODE
+-- module.rakun
+@external(javascript, "one", "two")
+pub fn javascript_only() -> Int
+
+-- main.rakun
+import module
+pub fn main() {
+  module.javascript_only()
+}
+
+----- ERROR
 error: Unsupported target
   ┌─ /src/one/two.rakun:3:9
   │

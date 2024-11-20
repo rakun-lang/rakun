@@ -1,6 +1,6 @@
 use crate::assert_format;
 
-// https://github.com/rakun-lang/rakun/issues/835
+
 #[test]
 pub fn long_binary_operation_sequence() {
     assert_format!(
@@ -84,7 +84,7 @@ fn binary_operation_in_assignment_that_is_almost_80_chars() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2480
+
 #[test]
 fn labelled_field_with_binary_operators_are_not_broken_if_they_can_fit() {
     assert_format!(
@@ -258,7 +258,7 @@ fn binop_inside_tuple_is_not_nested_if_only_item() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2624
+
 #[test]
 fn binop_as_argument_in_variant_with_spread_gets_nested() {
     assert_format!(

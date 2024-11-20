@@ -1,6 +1,6 @@
-use crate::assert_format;
+use crate::{assert_format, assert_format_rewrite};
 
-// https://github.com/rakun-lang/rakun/issues/2083
+
 #[test]
 fn nested_index_block() {
     assert_format!(
@@ -11,7 +11,7 @@ fn nested_index_block() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2083
+
 #[test]
 fn index_block() {
     assert_format!(
@@ -52,7 +52,7 @@ fn tuple_with_last_splittable_arg() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3070
+
 #[test]
 fn constant_long_list_of_tuples() {
     assert_format!(
@@ -63,6 +63,40 @@ fn constant_long_list_of_tuples() {
 
 pub fn main() {
   todo
+}
+"#
+    );
+}
+
+#[test]
+fn nested_tuple_access() {
+    assert_format!(
+        r#"pub fn main() {
+  wibble.1.0
+}
+"#
+    );
+}
+
+#[test]
+fn nested_tuple_with_needless_block() {
+    assert_format_rewrite!(
+        r#"pub fn main() {
+  { wibble.1 }.0
+}
+"#,
+        r#"pub fn main() {
+  wibble.1.0
+}
+"#
+    );
+}
+
+#[test]
+fn nested_literal_tuple_with_needless_block_is_not_changed() {
+    assert_format!(
+        r#"pub fn main() {
+  { #(wibble, wobble).1 }.0
 }
 "#
     );

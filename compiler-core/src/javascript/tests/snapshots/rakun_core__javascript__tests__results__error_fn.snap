@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/javascript/tests/results.rs
+assertion_line: 20
 expression: "pub fn main() { Error }"
 ---
+----- SOURCE CODE
+pub fn main() { Error }
+
+----- COMPILED JAVASCRIPT
 import { Error } from "../rakun.mjs";
 
 export function main() {

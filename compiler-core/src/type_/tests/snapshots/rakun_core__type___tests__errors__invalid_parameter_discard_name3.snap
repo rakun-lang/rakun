@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1246
 expression: "let ignore = fn(_ignoreMe: Bool) { 98 }"
 ---
+----- SOURCE CODE
+let ignore = fn(_ignoreMe: Bool) { 98 }
+
+----- ERROR
 error: Invalid discard name
   ┌─ /src/one/two.rakun:1:17
   │

@@ -1,0 +1,29 @@
+---
+source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 2480
+expression: "\npub record Wibble {\n  Wibble(field: Int)\n  Wobble(not_field: String, field: Int)\n}\n\npub fn main(wibble: Wibble) {\n  wibble.wibble\n}\n"
+---
+----- SOURCE CODE
+
+pub record Wibble {
+  Wibble(field: Int)
+  Wobble(not_field: String, field: Int)
+}
+
+pub fn main(wibble: Wibble) {
+  wibble.wibble
+}
+
+
+----- ERROR
+error: Unknown record field
+  ┌─ /src/one/two.rakun:8:9
+  │
+8 │   wibble.wibble
+  │         ^^^^^^^ This field does not exist
+
+The value being accessed has this type:
+
+    Wibble
+
+It does not have any fields shared by all variants.

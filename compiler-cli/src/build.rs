@@ -1,9 +1,10 @@
-use std::{sync::Arc, time::Instant};
+use std::{rc::Rc, time::Instant};
 
 use rakun_core::{
     build::{Built, Codegen, NullTelemetry, Options, ProjectCompiler, Telemetry},
     manifest::Manifest,
     paths::ProjectPaths,
+    warning::WarningEmitterIO,
     Result,
 };
 
@@ -16,10 +17,18 @@ use crate::{
 
 pub fn download_dependencies(telemetry: impl Telemetry) -> Result<Manifest> {
     let paths = crate::find_project_paths()?;
-    crate::dependencies::download(&paths, telemetry, None, UseManifest::Yes)
+    crate::dependencies::download(&paths, telemetry, None, Vec::new(), UseManifest::Yes)
 }
 
 pub fn main(options: Options, manifest: Manifest) -> Result<Built> {
+    main_with_warnings(options, manifest, Rc::new(ConsoleWarningEmitter))
+}
+
+pub(crate) fn main_with_warnings(
+    options: Options,
+    manifest: Manifest,
+    warnings: Rc<dyn WarningEmitterIO>,
+) -> Result<Built> {
     let paths = crate::find_project_paths()?;
     let perform_codegen = options.codegen;
     let root_config = crate::config::root_config()?;
@@ -45,7 +54,7 @@ pub fn main(options: Options, manifest: Manifest) -> Result<Built> {
             options,
             manifest.packages,
             telemetry,
-            Arc::new(ConsoleWarningEmitter),
+            warnings,
             ProjectPaths::new(current_dir),
             io,
         );

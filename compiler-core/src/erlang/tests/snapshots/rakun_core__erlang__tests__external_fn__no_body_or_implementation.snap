@@ -1,7 +1,14 @@
 ---
 source: compiler-core/src/erlang/tests/external_fn.rs
+assertion_line: 224
 expression: "\npub fn one(x: Int) -> Float\n"
 ---
+----- SOURCE CODE
+
+pub fn one(x: Int) -> Float
+
+
+----- ERROR
 error: Function without an implementation
   ┌─ /src/one/two.rakun:2:1
   │

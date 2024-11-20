@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 321
 expression: "const first = list.at([1], 0)"
 ---
+----- SOURCE CODE
+const first = list.at([1], 0)
+
+----- ERROR
 error: Syntax error
   ┌─ /src/one/two.rakun:1:15
   │

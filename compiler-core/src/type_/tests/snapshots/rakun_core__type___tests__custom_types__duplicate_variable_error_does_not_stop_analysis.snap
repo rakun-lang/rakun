@@ -1,7 +1,20 @@
 ---
 source: compiler-core/src/type_/tests/custom_types.rs
+assertion_line: 50
 expression: "\nrecord Two<a, a> {\n  Two(a, a)\n}\n\nrecord Three<a, a> {\n  Three\n}\n"
 ---
+----- SOURCE CODE
+
+record Two<a, a> {
+  Two(a, a)
+}
+
+record Three<a, a> {
+  Three
+}
+
+
+----- ERROR
 error: Duplicate type parameter
   ┌─ /src/one/two.rakun:2:15
   │

@@ -1,7 +1,13 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1001
 expression: "record X { X(a: Int, b: Float) }\nfn x() { case X(1, 2.0) { x if x == X(2.0, 1) -> 1 _ -> 2 } }"
 ---
+----- SOURCE CODE
+record X { X(a: Int, b: Float) }
+fn x() { case X(1, 2.0) { x if x == X(2.0, 1) -> 1 _ -> 2 } }
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:2:39
   │

@@ -1,7 +1,18 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 2016
 expression: "\n  pub fn wibble(_, _) { 1 }\n\n  pub fn main() {\n    1 |> wibble(2) |> wibble(_, 2)\n  }\n"
 ---
+----- SOURCE CODE
+
+  pub fn wibble(_, _) { 1 }
+
+  pub fn main() {
+    1 |> wibble(2) |> wibble(_, 2)
+  }
+
+
+----- WARNING
 warning: Redundant function capture
   ┌─ /src/warning/wrn.rakun:5:30
   │

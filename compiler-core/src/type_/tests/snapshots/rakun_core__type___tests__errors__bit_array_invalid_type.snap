@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 8
 expression: "fn x() { \"test\" }\n\nfn main() {\n    let a = <<1:size(x())>>\n    a\n}"
 ---
+----- SOURCE CODE
+fn x() { "test" }
+
+fn main() {
+    let a = <<1:size(x())>>
+    a
+}
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:4:22
   │

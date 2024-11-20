@@ -1,3 +1,4 @@
+use num_bigint::BigInt;
 use std::fmt;
 
 use ecow::EcoString;
@@ -5,12 +6,15 @@ use ecow::EcoString;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Token {
     Name { name: EcoString },
+    HtmlTagAttrName { name: EcoString },
     UpName { name: EcoString },
     DiscardName { name: EcoString },
-    Int { value: EcoString },
+    Int { value: EcoString, int_value: BigInt },
     Float { value: EcoString },
     String { value: EcoString },
-    CommentDoc { content: String },
+    CommentDoc { content: EcoString },
+    HtmlText { value: EcoString },
+    HtmlStartTag,
     // Groupings
     LeftParen,   // (
     RightParen,  // )
@@ -29,7 +33,6 @@ pub enum Token {
     GreaterEqual,
     Percent,
     // Float Operators
-    PlusPlus,        // '++'
     PlusDot,         // '+.'
     MinusDot,        // '-.'
     StarDot,         // '*.'
@@ -39,8 +42,12 @@ pub enum Token {
     LessEqualDot,    // '<=.'
     GreaterEqualDot, // '>=.'
     EqualDot,        // '=.'
+    LtSt,            // '</'
+    LtStGt,          // '</>'
+    StGt,            // '/>'
+    LtGt,            // '<>'
     // String Operators
-    LtGt, // '<>'
+    PlusPlus, // '++'
     // Other Punctuation
     Colon,
     Comma,
@@ -91,6 +98,19 @@ pub enum Token {
     Use,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq, Copy)]
+pub enum TokenIteratorMode {
+    HtmlContent,
+    HtmlTagAttr,
+    Code,
+}
+
+pub trait TokenIterator {
+    type Item;
+    fn change_mode(&mut self, mode: TokenIteratorMode);
+    fn collect_vec(self) -> Vec<Self::Item>;
+    fn next(&mut self) -> Option<Self::Item>;
+}
 impl Token {
     pub fn guard_precedence(&self) -> Option<u8> {
         match self {
@@ -144,11 +164,13 @@ impl Token {
             | Token::Test => true,
 
             Token::Name { .. }
+            | Token::HtmlTagAttrName { .. }
             | Token::UpName { .. }
             | Token::DiscardName { .. }
             | Token::Int { .. }
             | Token::Float { .. }
             | Token::String { .. }
+            | Token::HtmlText { .. }
             | Token::CommentDoc { .. }
             | Token::LeftParen
             | Token::RightParen
@@ -161,6 +183,7 @@ impl Token {
             | Token::Star
             | Token::Slash
             | Token::Less
+            | Token::HtmlStartTag
             | Token::Greater
             | Token::LessEqual
             | Token::GreaterEqual
@@ -175,6 +198,9 @@ impl Token {
             | Token::LessEqualDot
             | Token::GreaterEqualDot
             | Token::LtGt
+            | Token::LtSt
+            | Token::StGt
+            | Token::LtStGt
             | Token::Colon
             | Token::Comma
             | Token::Hash
@@ -205,12 +231,17 @@ impl Token {
 impl fmt::Display for Token {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let s = match self {
-            Token::Name { name } | Token::UpName { name } | Token::DiscardName { name } => {
-                name.as_str()
+            Token::Name { name }
+            | Token::HtmlTagAttrName { name }
+            | Token::UpName { name }
+            | Token::DiscardName { name } => name.as_str(),
+            Token::Int {
+                value,
+                int_value: _,
             }
-            Token::Int { value } | Token::Float { value } | Token::String { value } => {
-                value.as_str()
-            }
+            | Token::HtmlText { value }
+            | Token::Float { value }
+            | Token::String { value } => value.as_str(),
             Token::AmperAmper => "&&",
             Token::As => "as",
             Token::Assert => "assert",
@@ -255,11 +286,15 @@ impl fmt::Display for Token {
             Token::EqualDot => "=.",
             Token::Let => "let",
             Token::LtGt => "<>",
+            Token::LtSt => "</",
+            Token::LtStGt => "</>",
+            Token::StGt => "/>",
             Token::LtLt => "<<",
             Token::Macro => "macro",
             Token::Minus => "-",
             Token::MinusDot => "-.",
             Token::NotEqual => "!=",
+            Token::HtmlStartTag => "<",
             Token::Opaque => "opaque",
             Token::Panic => "panic",
             Token::Percent => "%",

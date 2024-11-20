@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1530
 expression: "record X { X(a: Int, b: Float) }\nfn x() {\n  let c = 2.0\n  let x = X(a: 1, c:)\n  x\n}"
 ---
+----- SOURCE CODE
+record X { X(a: Int, b: Float) }
+fn x() {
+  let c = 2.0
+  let x = X(a: 1, c:)
+  x
+}
+
+----- ERROR
 error: Unknown label
   ┌─ /src/one/two.rakun:4:19
   │

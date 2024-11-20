@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/erlang/tests.rs
+assertion_line: 513
 expression: "pub record X { Fun(Int) }"
 ---
+----- SOURCE CODE
+pub record X { Fun(Int) }
+
+----- COMPILED ERLANG
 -module(my@mod).
 -compile([no_auto_import, nowarn_unused_vars, nowarn_unused_function, nowarn_nomatch]).
 

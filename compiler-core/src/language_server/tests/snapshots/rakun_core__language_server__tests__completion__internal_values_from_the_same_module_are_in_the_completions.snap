@@ -1,7 +1,7 @@
 ---
 source: compiler-core/src/language_server/tests/completion.rs
+assertion_line: 1079
 expression: "\n@external(erlang, \"rand\", \"uniform\")\n@internal pub fn random_float() -> Float\n@internal pub fn main() { 0 }\n@internal pub record Wibble { Wobble }\n@internal pub const wibble = 1\n"
-
 ---
 |
 @external(erlang, "rand", "uniform")

@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 668
 expression: "\n@external(erlang, \"module\", \"fun\")\npub type Fun\n"
 ---
+----- SOURCE CODE
+
+@external(erlang, "module", "fun")
+pub type Fun
+
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:2:1
   │

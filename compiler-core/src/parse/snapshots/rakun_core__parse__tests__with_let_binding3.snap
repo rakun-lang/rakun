@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 439
 expression: "let assert [x] = [2]"
 ---
 [
@@ -21,6 +22,7 @@ expression: "let assert [x] = [2]"
                             end: 19,
                         },
                         value: "2",
+                        int_value: 2,
                     },
                 ],
                 tail: None,

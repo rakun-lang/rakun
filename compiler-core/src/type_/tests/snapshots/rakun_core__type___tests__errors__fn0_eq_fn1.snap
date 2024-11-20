@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 226
 expression: "fn() { 1 } == fn(x) { x + 1 }"
 ---
+----- SOURCE CODE
+fn() { 1 } == fn(x) { x + 1 }
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:15
   │

@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/type_/tests/use_.rs
+assertion_line: 181
 expression: "\nlet f = fn(a, b) { 1 }\nuse <- f(1, 2, 3)\n123\n"
 ---
+----- SOURCE CODE
+
+let f = fn(a, b) { 1 }
+use <- f(1, 2, 3)
+123
+
+
+----- ERROR
 error: Incorrect arity
   ┌─ /src/one/two.rakun:3:8
   │

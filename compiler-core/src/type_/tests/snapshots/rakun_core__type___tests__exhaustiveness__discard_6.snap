@@ -1,7 +1,22 @@
 ---
 source: compiler-core/src/type_/tests/exhaustiveness.rs
+assertion_line: 721
 expression: "\npub record Thing {\n  Thing(a: Bool, b: Bool)\n}\n\npub fn main(x) {\n  case x {\n    Thing(False, ..) -> 1\n  }\n}\n"
 ---
+----- SOURCE CODE
+
+pub record Thing {
+  Thing(a: Bool, b: Bool)
+}
+
+pub fn main(x) {
+  case x {
+    Thing(False, ..) -> 1
+  }
+}
+
+
+----- ERROR
 error: Inexhaustive patterns
   ┌─ /src/one/two.rakun:7:3
   │  

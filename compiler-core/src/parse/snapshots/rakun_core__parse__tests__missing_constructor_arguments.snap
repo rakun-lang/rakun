@@ -1,0 +1,22 @@
+---
+source: compiler-core/src/parse/tests.rs
+assertion_line: 1540
+expression: "\npub record A {\n  A(Int)\n}\n\nconst a = A()\n"
+---
+----- SOURCE CODE
+
+pub record A {
+  A(Int)
+}
+
+const a = A()
+
+
+----- ERROR
+error: Syntax error
+  ┌─ /src/parse/error.rakun:6:12
+  │
+6 │ const a = A()
+  │            ^^ I was expecting arguments here
+
+A record must be passed arguments when constructed.

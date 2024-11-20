@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 463
 expression: "fn use_test(f) { f(Nil) }\npub fn main() {use useVar <- use_test()}"
 ---
 ----- BEFORE ACTION

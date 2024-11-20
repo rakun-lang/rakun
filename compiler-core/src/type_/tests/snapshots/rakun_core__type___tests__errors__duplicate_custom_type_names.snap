@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1104
 expression: "record DupType { A } record DupType { B }"
 ---
+----- SOURCE CODE
+record DupType { A } record DupType { B }
+
+----- ERROR
 error: Duplicate type definition
   ┌─ /src/one/two.rakun:1:1
   │

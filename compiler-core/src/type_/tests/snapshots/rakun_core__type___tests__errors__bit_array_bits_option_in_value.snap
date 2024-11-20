@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 196
 expression: "let x = <<<<1:1>>:bytes>> x"
 ---
+----- SOURCE CODE
+let x = <<<<1:1>>:bytes>> x
+
+----- ERROR
 error: Invalid bit array segment
   ┌─ /src/one/two.rakun:1:19
   │

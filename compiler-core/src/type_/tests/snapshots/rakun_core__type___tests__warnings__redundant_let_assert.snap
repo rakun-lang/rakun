@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 1553
 expression: "\npub fn main() {\n  let assert wibble = [1, 2, 3]\n  wibble\n}\n"
 ---
+----- SOURCE CODE
+
+pub fn main() {
+  let assert wibble = [1, 2, 3]
+  wibble
+}
+
+
+----- WARNING
 warning: Redundant assertion
   ┌─ /src/warning/wrn.rakun:3:7
   │

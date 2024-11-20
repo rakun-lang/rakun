@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 291
 expression: "let f = fn(x: Int) { x } f(1.0)"
 ---
+----- SOURCE CODE
+let f = fn(x: Int) { x } f(1.0)
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:28
   │

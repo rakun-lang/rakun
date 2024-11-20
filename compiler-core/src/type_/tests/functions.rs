@@ -1,6 +1,6 @@
 use crate::{assert_module_error, assert_module_infer};
 
-// https://github.com/rakun-lang/rakun/issues/1860
+
 #[test]
 fn unlabelled_after_labelled() {
     assert_module_error!(
@@ -10,7 +10,7 @@ fn unlabelled_after_labelled() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1860
+
 #[test]
 fn unlabelled_after_labelled_with_type() {
     assert_module_error!(
@@ -20,7 +20,7 @@ fn unlabelled_after_labelled_with_type() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1860
+
 #[test]
 fn unlabelled_after_labelled_external() {
     assert_module_error!(
@@ -31,7 +31,7 @@ fn main(wibble x: Int, y: Int) -> Int
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1860
+
 #[test]
 fn all_labelled() {
     assert_module_infer!(
@@ -43,7 +43,7 @@ fn all_labelled() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1814
+
 #[test]
 fn out_of_order_generalisation() {
     assert_module_infer!(
@@ -62,7 +62,7 @@ fn call(f: fn() -> a) {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2275
+
 #[test]
 fn bug_2275() {
     assert_module_infer!(
@@ -85,7 +85,7 @@ fn two() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2275
+
 #[test]
 fn bug_2275_2_self_references() {
     assert_module_infer!(
@@ -109,7 +109,7 @@ fn two() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2275
+
 #[test]
 fn bug_2275_again() {
     assert_module_infer!(
@@ -153,7 +153,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2303
+
 #[test]
 fn recursive_type() {
     assert_module_error!(
@@ -460,7 +460,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2504
+
 #[test]
 fn provide_arg_type_to_fn_implicit_ok() {
     assert_module_infer!(

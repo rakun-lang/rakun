@@ -1,7 +1,18 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1608
 expression: "\n pub record Person {\n   Person(name: String)\n }\n pub fn update_person(person: Person) {\n   Person(..person, one: 5)\n }"
 ---
+----- SOURCE CODE
+
+ pub record Person {
+   Person(name: String)
+ }
+ pub fn update_person(person: Person) {
+   Person(..person, one: 5)
+ }
+
+----- ERROR
 error: Unknown record field
   ┌─ /src/one/two.rakun:6:21
   │
@@ -12,6 +23,6 @@ The value being accessed has this type:
 
     Person
 
-It has these fields:
+It has these accessible fields:
 
     .name

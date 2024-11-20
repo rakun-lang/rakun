@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 252
 expression: "fn a() { 1 }"
 ---
+----- SOURCE CODE
+fn a() { 1 }
+
+----- WARNING
 warning: Unused private function
   ┌─ /src/warning/wrn.rakun:1:1
   │

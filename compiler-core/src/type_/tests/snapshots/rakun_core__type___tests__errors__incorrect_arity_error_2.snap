@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 261
 expression: "let id = fn(x) { x } id(1, 2)"
 ---
+----- SOURCE CODE
+let id = fn(x) { x } id(1, 2)
+
+----- ERROR
 error: Incorrect arity
   ┌─ /src/one/two.rakun:1:22
   │

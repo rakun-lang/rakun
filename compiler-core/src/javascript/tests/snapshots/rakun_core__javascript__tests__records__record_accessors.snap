@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/javascript/tests/records.rs
+assertion_line: 6
 expression: "\npub record Person { Person(name: String, age: Int) }\npub fn get_age(person: Person) { person.age }\npub fn get_name(person: Person) { person.name }\n"
 ---
+----- SOURCE CODE
+
+pub record Person { Person(name: String, age: Int) }
+pub fn get_age(person: Person) { person.age }
+pub fn get_name(person: Person) { person.name }
+
+
+----- COMPILED JAVASCRIPT
 import { CustomType as $CustomType } from "../rakun.mjs";
 
 export class Person extends $CustomType {

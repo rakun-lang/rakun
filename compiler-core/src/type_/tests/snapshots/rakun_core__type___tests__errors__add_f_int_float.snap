@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 206
 expression: 1 +. 1.0
 ---
+----- SOURCE CODE
+1 +. 1.0
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:1
   │

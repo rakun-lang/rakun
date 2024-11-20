@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 1292
 expression: type Wobble = wibble.Wubble
 ---
 ----- BEFORE ACTION

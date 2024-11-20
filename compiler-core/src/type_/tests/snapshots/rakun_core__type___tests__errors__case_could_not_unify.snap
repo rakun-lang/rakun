@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 286
 expression: "case 1, 2.0 { a, b -> a 1, 2 -> 0 }"
 ---
+----- SOURCE CODE
+case 1, 2.0 { a, b -> a 1, 2 -> 0 }
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:28
   │

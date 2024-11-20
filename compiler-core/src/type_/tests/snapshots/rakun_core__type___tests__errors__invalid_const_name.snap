@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1216
 expression: const myInvalid_Constant = 42
 ---
+----- SOURCE CODE
+const myInvalid_Constant = 42
+
+----- ERROR
 error: Invalid constant name
   ┌─ /src/one/two.rakun:1:7
   │

@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 713
 expression: const auto = 1
 ---
+----- SOURCE CODE
+const auto = 1
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:1:7
   │

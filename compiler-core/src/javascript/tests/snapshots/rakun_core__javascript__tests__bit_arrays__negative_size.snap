@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/javascript/tests/bit_arrays.rs
+assertion_line: 570
 expression: "\nfn go() {\n  <<1:size(-1)>>\n}\n"
 ---
+----- SOURCE CODE
+
+fn go() {
+  <<1:size(-1)>>
+}
+
+
+----- COMPILED JAVASCRIPT
 import { toBitArray, sizedInt } from "../rakun.mjs";
 
 function go() {

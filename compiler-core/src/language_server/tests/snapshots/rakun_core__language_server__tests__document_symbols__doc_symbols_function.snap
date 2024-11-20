@@ -1,12 +1,13 @@
 ---
 source: compiler-core/src/language_server/tests/document_symbols.rs
+assertion_line: 142
 expression: "doc_symbols(TestProject::for_source(code))"
 ---
 [
     DocumentSymbol {
         name: "super_func",
         detail: Some(
-            "fn(Int) -> List<Int>",
+            "fn(Int) -> List(Int)",
         ),
         kind: Function,
         tags: None,
@@ -36,7 +37,7 @@ expression: "doc_symbols(TestProject::for_source(code))"
     DocumentSymbol {
         name: "super_func2",
         detail: Some(
-            "fn(Int) -> List<Int>",
+            "fn(Int) -> List(Int)",
         ),
         kind: Function,
         tags: None,

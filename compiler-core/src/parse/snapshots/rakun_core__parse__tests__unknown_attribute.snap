@@ -1,7 +1,13 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 607
 expression: "@go_faster()\npub fn main() { 1 }"
 ---
+----- SOURCE CODE
+@go_faster()
+pub fn main() { 1 }
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:1:1
   │

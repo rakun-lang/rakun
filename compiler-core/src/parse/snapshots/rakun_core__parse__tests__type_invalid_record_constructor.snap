@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 1033
 expression: "\npub record User {\n    name: String,\n}\n"
 ---
+----- SOURCE CODE
+
+pub record User {
+    name: String,
+}
+
+
+----- ERROR
 error: Syntax error
   ┌─ /src/parse/error.rakun:3:5
   │

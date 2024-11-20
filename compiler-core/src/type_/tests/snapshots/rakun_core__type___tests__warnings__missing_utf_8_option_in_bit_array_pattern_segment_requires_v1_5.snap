@@ -1,7 +1,19 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 2469
 expression: "\npub fn main(a) {\n  case a {\n    <<\"hello\">> -> Nil\n    _ -> Nil\n  }\n}\n"
 ---
+----- SOURCE CODE
+
+pub fn main(a) {
+  case a {
+    <<"hello">> -> Nil
+    _ -> Nil
+  }
+}
+
+
+----- WARNING
 warning: Incompatible rakun version range
   ┌─ /src/warning/wrn.rakun:4:7
   │

@@ -1,7 +1,19 @@
 ---
 source: compiler-core/src/javascript/tests/functions.rs
+assertion_line: 58
 expression: "\npub fn add(x, y) {\nx + y\n}\n\npub fn long() {\n  add(1, add(1, add(1, add(1, add(1, add(1, add(1, add(1, add(1, add(1, add(1, add(1, add(1, add(1, add(1, 1)))))))))))))))\n}"
 ---
+----- SOURCE CODE
+
+pub fn add(x, y) {
+x + y
+}
+
+pub fn long() {
+  add(1, add(1, add(1, add(1, add(1, add(1, add(1, add(1, add(1, add(1, add(1, add(1, add(1, add(1, add(1, 1)))))))))))))))
+}
+
+----- COMPILED JAVASCRIPT
 export function add(x, y) {
   return x + y;
 }

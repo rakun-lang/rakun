@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/javascript/tests/panic.rs
+assertion_line: 39
 expression: "\nfn go(f) {\n  let boop = panic\n  f(panic)\n}\n"
 ---
+----- SOURCE CODE
+
+fn go(f) {
+  let boop = panic
+  f(panic)
+}
+
+
+----- COMPILED JAVASCRIPT
 import { makeError } from "../rakun.mjs";
 
 function go(f) {

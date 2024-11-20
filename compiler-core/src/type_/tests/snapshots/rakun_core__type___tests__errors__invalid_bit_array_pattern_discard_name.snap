@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1356
 expression: let assert <<_iDontCare>> = <<97>>
 ---
+----- SOURCE CODE
+let assert <<_iDontCare>> = <<97>>
+
+----- ERROR
 error: Invalid discard name
   ┌─ /src/one/two.rakun:1:14
   │

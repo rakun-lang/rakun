@@ -97,7 +97,7 @@ pub fn new() -> Queue<a>
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1636
+
 #[test]
 fn external_fn_escaping() {
     assert_js!(
@@ -107,7 +107,7 @@ pub fn then(a: a) -> b"#,
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1954
+
 #[test]
 fn pipe_variable_shadow() {
     assert_js!(
@@ -123,7 +123,7 @@ pub fn main() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2090
+
 #[test]
 fn tf_type_name_usage() {
     assert_ts_def!(
@@ -310,6 +310,16 @@ pub fn should_not_be_generated() {
   js()
   erl()
 }
+"#
+    );
+}
+
+#[test]
+fn discarded_names_in_external_are_passed_correctly() {
+    assert_js!(
+        r#"
+@external(javascript, "wibble", "wobble")
+pub fn woo(_ignored: a) -> Nil
 "#
     );
 }

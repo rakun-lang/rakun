@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 542
 expression: "{ 1 }"
 ---
 [
@@ -17,6 +18,7 @@ expression: "{ 1 }"
                             end: 3,
                         },
                         value: "1",
+                        int_value: 1,
                     },
                 ),
             ],

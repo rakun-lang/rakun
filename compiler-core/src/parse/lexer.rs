@@ -1,12 +1,17 @@
+use ecow::EcoString;
+use itertools::Itertools;
+
 use crate::ast::SrcSpan;
 use crate::parse::error::{LexicalError, LexicalErrorType};
 use crate::parse::token::Token;
 use std::char;
 
 use super::error::InvalidUnicodeEscapeError;
+use super::token::{TokenIterator, TokenIteratorMode};
 
 #[derive(Debug)]
 pub struct Lexer<T: Iterator<Item = (u32, char)>> {
+    mode: TokenIteratorMode,
     chars: T,
     pending: Vec<Spanned>,
     chr0: Option<char>,
@@ -48,7 +53,7 @@ pub fn str_to_keyword(word: &str) -> Option<Token> {
     }
 }
 
-pub fn make_tokenizer(source: &str) -> impl Iterator<Item = LexResult> + '_ {
+pub fn make_tokenizer(source: &str) -> impl TokenIterator<Item = LexResult> + '_ {
     let chars = source.char_indices().map(|(i, c)| (i as u32, c));
     let nlh = NewlineHandler::new(chars);
     Lexer::new(nlh)
@@ -116,6 +121,7 @@ where
 {
     pub fn new(input: T) -> Self {
         let mut lxr = Lexer {
+            mode: TokenIteratorMode::Code,
             chars: input,
             pending: Vec::new(),
             location: 0,
@@ -135,7 +141,11 @@ where
     fn inner_next(&mut self) -> LexResult {
         // top loop, keep on processing, until we have something pending.
         while self.pending.is_empty() {
-            self.consume_normal()?;
+            match self.mode {
+                TokenIteratorMode::Code => self.consume_normal()?,
+                TokenIteratorMode::HtmlContent => self.consume_normal_html()?,
+                TokenIteratorMode::HtmlTagAttr => self.consume_normal_html_tag_attr()?,
+            }
         }
 
         Ok(self.pending.remove(0))
@@ -249,6 +259,11 @@ where
                         let tok_end = self.get_pos();
                         self.emit((tok_start, Token::SlashDot, tok_end));
                     }
+                    Some('>') => {
+                        let _ = self.next_char();
+                        let tok_end = self.get_pos();
+                        self.emit((tok_start, Token::StGt, tok_end));
+                    }
                     Some('/') => {
                         let _ = self.next_char();
                         let comment = self.lex_comment();
@@ -352,11 +367,26 @@ where
             '<' => {
                 let tok_start = self.get_pos();
                 let _ = self.next_char();
+
                 match self.chr0 {
                     Some('>') => {
                         let _ = self.next_char();
                         let tok_end = self.get_pos();
                         self.emit((tok_start, Token::LtGt, tok_end));
+                    }
+                    Some('/') => {
+                        let _ = self.next_char();
+                        match self.chr0 {
+                            Some('>') => {
+                                let _ = self.next_char();
+                                let tok_end = self.get_pos();
+                                self.emit((tok_start, Token::LtStGt, tok_end));
+                            }
+                            _ => {
+                                let tok_end = self.get_pos();
+                                self.emit((tok_start, Token::LtSt, tok_end));
+                            }
+                        }
                     }
                     Some('<') => {
                         let _ = self.next_char();
@@ -387,7 +417,23 @@ where
                             }
                         }
                     }
-                    _ => {
+                    Some(c) => {
+                        if self.is_upname_start(c) {
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::HtmlStartTag, tok_end));
+                            let name = self.lex_upname()?;
+                            self.emit(name)
+                        } else if self.is_name_start(c) {
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::HtmlStartTag, tok_end));
+                            let name = self.lex_name()?;
+                            self.emit(name);
+                        } else {
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::Less, tok_end));
+                        }
+                    }
+                    None => {
                         let tok_end = self.get_pos();
                         self.emit((tok_start, Token::Less, tok_end));
                     }
@@ -468,6 +514,30 @@ where
         Ok(())
     }
 
+    fn is_name_start(&self, c: char) -> bool {
+        matches!(c, '_' | 'a'..='z')
+    }
+
+    fn lex_attr_name(&mut self) -> LexResult {
+        let mut name = String::new();
+        let start_pos = self.get_pos();
+        while self.is_attr_name_continuation() {
+            name.push(self.next_char().expect("lex_attr_name continuation"));
+        }
+
+        let end_pos = self.get_pos();
+
+        Ok((
+            start_pos,
+            Token::HtmlTagAttrName { name: name.into() },
+            end_pos,
+        ))
+    }
+    fn is_attr_name_continuation(&self) -> bool {
+        self.chr0
+            .map(|c| matches!(c, '_' | '-' | '0'..='9' | 'a'..='z' | 'A'..='Z'))
+            .unwrap_or(false)
+    }
     // Lexer helper functions:
     // this can be either a reserved word, or a name
     fn lex_name(&mut self) -> LexResult {
@@ -568,11 +638,13 @@ where
             })
         } else {
             let value = format!("{prefix}{num}");
+            let int_value = super::parse_int_value(&value).expect("int value to parse as bigint");
             let end_pos = self.get_pos();
             Ok((
                 start_pos,
                 Token::Int {
                     value: value.into(),
+                    int_value,
                 },
                 end_pos,
             ))
@@ -624,11 +696,13 @@ where
                 end_pos,
             )
         } else {
+            let int_value = super::parse_int_value(&value).expect("int value to parse as bigint");
             let end_pos = self.get_pos();
             (
                 start_pos,
                 Token::Int {
                     value: value.into(),
+                    int_value,
                 },
                 end_pos,
             )
@@ -710,7 +784,7 @@ where
             }
             _ => Kind::Comment,
         };
-        let mut content = String::new();
+        let mut content = EcoString::new();
         let start_pos = self.get_pos();
         while Some('\n') != self.chr0 {
             match self.chr0 {
@@ -880,10 +954,231 @@ where
 
         Ok((start_pos, tok, end_pos))
     }
+    fn lex_html_string(&mut self) -> Result<Option<Spanned>, LexicalError> {
+        let start_pos = self.get_pos();
+        // advance past the first quote
+        let mut string_content = String::new();
+        loop {
+            match self.chr0 {
+                Some('>' | '<' | '{') => break,
+                Some(c) => {
+                    string_content.push(c);
+                    let _ = self.next_char();
+                }
+                None => {
+                    return Err(LexicalError {
+                        error: LexicalErrorType::UnexpectedStringEnd,
+                        location: SrcSpan {
+                            start: start_pos,
+                            end: start_pos,
+                        },
+                    });
+                }
+            }
+        }
+        let end_pos = self.get_pos();
 
-    fn is_name_start(&self, c: char) -> bool {
-        matches!(c, '_' | 'a'..='z')
+        let trimmed_content = string_content.trim().to_string();
+        if trimmed_content.is_empty() {
+            return Ok(None); // Return None if the content is empty
+        }
+        let tok = Token::HtmlText {
+            value: trimmed_content.into(),
+        };
+
+        Ok(Some((start_pos, tok, end_pos)))
     }
+
+    fn consume_normal_html(&mut self) -> Result<(), LexicalError> {
+        match self.chr0 {
+            Some(c) => match c {
+                '/' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    match self.chr0 {
+                        Some('>') => {
+                            let _ = self.next_char();
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::StGt, tok_end));
+                        }
+                        _ => {
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::Slash, tok_end));
+                        }
+                    }
+                }
+                '<' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    match self.chr0 {
+                        Some('>') => {
+                            let _ = self.next_char();
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::LtGt, tok_end));
+                        }
+                        Some('/') => {
+                            let _ = self.next_char();
+                            match self.chr0 {
+                                Some('>') => {
+                                    let _ = self.next_char();
+                                    let tok_end = self.get_pos();
+                                    self.emit((tok_start, Token::LtStGt, tok_end));
+                                }
+                                _ => {
+                                    let tok_end = self.get_pos();
+                                    self.emit((tok_start, Token::LtSt, tok_end));
+                                }
+                            }
+                        }
+                        _ => {
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::Less, tok_end));
+                        }
+                    }
+                }
+                '>' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    let tok_end = self.get_pos();
+                    self.emit((tok_start, Token::Greater, tok_end));
+                }
+                '{' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    let tok_end = self.get_pos();
+                    self.emit((tok_start, Token::LeftBrace, tok_end));
+                }
+                _ => {
+                    if let Some(spanned) = self.lex_html_string()? {
+                        self.emit(spanned);
+                    } else {
+                        return self.consume_normal_html();
+                    }
+                }
+            },
+            None => {
+                // We reached end of file.
+                let tok_pos = self.get_pos();
+                self.emit((tok_pos, Token::EndOfFile, tok_pos));
+            }
+        }
+        Ok(())
+    }
+
+    fn consume_normal_html_tag_attr(&mut self) -> Result<(), LexicalError> {
+        match self.chr0 {
+            Some(c) => match c {
+                '.' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    if let Some('.') = &self.chr0 {
+                        let _ = self.next_char();
+                        let tok_end = self.get_pos();
+                        self.emit((tok_start, Token::DotDot, tok_end));
+                    } else {
+                        let tok_end = self.get_pos();
+                        self.emit((tok_start, Token::Dot, tok_end));
+                    }
+                }
+                '/' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    match self.chr0 {
+                        Some('>') => {
+                            let _ = self.next_char();
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::StGt, tok_end));
+                        }
+                        _ => {
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::Slash, tok_end));
+                        }
+                    }
+                }
+                '<' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    match self.chr0 {
+                        Some('>') => {
+                            let _ = self.next_char();
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::LtGt, tok_end));
+                        }
+                        Some('/') => {
+                            let _ = self.next_char();
+                            match self.chr0 {
+                                Some('>') => {
+                                    let _ = self.next_char();
+                                    let tok_end = self.get_pos();
+                                    self.emit((tok_start, Token::LtStGt, tok_end));
+                                }
+                                _ => {
+                                    let tok_end = self.get_pos();
+                                    self.emit((tok_start, Token::LtSt, tok_end));
+                                }
+                            }
+                        }
+                        _ => {
+                            let tok_end = self.get_pos();
+                            self.emit((tok_start, Token::Less, tok_end));
+                        }
+                    }
+                }
+                '>' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    let tok_end = self.get_pos();
+                    self.emit((tok_start, Token::Greater, tok_end));
+                }
+                '{' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    let tok_end = self.get_pos();
+                    self.emit((tok_start, Token::LeftBrace, tok_end));
+                }
+                '=' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    let tok_end = self.get_pos();
+                    self.emit((tok_start, Token::Equal, tok_end));
+                }
+                '\n' | ' ' | '\t' | '\x0C' => {
+                    let tok_start = self.get_pos();
+                    let _ = self.next_char();
+                    let tok_end = self.get_pos();
+                    if c == '\n' {
+                        self.emit((tok_start, Token::NewLine, tok_end));
+                    }
+                }
+                c => {
+                    if self.is_attr_name_start(c) {
+                        let name = self.lex_attr_name()?;
+                        self.emit(name);
+                    } else {
+                        let location = self.get_pos();
+                        return Err(LexicalError {
+                            error: LexicalErrorType::UnrecognizedToken { tok: c },
+                            location: SrcSpan {
+                                start: location,
+                                end: location,
+                            },
+                        });
+                    }
+                }
+            },
+            None => {
+                // We reached end of file.
+                let tok_pos = self.get_pos();
+                self.emit((tok_pos, Token::EndOfFile, tok_pos));
+            }
+        }
+        Ok(())
+    }
+
+    fn is_attr_name_start(&self, c: char) -> bool {
+        matches!(c, '_' | 'a'..='z' | 'A'..='Z')
+    }
+
     fn is_upname_start(&self, c: char) -> bool {
         c.is_ascii_uppercase()
     }
@@ -941,6 +1236,25 @@ where
     }
 }
 
+impl<T> TokenIterator for Lexer<T>
+where
+    T: Iterator<Item = (u32, char)>,
+{
+    type Item = LexResult;
+    fn change_mode(&mut self, mode: TokenIteratorMode) {
+        self.mode = mode;
+    }
+
+    fn collect_vec(self) -> Vec<Self::Item> {
+        Itertools::collect_vec(self)
+    }
+
+    fn next(&mut self) -> Option<Self::Item> {
+        Iterator::next(self)
+    }
+}
+
+// Certifique-se de que o Lexer T implementa Iterator
 impl<T> Iterator for Lexer<T>
 where
     T: Iterator<Item = (u32, char)>,

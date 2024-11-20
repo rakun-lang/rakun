@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1396
 expression: "fn identity(value: someType) { value }"
 ---
+----- SOURCE CODE
+fn identity(value: someType) { value }
+
+----- ERROR
 error: Invalid type variable name
   ┌─ /src/one/two.rakun:1:20
   │

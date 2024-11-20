@@ -1,7 +1,40 @@
 ---
 source: compiler-core/src/erlang/tests/reserved.rs
+assertion_line: 12
 expression: "pub record After { TestAfter }\npub record And { TestAnd }\npub record Andalso { TestAndAlso }\npub record Band { TestBAnd }\npub record Begin { TestBegin }\npub record Bnot { TestBNot }\npub record Bor { TestBOr }\npub record Bsl { TestBsl }\npub record Bsr { TestBsr }\npub record Bxor { TestBXor }\npub record Case { TestCase }\npub record Catch { TestCatch }\npub record Cond { TestCond }\npub record Div { TestDiv }\npub record End { TestEnd }\npub record Fun { TestFun }\npub record If { TestIf }\npub record Let { TestLet }\npub record Maybe { TestMaybe }\npub record Not { TestNot }\npub record Of { TestOf }\npub record Or { TestOr }\npub record Orelse { TestOrElse }\npub record Query { TestQuery }\npub record Receive { TestReceive }\npub record Rem { TestRem }\npub record Try { TestTry }\npub record When { TestWhen }\npub record Xor { TestXor }"
 ---
+----- SOURCE CODE
+pub record After { TestAfter }
+pub record And { TestAnd }
+pub record Andalso { TestAndAlso }
+pub record Band { TestBAnd }
+pub record Begin { TestBegin }
+pub record Bnot { TestBNot }
+pub record Bor { TestBOr }
+pub record Bsl { TestBsl }
+pub record Bsr { TestBsr }
+pub record Bxor { TestBXor }
+pub record Case { TestCase }
+pub record Catch { TestCatch }
+pub record Cond { TestCond }
+pub record Div { TestDiv }
+pub record End { TestEnd }
+pub record Fun { TestFun }
+pub record If { TestIf }
+pub record Let { TestLet }
+pub record Maybe { TestMaybe }
+pub record Not { TestNot }
+pub record Of { TestOf }
+pub record Or { TestOr }
+pub record Orelse { TestOrElse }
+pub record Query { TestQuery }
+pub record Receive { TestReceive }
+pub record Rem { TestRem }
+pub record Try { TestTry }
+pub record When { TestWhen }
+pub record Xor { TestXor }
+
+----- COMPILED ERLANG
 -module(my@mod).
 -compile([no_auto_import, nowarn_unused_vars, nowarn_unused_function, nowarn_nomatch]).
 

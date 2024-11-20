@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1341
 expression: "let #(a, secondValue) = #(1, 2)"
 ---
+----- SOURCE CODE
+let #(a, secondValue) = #(1, 2)
+
+----- ERROR
 error: Invalid variable name
   ┌─ /src/one/two.rakun:1:10
   │

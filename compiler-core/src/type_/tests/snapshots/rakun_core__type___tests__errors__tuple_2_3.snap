@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 405
 expression: "#(1, 2) == #(1, 2, 3)"
 ---
+----- SOURCE CODE
+#(1, 2) == #(1, 2, 3)
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:12
   │

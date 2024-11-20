@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 1713
 expression: "pub fn main() {\n          let _ = {\n            panic\n          }\n          1\n        }"
 ---
+----- SOURCE CODE
+pub fn main() {
+          let _ = {
+            panic
+          }
+          1
+        }
+
+----- WARNING
 warning: Unreachable code
   ┌─ /src/warning/wrn.rakun:5:11
   │

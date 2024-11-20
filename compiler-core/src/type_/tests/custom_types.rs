@@ -1,6 +1,6 @@
 use crate::{assert_module_error, assert_module_infer, assert_warning, assert_with_module_error};
 
-// https://github.com/rakun-lang/rakun/issues/2215
+
 #[test]
 fn generic_phantom() {
     assert_module_infer!(

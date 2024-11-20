@@ -1,12 +1,11 @@
 use super::*;
 use crate::{
-    assert_no_warnings, assert_warning, assert_warnings_with_imports,
-    assert_warnings_with_rakun_version,
+    assert_js_no_warnings, assert_js_warning, assert_no_warnings, assert_warning,
+    assert_warnings_with_imports, assert_warnings_with_rakun_version,
 };
 
 #[test]
 fn unknown_label() {
-    // https://github.com/rakun-lang/rakun/issues/1098
     // calling function with unused labelled argument should not emit warnings
     assert_no_warnings!(
         r#"fn greet(name name: String, title _title: String) { name }
@@ -19,7 +18,6 @@ fn todo_warning_test() {
     assert_warning!("pub fn main() { 1 == todo }");
 }
 
-// https://github.com/rakun-lang/rakun/issues/1669
 #[test]
 fn todo_warning_correct_location() {
     assert_warning!(
@@ -336,7 +334,6 @@ fn unused_imported_module_with_alias_warnings_test() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2326
 #[test]
 fn unused_imported_module_with_alias_and_unqualified_name_warnings_test() {
     assert_warning!(
@@ -385,7 +382,6 @@ fn unused_imported_module_no_warning_on_used_unqualified_type_test() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3313
 #[test]
 fn imported_module_with_alias_no_warning_when_only_used_in_case_test() {
     assert_no_warnings!(
@@ -406,7 +402,6 @@ fn module_access_registers_import_usage() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/978
 #[test]
 fn bit_pattern_var_use() {
     assert_no_warnings!(
@@ -418,7 +413,6 @@ pub fn main(x) {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/989
 #[test]
 fn alternative_case_clause_pattern_variable_usage() {
     assert_no_warnings!(
@@ -432,7 +426,6 @@ pub fn main(s) {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1742
 #[test]
 fn imported_function_referenced_in_constant() {
     assert_no_warnings!(
@@ -445,7 +438,6 @@ pub const make_two = one.two
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1742
 #[test]
 fn imported_constructor_referenced_in_constant() {
     assert_no_warnings!(
@@ -458,13 +450,11 @@ pub const make_two = one.Two
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2050
 #[test]
 fn double_unary_integer_literal() {
     assert_warning!("pub fn main() { let _ = --7 }");
 }
 
-// https://github.com/rakun-lang/rakun/issues/2050
 #[test]
 fn double_unary_integer_variable() {
     assert_warning!(
@@ -477,13 +467,11 @@ fn double_unary_integer_variable() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2050
 #[test]
 fn double_unary_bool_literal() {
     assert_warning!("pub fn main() { let _ = !!True }");
 }
 
-// https://github.com/rakun-lang/rakun/issues/2050
 #[test]
 fn double_unary_bool_variable() {
     assert_warning!(
@@ -496,7 +484,6 @@ fn double_unary_bool_variable() {
     );
 }
 
-/// https://github.com/rakun-lang/rakun/issues/2067
 #[test]
 fn prefer_list_is_empty_over_list_length_eq_0() {
     assert_warning!(
@@ -516,7 +503,6 @@ fn prefer_list_is_empty_over_list_length_eq_0() {
     );
 }
 
-/// https://github.com/rakun-lang/rakun/issues/2067
 #[test]
 fn prefer_list_is_empty_over_list_length_eq_negative_0() {
     assert_warning!(
@@ -536,7 +522,6 @@ fn prefer_list_is_empty_over_list_length_eq_negative_0() {
     );
 }
 
-/// https://github.com/rakun-lang/rakun/issues/2067
 #[test]
 fn prefer_list_is_empty_over_0_eq_list_length() {
     assert_warning!(
@@ -556,7 +541,6 @@ fn prefer_list_is_empty_over_0_eq_list_length() {
     );
 }
 
-/// https://github.com/rakun-lang/rakun/issues/2067
 #[test]
 fn prefer_list_is_empty_over_negative_0_eq_list_length() {
     assert_warning!(
@@ -576,7 +560,6 @@ fn prefer_list_is_empty_over_negative_0_eq_list_length() {
     );
 }
 
-/// https://github.com/rakun-lang/rakun/issues/2067
 #[test]
 fn prefer_list_is_empty_over_list_length_not_eq_0() {
     assert_warning!(
@@ -596,7 +579,6 @@ fn prefer_list_is_empty_over_list_length_not_eq_0() {
     );
 }
 
-/// https://github.com/rakun-lang/rakun/issues/2067
 #[test]
 fn prefer_list_is_empty_over_0_not_eq_list_length() {
     assert_warning!(
@@ -616,7 +598,6 @@ fn prefer_list_is_empty_over_0_not_eq_list_length() {
     );
 }
 
-/// https://github.com/rakun-lang/rakun/issues/2067
 #[test]
 fn prefer_list_is_empty_over_list_length_lt_eq_0() {
     assert_warning!(
@@ -636,7 +617,6 @@ fn prefer_list_is_empty_over_list_length_lt_eq_0() {
     );
 }
 
-/// https://github.com/rakun-lang/rakun/issues/2067
 #[test]
 fn prefer_list_is_empty_over_list_length_lt_1() {
     assert_warning!(
@@ -656,7 +636,6 @@ fn prefer_list_is_empty_over_list_length_lt_1() {
     );
 }
 
-/// https://github.com/rakun-lang/rakun/issues/2067
 #[test]
 fn allow_list_length_eq_1() {
     assert_no_warnings!(
@@ -676,7 +655,6 @@ fn allow_list_length_eq_1() {
     );
 }
 
-/// https://github.com/rakun-lang/rakun/issues/2067
 #[test]
 fn allow_1_eq_list_length() {
     assert_no_warnings!(
@@ -696,7 +674,6 @@ fn allow_1_eq_list_length() {
     );
 }
 
-/// https://github.com/rakun-lang/rakun/issues/2067
 #[test]
 fn allow_list_length_eq_3() {
     assert_no_warnings!(
@@ -716,7 +693,6 @@ fn allow_list_length_eq_3() {
     );
 }
 
-/// https://github.com/rakun-lang/rakun/issues/2067
 #[test]
 fn allow_1_lt_list_length() {
     assert_no_warnings!(
@@ -736,7 +712,6 @@ fn allow_1_lt_list_length() {
     );
 }
 
-/// https://github.com/rakun-lang/rakun/issues/2067
 #[test]
 fn allow_list_length_gt_1() {
     assert_no_warnings!(
@@ -758,7 +733,6 @@ fn allow_list_length_gt_1() {
 
 #[test]
 fn unused_external_function_arguments() {
-    // https://github.com/rakun-lang/rakun/issues/2259
     assert_no_warnings!(
         r#"
 @external(erlang, "go", "go")
@@ -790,7 +764,7 @@ pub fn main() {
   x
 }"#;
     let warnings = VectorWarningEmitterIO::default();
-    _ = compile_module("test_module", src, Some(Arc::new(warnings.clone())), vec![]).unwrap_err();
+    _ = compile_module("test_module", src, Some(Rc::new(warnings.clone())), vec![]).unwrap_err();
     assert!(warnings.take().is_empty());
 }
 
@@ -1374,7 +1348,67 @@ fn unused_module_select_constructor() {
 import wibble
 
 pub fn main() {
+  wibble.Wibble
+  1
+}
+"#
+    );
+}
+
+#[test]
+fn unused_module_select_constructor_call() {
+    assert_warning!(
+        ("wibble", "pub record Wibble { Wibble(Int) }"),
+        r#"
+import wibble
+
+pub fn main() {
   wibble.Wibble(1)
+  1
+}
+"#
+    );
+}
+
+#[test]
+fn unused_module_select_function() {
+    assert_warning!(
+        ("wibble", "pub fn println(a) { Nil }"),
+        r#"
+import wibble
+
+pub fn main() {
+  wibble.println
+  1
+}
+"#
+    );
+}
+
+#[test]
+fn unused_module_select_const() {
+    assert_warning!(
+        ("wibble", "pub const a = 1"),
+        r#"
+import wibble
+
+pub fn main() {
+  wibble.a
+  1
+}
+"#
+    );
+}
+
+#[test]
+fn calling_function_from_other_module_is_not_marked_unused() {
+    assert_no_warnings!(
+        ("wibble", "wibble", "pub fn println(a) { Nil }"),
+        r#"
+import wibble
+
+pub fn main() {
+  wibble.println("hello!")
   1
 }
 "#
@@ -2004,7 +2038,6 @@ fn deprecated_list_pattern_syntax() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3383
 #[test]
 fn deprecated_list_pattern_syntax_1() {
     assert_warning!(
@@ -2020,7 +2053,6 @@ fn deprecated_list_pattern_syntax_1() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3473
 #[test]
 fn deprecated_record_pattern_syntax() {
     assert_warning!(
@@ -2416,5 +2448,235 @@ pub fn main(a) {
   }
 }
 ",
+    );
+}
+
+#[test]
+fn record_update_variant_inference_requires_v1_6() {
+    assert_warnings_with_rakun_version!(
+        Range::higher_than(Version::new(1, 0, 0)),
+        "
+pub record Wibble {
+  Wibble(a: Int, b: Int)
+  Wobble(a: Int, c: Int)
+}
+
+pub fn main(wibble) {
+  case wibble {
+    Wibble(..) -> Wibble(..wibble, b: 10)
+    Wobble(..) -> panic
+  }
+}
+",
+    );
+}
+
+#[test]
+fn record_access_variant_inference_requires_v1_6() {
+    assert_warnings_with_rakun_version!(
+        Range::higher_than(Version::new(1, 0, 0)),
+        "
+pub record Wibble {
+  Wibble(a: Int, b: Int)
+  Wobble(a: Int, c: Int)
+}
+
+pub fn main(wibble) {
+  case wibble {
+    Wibble(..) -> wibble.b
+    Wobble(..) -> wibble.c
+  }
+}
+",
+    );
+}
+
+#[test]
+fn javascript_unsafe_int_decimal() {
+    assert_js_warning!(
+        r#"
+pub fn go() {
+  [
+    9_007_199_254_740_990,
+    9_007_199_254_740_991,
+    9_007_199_254_740_992,
+    -9_007_199_254_740_990,
+    -9_007_199_254_740_991,
+    -9_007_199_254_740_992,
+  ]
+}
+"#
+    );
+}
+
+#[test]
+fn javascript_unsafe_int_binary() {
+    assert_js_warning!(
+        r#"
+pub fn go() {
+  [
+    0b11111111111111111111111111111111111111111111111111110,
+    0b11111111111111111111111111111111111111111111111111111,
+    0b100000000000000000000000000000000000000000000000000000,
+  ]
+}
+"#
+    );
+}
+
+#[test]
+fn javascript_unsafe_int_octal() {
+    assert_js_warning!(
+        r#"
+pub fn go() {
+  [
+    0o377777777777777776,
+    0o377777777777777777,
+    0o400000000000000000,
+  ]
+}
+"#
+    );
+}
+
+#[test]
+fn javascript_unsafe_int_hex() {
+    assert_js_warning!(
+        r#"
+pub fn go() {
+  [
+    0x1FFFFFFFFFFFFE,
+    0x1FFFFFFFFFFFFF,
+    0x20000000000000,
+  ]
+}
+"#
+    );
+}
+
+#[test]
+fn javascript_unsafe_int_in_tuple() {
+    assert_js_warning!(
+        r#"
+pub fn go() {
+  #(9_007_199_254_740_992)
+}
+"#
+    );
+}
+
+#[test]
+fn javascript_unsafe_int_segment_in_bit_array() {
+    assert_js_warning!(
+        r#"
+pub fn go() {
+  <<9_007_199_254_740_992:64>>
+}
+"#
+    );
+}
+
+#[test]
+fn javascript_unsafe_int_segment_size_in_bit_array() {
+    assert_js_warning!(
+        r#"
+pub fn go() {
+  [
+    <<0:9_007_199_254_740_992>>,
+    <<0:size(9_007_199_254_740_992)>>,
+  ]
+}
+"#
+    );
+}
+
+#[test]
+fn javascript_unsafe_int_in_const() {
+    assert_js_warning!(r#"pub const i = 9_007_199_254_740_992"#);
+}
+
+#[test]
+fn javascript_unsafe_int_in_const_tuple() {
+    assert_js_warning!(r#"pub const i = #(9_007_199_254_740_992)"#);
+}
+
+#[test]
+fn javascript_unsafe_int_segment_in_const_bit_array() {
+    assert_js_warning!(
+        r#"
+pub const i = <<9_007_199_254_740_992:64>>
+"#
+    );
+}
+
+#[test]
+fn javascript_unsafe_int_segment_size_in_const_bit_array() {
+    assert_js_warning!(
+        r#"
+pub const ints = [
+  <<0:9_007_199_254_740_992>>,
+  <<0:size(9_007_199_254_740_992)>>,
+]
+"#
+    );
+}
+
+#[test]
+fn javascript_unsafe_int_in_pattern() {
+    assert_js_warning!(
+        r#"
+pub fn go() {
+  let assert <<9_007_199_254_740_992:64>> = <<>>
+}
+"#
+    );
+}
+
+#[test]
+fn javascript_unsafe_int_segment_size_in_pattern() {
+    assert_js_warning!(
+        r#"
+pub fn go() {
+  let assert <<0:9_007_199_254_740_992>> = <<>>
+}
+"#
+    );
+}
+
+#[test]
+fn javascript_unsafe_int_with_external_implementation() {
+    assert_js_no_warnings!(
+        r#"
+@external(javascript, "./test.mjs", "go")
+pub fn go() -> Int {
+  9_007_199_254_740_992
+}
+"#
+    );
+}
+
+#[test]
+fn javascript_unsafe_int_segment_in_pattern_with_external_implementation() {
+    assert_js_no_warnings!(
+        r#"
+@external(javascript, "./test.mjs", "go")
+pub fn go(b: BitArray) -> BitArray {
+  let assert <<0xFFF0000000000000:64>> = b
+}
+"#
+    );
+}
+
+#[test]
+fn javascript_unsafe_int_with_external_function_call() {
+    assert_js_warning!(
+        r#"
+pub fn main() {
+  9_007_199_254_740_992 + helper()
+}
+
+@external(javascript, "a", "b")
+fn helper() -> Int
+"#
     );
 }

@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1276
 expression: type Fancy_Bool = Bool
 ---
+----- SOURCE CODE
+type Fancy_Bool = Bool
+
+----- ERROR
 error: Invalid type alias name
   ┌─ /src/one/two.rakun:1:6
   │

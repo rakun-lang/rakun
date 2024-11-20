@@ -7,8 +7,8 @@ use crate::parse::token::Token;
 use crate::warning::WarningEmitter;
 use camino::Utf8PathBuf;
 
+use crate::parse::token::TokenIterator;
 use ecow::EcoString;
-use itertools::Itertools;
 use pretty_assertions::assert_eq;
 
 macro_rules! assert_error {
@@ -17,18 +17,19 @@ macro_rules! assert_error {
         assert_eq!(($src, $error), ($src, result),);
     };
     ($src:expr) => {
-        let result = $crate::parse::tests::expect_error($src);
-        insta::assert_snapshot!(insta::internals::AutoName, result, $src);
+        let error = $crate::parse::tests::expect_error($src);
+        let output = format!("----- SOURCE CODE\n{}\n\n----- ERROR\n{}", $src, error);
+        insta::assert_snapshot!(insta::internals::AutoName, output, $src);
     };
 }
 
 macro_rules! assert_module_error {
     ($src:expr) => {
-        let result = $crate::parse::tests::expect_module_error($src);
-        insta::assert_snapshot!(insta::internals::AutoName, result, $src);
+        let error = $crate::parse::tests::expect_module_error($src);
+        let output = format!("----- SOURCE CODE\n{}\n\n----- ERROR\n{}", $src, error);
+        insta::assert_snapshot!(insta::internals::AutoName, output, $src);
     };
 }
-
 macro_rules! assert_parse_module {
     ($src:expr) => {
         let result = crate::parse::parse_module(
@@ -319,7 +320,7 @@ fn bit_array2() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/3125
+
 #[test]
 fn triple_equals() {
     assert_error!(
@@ -349,7 +350,7 @@ fn triple_equals_with_whitespace() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1231
+
 #[test]
 fn pointless_spread() {
     assert_error!(
@@ -361,7 +362,7 @@ fn pointless_spread() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1358
+
 #[test]
 fn lowcase_bool_in_pattern() {
     assert_error!(
@@ -373,7 +374,7 @@ fn lowcase_bool_in_pattern() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1613
+
 #[test]
 fn anonymous_function_labeled_arguments() {
     assert_error!(
@@ -518,13 +519,13 @@ fn assign_left_hand_side_of_concat_pattern() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1890
+
 #[test]
 fn valueless_list_spread_expression() {
     assert_error!(r#"let x = [1, 2, 3, ..]"#);
 }
 
-// https://github.com/rakun-lang/rakun/issues/2035
+
 #[test]
 fn semicolons() {
     assert_error!(r#"{ 2 + 3; - -5; }"#);
@@ -535,25 +536,25 @@ fn bare_expression() {
     assert_parse!(r#"1"#);
 }
 
-// https://github.com/rakun-lang/rakun/issues/1991
+
 #[test]
 fn block_of_one() {
     assert_parse!(r#"{ 1 }"#);
 }
 
-// https://github.com/rakun-lang/rakun/issues/1991
+
 #[test]
 fn block_of_two() {
     assert_parse!(r#"{ 1 2 }"#);
 }
 
-// https://github.com/rakun-lang/rakun/issues/1991
+
 #[test]
 fn nested_block() {
     assert_parse!(r#"{ 1 { 1.0 2.0 } 3 }"#);
 }
 
-// https://github.com/rakun-lang/rakun/issues/1831
+
 #[test]
 fn argument_scope() {
     assert_error!(
@@ -620,6 +621,18 @@ fn multiple_deprecation_attributes() {
         r#"
 @deprecated("1")
 @deprecated("2")
+pub fn main() -> Nil {
+  Nil
+}
+"#
+    );
+}
+
+#[test]
+fn deprecation_without_message() {
+    assert_module_error!(
+        r#"
+@deprecated()
 pub fn main() -> Nil {
   Nil
 }
@@ -787,7 +800,7 @@ pub fn main() -> Nil {
 }
 
 // Tests for nested tuples and structs in tuples
-// https://github.com/rakun-lang/rakun/issues/1980
+
 
 #[test]
 fn nested_tuples() {
@@ -1013,7 +1026,7 @@ record A {
 
 // Tests whether diagnostic presents an example of how to formulate a proper
 // record constructor based off a common user error pattern.
-// https://github.com/rakun-lang/rakun/issues/3324
+
 
 #[test]
 fn type_invalid_record_constructor() {
@@ -1165,16 +1178,30 @@ fn newline_tokens() {
     assert_eq!(
         make_tokenizer("1\n\n2\n").collect_vec(),
         [
-            Ok((0, Token::Int { value: "1".into() }, 1)),
+            Ok((
+                0,
+                Token::Int {
+                    value: "1".into(),
+                    int_value: 1.into()
+                },
+                1
+            )),
             Ok((1, Token::NewLine, 2)),
             Ok((2, Token::NewLine, 3)),
-            Ok((3, Token::Int { value: "2".into() }, 4)),
+            Ok((
+                3,
+                Token::Int {
+                    value: "2".into(),
+                    int_value: 2.into()
+                },
+                4
+            )),
             Ok((4, Token::NewLine, 5))
         ]
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1756
+
 #[test]
 fn arithmetic_in_guards() {
     assert_parse!(
@@ -1439,7 +1466,7 @@ pub fn main() {
 
 #[test]
 fn error_message_on_variable_starting_with_underscore() {
-    // https://github.com/rakun-lang/rakun/issues/3504
+    
     assert_module_error!(
         "
   pub fn main() {
@@ -1461,7 +1488,7 @@ pub fn main() {
 
 #[test]
 fn error_message_on_variable_starting_with_underscore2() {
-    // https://github.com/rakun-lang/rakun/issues/3504
+    
     assert_module_error!(
         "
   pub fn main() {
@@ -1502,6 +1529,217 @@ pub fn main() {
   let a = if wibble {
     wobble
   }
+}
+"#
+    );
+}
+
+
+#[test]
+fn missing_constructor_arguments() {
+    assert_module_error!(
+        "
+pub record A {
+  A(Int)
+}
+
+const a = A()
+"
+    );
+}
+
+
+#[test]
+fn missing_type_constructor_arguments_in_type_definition() {
+    assert_module_error!(
+        "
+pub type A() {
+  A(Int)
+}
+"
+    );
+}
+
+#[test]
+fn html_nested_elements() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let a = "nested"
+
+   <div>
+       <div>
+           <span>{a}</span>
+           <p>Some text</p>
+       </div>
+   </div>
+}
+"#
+    );
+}
+
+#[test]
+fn missing_type_constructor_arguments_in_type_annotation_1() {
+    assert_module_error!("pub fn main() -> Int() {}");
+}
+
+#[test]
+fn missing_type_constructor_arguments_in_type_annotation_2() {
+    assert_module_error!(
+        "pub fn main() {
+  let a: Int() = todo
+}"
+    );
+}
+#[test]
+fn html_conditional_rendering() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let show = True
+   let a = "conditional"
+
+   <div>
+       {case show { True -> <span>{a}</span> False  -> <span>Not shown</span> }}
+   </div>
+}
+"#
+    );
+}
+
+#[test]
+fn html_dynamic_attributes() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let id = "unique-id"
+
+   <div id={ id } class="container">
+    Content here
+   </div>
+}
+"#
+    );
+}
+
+#[test]
+fn html_self_closing_with_attributes() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   <img src="image.png" alt="Image description" />
+   <input type="text" placeholder="Enter text here" />
+}
+"#
+    );
+}
+
+#[test]
+fn html_multiple_sibling_elements() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   <div>
+       <div>First</div>
+       <div>Second</div>
+       <div>Third</div>
+   </div>
+}
+"#
+    );
+}
+
+#[test]
+fn html_custom_component() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let content = "Hello from my component"
+
+   <c.my_component>
+       {content}
+   </c.my_component>
+}
+"#
+    );
+}
+
+#[test]
+fn html_nested_custom_component() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+  <c.outer_component>
+    <c.inner_component>
+      Nested content
+    </c.inner_component>
+  </c.outer_component>
+}
+"#
+    );
+}
+
+#[test]
+fn html_custom_component_with_props() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let title = "My Title"
+   let description = "This is a description."
+
+   <c.card title={ title } description={ description }>
+       <p>
+        This is the card content.
+       </p>
+   </c.card>
+}
+"#
+    );
+}
+
+#[test]
+fn html_custom_component_with_conditional() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let show_details = true
+
+   <c.toggle_component>
+       {case show_details { True -> <p>Details are shown!</p> False -> <p>No details to show.</p>}}
+   </c.toggle_component>
+}
+"#
+    );
+}
+
+#[test]
+fn html_custom_component_with_children() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   <c.parent_component>
+       <c.child_component>
+           Child content goes here.
+       </c.child_component>
+       <c.child_component>
+           Another child content.
+       </c.child_component>
+   </c.parent_component>
+}
+"#
+    );
+}
+
+#[test]
+fn html_custom_component_with_attributes() {
+    assert_parse_module!(
+        r#"
+pub fn main() {
+   let is_active = true
+
+   <c.button is_active={is_active} class="btn-primary">
+       Click Me
+   </c.button>
 }
 "#
     );

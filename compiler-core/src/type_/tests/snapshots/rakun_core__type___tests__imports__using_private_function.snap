@@ -1,7 +1,20 @@
 ---
 source: compiler-core/src/type_/tests/imports.rs
+assertion_line: 67
 expression: "import one\n\npub fn main() {\n  one.two\n}"
 ---
+----- SOURCE CODE
+-- one.rakun
+fn two() { 2 }
+
+-- main.rakun
+import one
+
+pub fn main() {
+  one.two
+}
+
+----- ERROR
 error: Unknown module value
   ┌─ /src/one/two.rakun:4:6
   │

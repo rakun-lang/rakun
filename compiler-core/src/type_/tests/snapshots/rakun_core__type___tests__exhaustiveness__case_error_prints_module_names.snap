@@ -1,13 +1,30 @@
 ---
 source: compiler-core/src/type_/tests/exhaustiveness.rs
-expression: "\nimport wibble\npub record Things { Thing1 Thing2(Int) }\npub fn main() {\n    let wobble_thing = #(wibble.Wobble, Thing2(23))\n    case wobble_thing {\n        #(wibble.Wibble, Thing1) -> Nil\n    }\n}\n"
+assertion_line: 994
+expression: "\nimport wibble\npub record Things { Thing1 Thing2(Int) }\npub fn main(wobble_thing) {\n    case wobble_thing {\n        #(wibble.Wibble, Thing1) -> Nil\n    }\n}\n"
 ---
+----- SOURCE CODE
+-- wibble.rakun
+pub record Wibble { Wibble Wobble }
+
+-- main.rakun
+
+import wibble
+pub record Things { Thing1 Thing2(Int) }
+pub fn main(wobble_thing) {
+    case wobble_thing {
+        #(wibble.Wibble, Thing1) -> Nil
+    }
+}
+
+
+----- ERROR
 error: Inexhaustive patterns
-  ┌─ /src/one/two.rakun:6:5
+  ┌─ /src/one/two.rakun:5:5
   │  
-6 │ ╭     case wobble_thing {
-7 │ │         #(wibble.Wibble, Thing1) -> Nil
-8 │ │     }
+5 │ ╭     case wobble_thing {
+6 │ │         #(wibble.Wibble, Thing1) -> Nil
+7 │ │     }
   │ ╰─────^
 
 This case expression does not have a pattern for all possible values. If it

@@ -2,7 +2,7 @@ use std::{collections::HashSet, time::SystemTime};
 
 use crate::{
     build::{Mode, NullTelemetry, PackageCompiler, StaleTracker, TargetCodegenConfiguration},
-    config::{DocsPage, PackageConfig},
+    config::{DocsPage, PackageConfig, Repository},
     docs::DocContext,
     io::{memory::InMemoryFileSystem, FileSystemWriter},
     paths::ProjectPaths,
@@ -121,7 +121,7 @@ pub fn one() {
     insta::assert_snapshot!(compile(config, modules));
 }
 
-// https://github.com/rakun-lang/rakun/issues/2347
+
 #[test]
 fn tables() {
     let config = PackageConfig::default();
@@ -141,7 +141,7 @@ pub fn one() {
     insta::assert_snapshot!(compile(config, modules));
 }
 
-// https://github.com/rakun-lang/rakun/issues/2202
+
 #[test]
 fn long_function_wrapping() {
     let config = PackageConfig::default();
@@ -190,7 +190,7 @@ pub fn one() { 1 }
     insta::assert_snapshot!(compile(config, modules));
 }
 
-// https://github.com/rakun-lang/rakun/issues/2561
+
 #[test]
 fn discarded_arguments_are_not_shown() {
     let config = PackageConfig::default();
@@ -198,7 +198,7 @@ fn discarded_arguments_are_not_shown() {
     insta::assert_snapshot!(compile(config, modules));
 }
 
-// https://github.com/rakun-lang/rakun/issues/2631
+
 #[test]
 fn docs_of_a_type_constructor_are_not_used_by_the_following_function() {
     let config = PackageConfig::default();
@@ -336,4 +336,33 @@ pub type Wibble = Int
 ",
     )];
     assert!(!compile(config, modules).contains("Not included!"));
+}
+
+#[test]
+fn source_link_for_github_repository() {
+    let mut config = PackageConfig::default();
+    config.repository = Repository::GitHub {
+        user: "wibble".to_string(),
+        repo: "wobble".to_string(),
+        path: None,
+    };
+
+    let modules = vec![("app.rakun", "pub type Wibble = Int")];
+    assert!(compile(config, modules)
+        .contains("https://github.com/wibble/wobble/blob/v0.1.0/src/app.rakun#L1-L1"));
+}
+
+#[test]
+fn source_link_for_github_repository_with_path() {
+    let mut config = PackageConfig::default();
+    config.repository = Repository::GitHub {
+        user: "wibble".to_string(),
+        repo: "wobble".to_string(),
+        path: Some("path/to/package".to_string()),
+    };
+
+    let modules = vec![("app.rakun", "pub type Wibble = Int")];
+    assert!(compile(config, modules).contains(
+        "https://github.com/wibble/wobble/blob/v0.1.0/path/to/package/src/app.rakun#L1-L1"
+    ));
 }

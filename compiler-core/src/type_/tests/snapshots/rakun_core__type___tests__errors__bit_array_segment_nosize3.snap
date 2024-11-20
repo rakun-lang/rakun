@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 65
 expression: "case <<1>> { <<_:bytes, _:bits>> -> 1 }"
 ---
+----- SOURCE CODE
+case <<1>> { <<_:bytes, _:bits>> -> 1 }
+
+----- ERROR
 error: Invalid bit array segment
   ┌─ /src/one/two.rakun:1:18
   │

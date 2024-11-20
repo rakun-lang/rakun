@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 907
 expression: "type IntMap = IllMap<Int, Int>"
 ---
+----- SOURCE CODE
+type IntMap = IllMap<Int, Int>
+
+----- ERROR
 error: Unknown type
   ┌─ /src/one/two.rakun:1:15
   │

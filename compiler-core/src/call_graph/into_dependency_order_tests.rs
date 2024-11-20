@@ -675,7 +675,7 @@ fn constants_and_functions() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/2275
+
 #[test]
 fn bug_2275() {
     let functions = [

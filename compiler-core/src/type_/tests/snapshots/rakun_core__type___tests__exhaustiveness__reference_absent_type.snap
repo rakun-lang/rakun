@@ -1,7 +1,23 @@
 ---
 source: compiler-core/src/type_/tests/exhaustiveness.rs
+assertion_line: 976
 expression: "\nrecord Wibble {\n    One(Int)\n    Two(Absent)\n}\n\npub fn main(wibble) {\n    case wibble {\n        One(x) -> x\n    }\n}\n"
 ---
+----- SOURCE CODE
+
+record Wibble {
+    One(Int)
+    Two(Absent)
+}
+
+pub fn main(wibble) {
+    case wibble {
+        One(x) -> x
+    }
+}
+
+
+----- ERROR
 error: Unknown type
   ┌─ /src/one/two.rakun:4:9
   │

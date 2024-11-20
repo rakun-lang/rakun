@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 522
 expression: "pub record Box { Box(Int) }\npub fn main() {\n    let Box(innerValue) = Box(203)\n}"
 ---
 ----- BEFORE ACTION

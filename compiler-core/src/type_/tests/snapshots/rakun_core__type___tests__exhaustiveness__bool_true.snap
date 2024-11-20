@@ -1,7 +1,18 @@
 ---
 source: compiler-core/src/type_/tests/exhaustiveness.rs
+assertion_line: 47
 expression: "\npub fn main(x) {\n  case x {\n    True -> 1\n  }\n}\n"
 ---
+----- SOURCE CODE
+
+pub fn main(x) {
+  case x {
+    True -> 1
+  }
+}
+
+
+----- ERROR
 error: Inexhaustive patterns
   ┌─ /src/one/two.rakun:3:3
   │  

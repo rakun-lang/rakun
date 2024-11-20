@@ -1,7 +1,18 @@
 ---
 source: compiler-core/src/type_/tests/type_alias.rs
+assertion_line: 45
 expression: "\ntype A = B\ntype B = C\ntype C = D\ntype D = E\ntype E = A\n"
 ---
+----- SOURCE CODE
+
+type A = B
+type B = C
+type C = D
+type D = E
+type E = A
+
+
+----- ERROR
 error: Type cycle
   ┌─ /src/one/two.rakun:2:1
   │

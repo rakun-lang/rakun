@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 135
 expression: "\n// test\nimport // comment\nlist as lispy\nimport result\nimport option\n\npub fn main() {\n  result.is_ok\n}\n"
 ---
 ----- BEFORE ACTION

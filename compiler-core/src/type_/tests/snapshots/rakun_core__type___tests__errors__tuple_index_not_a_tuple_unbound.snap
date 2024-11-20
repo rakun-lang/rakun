@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 586
 expression: "fn(a) { a.2 }"
 ---
+----- SOURCE CODE
+fn(a) { a.2 }
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:9
   │

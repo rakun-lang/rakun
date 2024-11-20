@@ -1,7 +1,19 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 582
 expression: "\n        import rakun/list\n\n        pub fn main() {\n            let a_list = []\n            let _ = list.length(a_list) != 0\n        }\n        "
 ---
+----- SOURCE CODE
+
+        import rakun/list
+
+        pub fn main() {
+            let a_list = []
+            let _ = list.length(a_list) != 0
+        }
+        
+
+----- WARNING
 warning: Inefficient use of `list.length`
   ┌─ /src/warning/wrn.rakun:6:21
   │

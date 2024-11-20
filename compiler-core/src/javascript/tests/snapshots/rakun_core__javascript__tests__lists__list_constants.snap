@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/javascript/tests/lists.rs
+assertion_line: 42
 expression: "\nconst a = []\nconst b = [1, 2, 3]\n"
 ---
+----- SOURCE CODE
+
+const a = []
+const b = [1, 2, 3]
+
+
+----- COMPILED JAVASCRIPT
 import { toList } from "../rakun.mjs";
 
 const a = /* @__PURE__ */ toList([]);

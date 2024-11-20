@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 363
 expression: "pub fn main() {\n    let ignore = fn(_ignoreMe: Bool) { 98 }\n}"
 ---
 ----- BEFORE ACTION

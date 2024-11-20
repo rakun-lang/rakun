@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1098
 expression: type X = Int type X = Int
 ---
+----- SOURCE CODE
+type X = Int type X = Int
+
+----- ERROR
 error: Duplicate type definition
   ┌─ /src/one/two.rakun:1:1
   │

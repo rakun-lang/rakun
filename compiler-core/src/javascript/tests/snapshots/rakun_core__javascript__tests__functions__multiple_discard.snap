@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/javascript/tests/functions.rs
+assertion_line: 265
 expression: "pub fn main(_, _, _) {\n  1\n}\n"
 ---
+----- SOURCE CODE
+pub fn main(_, _, _) {
+  1
+}
+
+
+----- COMPILED JAVASCRIPT
 export function main(_, _1, _2) {
   return 1;
 }

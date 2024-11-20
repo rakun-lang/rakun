@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 315
 expression: "pub fn a(b) { case b { #(c, _) -> 5 } }"
 ---
+----- SOURCE CODE
+pub fn a(b) { case b { #(c, _) -> 5 } }
+
+----- WARNING
 warning: Unused variable
   ┌─ /src/warning/wrn.rakun:1:26
   │

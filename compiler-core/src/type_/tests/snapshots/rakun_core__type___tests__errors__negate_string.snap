@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1798
 expression: "!\"Hello Rakun\""
 ---
+----- SOURCE CODE
+!"Hello Rakun"
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:2
   │

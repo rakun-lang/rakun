@@ -1,7 +1,21 @@
 ---
 source: compiler-core/src/type_/tests/use_.rs
+assertion_line: 241
 expression: "\nlet x = fn(f) { \"Hello, \" ++ f() }\nlet y = fn(f) { 1 + f() }\nlet z = fn(f) { 1.0 +. f() }\nuse <- x()\nuse <- y()\nlet n = 1\nuse <- z()\n1.0\n"
 ---
+----- SOURCE CODE
+
+let x = fn(f) { "Hello, " ++ f() }
+let y = fn(f) { 1 + f() }
+let z = fn(f) { 1.0 +. f() }
+use <- x()
+use <- y()
+let n = 1
+use <- z()
+1.0
+
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:8:1
   │

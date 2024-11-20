@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/type_/tests/use_.rs
+assertion_line: 257
 expression: "\nlet x = fn(f) { \"Hello, \" ++ f() }\nuse _ <- x()\n\"Giacomo!\"\n"
 ---
+----- SOURCE CODE
+
+let x = fn(f) { "Hello, " ++ f() }
+use _ <- x()
+"Giacomo!"
+
+
+----- ERROR
 error: Incorrect arity
   ┌─ /src/one/two.rakun:3:5
   │

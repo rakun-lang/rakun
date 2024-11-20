@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 1768
 expression: "\n        pub fn wibble(_) { 1 }\n        pub fn main() {\n            panic |> wibble\n        }\n        "
 ---
+----- SOURCE CODE
+
+        pub fn wibble(_) { 1 }
+        pub fn main() {
+            panic |> wibble
+        }
+        
+
+----- WARNING
 warning: Unreachable code
   ┌─ /src/warning/wrn.rakun:4:22
   │

@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 686
 expression: "pub fn main() {\n  {\n    let assert Ok(value) = Ok(1)\n  }\n}"
 ---
 ----- BEFORE ACTION

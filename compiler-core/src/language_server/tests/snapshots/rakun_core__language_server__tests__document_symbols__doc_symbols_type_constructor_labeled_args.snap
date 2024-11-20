@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/document_symbols.rs
+assertion_line: 95
 expression: "doc_symbols(TestProject::for_source(code))"
 ---
 [
@@ -123,7 +124,7 @@ expression: "doc_symbols(TestProject::for_source(code))"
                             DocumentSymbol {
                                 name: "argd",
                                 detail: Some(
-                                    "List<Int>",
+                                    "List(Int)",
                                 ),
                                 kind: Field,
                                 tags: None,
@@ -184,7 +185,7 @@ expression: "doc_symbols(TestProject::for_source(code))"
                             DocumentSymbol {
                                 name: "arge",
                                 detail: Some(
-                                    "Result<Int, Bool>",
+                                    "Result(Int, Bool)",
                                 ),
                                 kind: Field,
                                 tags: None,

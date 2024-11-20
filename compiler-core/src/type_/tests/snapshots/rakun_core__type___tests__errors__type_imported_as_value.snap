@@ -1,7 +1,18 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 2097
 expression: "import rakun/wibble.{Wibble}"
 ---
+----- SOURCE CODE
+-- rakun/wibble.rakun
+pub record Wibble {
+               Wobble
+             }
+
+-- main.rakun
+import rakun/wibble.{Wibble}
+
+----- ERROR
 error: Unknown module value
   ┌─ /src/one/two.rakun:1:22
   │

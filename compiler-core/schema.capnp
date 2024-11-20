@@ -67,7 +67,12 @@ struct TypeConstructor {
 
 struct AccessorsMap {
   type @0 :Type;
-  accessors @1 :List(Property(RecordAccessor));
+  sharedAccessors @1 :List(Property(RecordAccessor));
+  variantSpecificAccessors @2 :List(VariantSpecificAccessors);
+}
+
+struct VariantSpecificAccessors {
+  accessors @0 :List(Property(RecordAccessor));
 }
 
 struct RecordAccessor {
@@ -108,11 +113,11 @@ struct ValueConstructor {
 }
 
 struct Publicity {
-    union {
-        public @0 :Void;
-        private @1 :Void;
-        internal @2 :Option(SrcSpan);
-    }
+  union {
+    public @0 :Void;
+    private @1 :Void;
+    internal @2 :Option(SrcSpan);
+  }
 }
 
 struct Implementations {
@@ -141,6 +146,8 @@ struct ValueConstructorVariant {
       location @7 :SrcSpan;
       documentation @15 :Text;
       implementations @18 :Implementations;
+      externalErlang @20 :Option(External);
+      externalJavascript @21 :Option(External);
     }
 
     record :group {
@@ -154,6 +161,11 @@ struct ValueConstructorVariant {
       constructorIndex @17 :UInt16;
     }
   }
+}
+
+struct External {
+  module @0 :Text;
+  function @1 :Text;
 }
 
 struct SrcSpan {

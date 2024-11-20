@@ -45,7 +45,7 @@ fn go() {
     );
 }
 
-// https://github.com/rakun-lang/rakun/issues/1238
+
 #[test]
 fn as_expression() {
     assert_js!(

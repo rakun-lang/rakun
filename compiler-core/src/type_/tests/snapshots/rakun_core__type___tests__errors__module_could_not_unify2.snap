@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 688
 expression: "fn go() { 1 + 2.0 }"
 ---
+----- SOURCE CODE
+fn go() { 1 + 2.0 }
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:15
   │

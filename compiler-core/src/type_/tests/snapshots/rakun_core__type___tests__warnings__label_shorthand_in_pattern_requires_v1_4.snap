@@ -1,7 +1,20 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 2425
 expression: "\npub record Wibble { Wibble(wibble: Int) }\n\npub fn main(wibble) {\n  case wibble {\n    Wibble(wibble:) -> wibble\n  }\n}\n"
 ---
+----- SOURCE CODE
+
+pub record Wibble { Wibble(wibble: Int) }
+
+pub fn main(wibble) {
+  case wibble {
+    Wibble(wibble:) -> wibble
+  }
+}
+
+
+----- WARNING
 warning: Incompatible rakun version range
   ┌─ /src/warning/wrn.rakun:6:12
   │

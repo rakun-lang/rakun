@@ -1,7 +1,13 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1511
 expression: "record X { X }\nconst x = unknown.X"
 ---
+----- SOURCE CODE
+record X { X }
+const x = unknown.X
+
+----- ERROR
 error: Unknown module
   ┌─ /src/one/two.rakun:2:11
   │

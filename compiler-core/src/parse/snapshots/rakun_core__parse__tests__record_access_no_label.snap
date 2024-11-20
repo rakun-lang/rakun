@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/parse/tests.rs
+assertion_line: 1163
 expression: "\nrecord Wibble {\n    Wibble(wibble: String)\n}\n\nfn wobble() {\n  Wibble(\"a\").\n}\n"
 ---
 Parsed {
@@ -158,6 +159,12 @@ Parsed {
                 target: None,
             },
         ],
+        names: Names {
+            local_types: {},
+            imported_modules: {},
+            type_variables: {},
+            local_value_constructors: {},
+        },
     },
     extra: ModuleExtra {
         module_comments: [],

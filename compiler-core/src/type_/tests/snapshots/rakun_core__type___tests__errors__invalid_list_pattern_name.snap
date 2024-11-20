@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1317
 expression: "let assert [theElement] = [9.4]"
 ---
+----- SOURCE CODE
+let assert [theElement] = [9.4]
+
+----- ERROR
 error: Invalid variable name
   ┌─ /src/one/two.rakun:1:13
   │

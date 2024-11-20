@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/javascript/tests/tuples.rs
+assertion_line: 97
 expression: "\nconst e = #(\n  \"loooooooooooooong\", \"loooooooooooong\", \"loooooooooooooong\",\n  \"loooooooooooooong\", \"loooooooooooong\", \"loooooooooooooong\",\n)\n"
 ---
+----- SOURCE CODE
+
+const e = #(
+  "loooooooooooooong", "loooooooooooong", "loooooooooooooong",
+  "loooooooooooooong", "loooooooooooong", "loooooooooooooong",
+)
+
+
+----- COMPILED JAVASCRIPT
 const e = [
   "loooooooooooooong",
   "loooooooooooong",

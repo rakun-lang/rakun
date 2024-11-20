@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 582
 expression: "pub fn main() {\n    let assert <<_iDontCare>> = <<97>>\n}"
 ---
 ----- BEFORE ACTION

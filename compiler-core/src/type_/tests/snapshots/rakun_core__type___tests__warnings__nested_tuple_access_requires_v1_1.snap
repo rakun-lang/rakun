@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 2238
 expression: "\npub fn main() {\n  let tuple = #(1, #(1, 1))\n  tuple.1.0\n}\n"
 ---
+----- SOURCE CODE
+
+pub fn main() {
+  let tuple = #(1, #(1, 1))
+  tuple.1.0
+}
+
+
+----- WARNING
 warning: Incompatible rakun version range
   ┌─ /src/warning/wrn.rakun:4:3
   │

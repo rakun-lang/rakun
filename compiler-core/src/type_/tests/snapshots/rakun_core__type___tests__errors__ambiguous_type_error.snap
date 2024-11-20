@@ -1,7 +1,19 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1803
 expression: "import wibble pub record Thing { Thing }\n        pub fn main() {\n            [Thing] == [wibble.Thing]\n        }"
 ---
+----- SOURCE CODE
+-- wibble.rakun
+pub record Thing { Thing }
+
+-- main.rakun
+import wibble pub record Thing { Thing }
+        pub fn main() {
+            [Thing] == [wibble.Thing]
+        }
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:3:24
   │
@@ -10,8 +22,8 @@ error: Type mismatch
 
 Expected type:
 
-    List<Thing>
+    List(Thing)
 
 Found type:
 
-    List<wibble.Thing>
+    List(wibble.Thing)

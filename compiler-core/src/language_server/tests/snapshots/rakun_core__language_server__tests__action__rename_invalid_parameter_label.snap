@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
+assertion_line: 374
 expression: "fn func(thisIsALabel param: Int) { param }"
 ---
 ----- BEFORE ACTION

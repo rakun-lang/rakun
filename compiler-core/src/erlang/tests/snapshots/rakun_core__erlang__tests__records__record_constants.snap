@@ -1,7 +1,14 @@
 ---
 source: compiler-core/src/erlang/tests/records.rs
+assertion_line: 315
 expression: "pub record Test { A }\nconst some_test = A\npub fn a() { A }"
 ---
+----- SOURCE CODE
+pub record Test { A }
+const some_test = A
+pub fn a() { A }
+
+----- COMPILED ERLANG
 -module(my@mod).
 -compile([no_auto_import, nowarn_unused_vars, nowarn_unused_function, nowarn_nomatch]).
 

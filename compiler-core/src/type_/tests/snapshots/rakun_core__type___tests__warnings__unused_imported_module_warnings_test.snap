@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 325
 expression: import rakun/wibble
 ---
+----- SOURCE CODE
+import rakun/wibble
+
+----- WARNING
 warning: Unused imported module
   ┌─ /src/warning/wrn.rakun:1:1
   │

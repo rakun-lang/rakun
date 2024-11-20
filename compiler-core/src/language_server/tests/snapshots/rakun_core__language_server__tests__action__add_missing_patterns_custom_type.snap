@@ -1,6 +1,7 @@
 ---
 source: compiler-core/src/language_server/tests/action.rs
-expression: "\nrecord Wibble {\n  Wibble\n  Wobble\n  Wubble\n}\n\npub fn main() {\n  let wibble = Wobble\n  case wibble {\n    Wobble -> Nil\n  }\n}\n"
+assertion_line: 1443
+expression: "\nrecord Wibble {\n  Wibble\n  Wobble\n  Wubble\n}\n\npub fn main(wibble: Wibble) {\n  case wibble {\n    Wobble -> Nil\n  }\n}\n"
 ---
 ----- BEFORE ACTION
 
@@ -10,8 +11,7 @@ record Wibble {
   Wubble
 }
 
-pub fn main() {
-  let wibble = Wobble
+pub fn main(wibble: Wibble) {
   case wibble {
   ▔▔▔▔▔↑       
     Wobble -> Nil
@@ -27,8 +27,7 @@ record Wibble {
   Wubble
 }
 
-pub fn main() {
-  let wibble = Wobble
+pub fn main(wibble: Wibble) {
   case wibble {
     Wobble -> Nil
     Wibble -> todo

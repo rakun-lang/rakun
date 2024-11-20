@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1251
 expression: "fn func(thisIsALabel param: Int) { param }"
 ---
+----- SOURCE CODE
+fn func(thisIsALabel param: Int) { param }
+
+----- ERROR
 error: Invalid label name
   ┌─ /src/one/two.rakun:1:9
   │

@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 901
 expression: "record Thing { Thing(unknown: x) }"
 ---
+----- SOURCE CODE
+record Thing { Thing(unknown: x) }
+
+----- ERROR
 error: Unknown type
   ┌─ /src/one/two.rakun:1:31
   │

@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/hover.rs
+assertion_line: 658
 expression: "\nimport example_module.{type MyType, MyType}\nfn main() -> MyType {\n  MyType\n}\n"
 ---
 import example_module.{type MyType, MyType}
@@ -12,6 +13,6 @@ fn main() -> MyType {
 ----- Hover content -----
 Scalar(
     String(
-        "```rakun\nMyType\n```\n Exciting documentation\n Maybe even multiple lines\n",
+        "```rakun\nexample_module.MyType\n```\n Exciting documentation\n Maybe even multiple lines\n",
     ),
 )

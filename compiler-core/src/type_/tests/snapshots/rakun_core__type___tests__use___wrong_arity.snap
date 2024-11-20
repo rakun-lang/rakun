@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/type_/tests/use_.rs
+assertion_line: 104
 expression: "\nlet f = fn(callback) { callback(1, 2) }\nuse <- f\n123\n"
 ---
+----- SOURCE CODE
+
+let f = fn(callback) { callback(1, 2) }
+use <- f
+123
+
+
+----- ERROR
 error: Incorrect arity
   ┌─ /src/one/two.rakun:3:1
   │

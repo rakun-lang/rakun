@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 420
 expression: "[1.0] == [1]"
 ---
+----- SOURCE CODE
+[1.0] == [1]
+
+----- ERROR
 error: Type mismatch
   ┌─ /src/one/two.rakun:1:10
   │
@@ -10,8 +15,8 @@ error: Type mismatch
 
 Expected type:
 
-    List<Float>
+    List(Float)
 
 Found type:
 
-    List<Int>
+    List(Int)

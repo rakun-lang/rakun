@@ -1,0 +1,31 @@
+---
+source: test-package-compiler/src/generated_tests.rs
+expression: "./cases/import_cycle_multi"
+---
+error: Import cycle
+  ┌─ src/three.rakun:1:1
+  │
+1 │ import one
+  │ ^ Imported here
+  │
+  ┌─ src/two.rakun:1:1
+  │
+1 │ import three
+  │ ^ Imported here
+  │
+  ┌─ src/one.rakun:1:1
+  │
+1 │ import two
+  │ ^ Imported here
+
+The import statements for these modules form a cycle:
+
+    ┌─────┐
+    │     three
+    │     ↓
+    │     two
+    │     ↓
+    │     one
+    └─────┘
+Rakun doesn't support dependency cycles like these, please break the
+cycle to continue.

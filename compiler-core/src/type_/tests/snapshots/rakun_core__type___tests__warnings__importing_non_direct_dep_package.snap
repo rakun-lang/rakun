@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 773
 expression: "\nimport some_module\npub const x = some_module.x\n        "
 ---
+----- SOURCE CODE
+
+import some_module
+pub const x = some_module.x
+        
+
+----- WARNING
 warning: Transitive dependency imported
   ┌─ /src/warning/wrn.rakun:2:1
   │

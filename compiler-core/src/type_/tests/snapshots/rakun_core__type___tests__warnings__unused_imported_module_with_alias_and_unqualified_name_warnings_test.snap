@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/warnings.rs
+assertion_line: 342
 expression: "import rakun/one.{two} as three"
 ---
+----- SOURCE CODE
+import rakun/one.{two} as three
+
+----- WARNING
 warning: Unused imported value
   ┌─ /src/warning/wrn.rakun:1:19
   │

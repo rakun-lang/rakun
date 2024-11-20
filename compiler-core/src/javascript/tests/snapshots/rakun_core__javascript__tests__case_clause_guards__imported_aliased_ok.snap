@@ -1,7 +1,22 @@
 ---
 source: compiler-core/src/javascript/tests/case_clause_guards.rs
+assertion_line: 489
 expression: "import rakun.{Ok as Y}\npub record X {\n  Ok\n}\nfn func() {\n  case Y {\n    y if y == Y -> True\n    _ -> False\n  }\n}\n"
 ---
+----- SOURCE CODE
+import rakun.{Ok as Y}
+pub record X {
+  Ok
+}
+fn func() {
+  case Y {
+    y if y == Y -> True
+    _ -> False
+  }
+}
+
+
+----- COMPILED JAVASCRIPT
 import * as $rakun from "../rakun.mjs";
 import { Ok as Y, CustomType as $CustomType, isEqual } from "../rakun.mjs";
 
@@ -9,7 +24,7 @@ export class Ok extends $CustomType {}
 
 function func() {
   let $ = (var0) => { return new Y(var0); };
-  if (isEqual($, new Y())) {
+  if (isEqual($, (var0) => { return new Y(var0); })) {
     let y = $;
     return true;
   } else {

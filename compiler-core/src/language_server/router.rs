@@ -1,7 +1,7 @@
 use crate::{
     build::SourceFingerprint,
     error::{FileIoAction, FileKind},
-    io::{CommandExecutor, FileSystemReader, FileSystemWriter},
+    io::{BeamCompiler, CommandExecutor, FileSystemReader, FileSystemWriter},
     language_server::{
         engine::LanguageServerEngine, files::FileSystemProxy, progress::ProgressReporter,
         DownloadDependencies, MakeLocker,
@@ -37,6 +37,7 @@ where
     // IO to be supplied from outside of rakun-core
     IO: FileSystemReader
         + FileSystemWriter
+        + BeamCompiler
         + CommandExecutor
         + DownloadDependencies
         + MakeLocker
@@ -250,7 +251,7 @@ mod find_rakun_project_parent_tests {
         );
     }
 
-    // https://github.com/rakun-lang/rakun/issues/2121
+    
     #[test]
     fn module_in_project_but_not_src_or_test() {
         let io = InMemoryFileSystem::new();

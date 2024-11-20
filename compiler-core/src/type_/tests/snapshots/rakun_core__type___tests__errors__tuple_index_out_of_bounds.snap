@@ -1,7 +1,12 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 576
 expression: "#(0, 1).2"
 ---
+----- SOURCE CODE
+#(0, 1).2
+
+----- ERROR
 error: Out of bounds tuple index
   ┌─ /src/one/two.rakun:1:8
   │

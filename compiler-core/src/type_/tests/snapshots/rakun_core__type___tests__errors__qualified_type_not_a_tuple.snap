@@ -1,0 +1,27 @@
+---
+source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 2389
+expression: "\nimport mod.{type Pair as Duo}\npub fn first(pair: Duo<a, b>) {\n  pair.0\n}\n"
+---
+----- SOURCE CODE
+-- mod.rakun
+pub record Pair<a, b> { Pair(a, b) }
+
+-- main.rakun
+
+import mod.{type Pair as Duo}
+pub fn first(pair: Duo<a, b>) {
+  pair.0
+}
+
+
+----- ERROR
+error: Type mismatch
+  ┌─ /src/one/two.rakun:4:3
+  │
+4 │   pair.0
+  │   ^^^^ This is not a tuple
+
+To index into this value it needs to be a tuple, however it has this type:
+
+    Duo(a, b)

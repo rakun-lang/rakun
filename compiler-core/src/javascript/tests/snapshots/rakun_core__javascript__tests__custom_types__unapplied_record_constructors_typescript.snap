@@ -1,7 +1,17 @@
 ---
 source: compiler-core/src/javascript/tests/custom_types.rs
+assertion_line: 650
 expression: "pub record Cat { Cat(name: String) }\n\npub fn return_unapplied_cat() {\n  Cat\n}\n"
 ---
+----- SOURCE CODE
+pub record Cat { Cat(name: String) }
+
+pub fn return_unapplied_cat() {
+  Cat
+}
+
+
+----- TYPESCRIPT DEFINITIONS
 import type * as _ from "../rakun.d.mts";
 
 export class Cat extends _.CustomType {

@@ -1,7 +1,15 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 1723
 expression: "\n@external(erlang, \"a\", \"b\")\nfn main() -> List<_>\n"
 ---
+----- SOURCE CODE
+
+@external(erlang, "a", "b")
+fn main() -> List<_>
+
+
+----- ERROR
 error: Unexpected type hole
   ┌─ /src/one/two.rakun:3:19
   │

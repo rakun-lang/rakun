@@ -1,7 +1,16 @@
 ---
 source: compiler-core/src/javascript/tests/lists.rs
+assertion_line: 31
 expression: "\nfn go(x) {\n    [{True 1}]\n}\n"
 ---
+----- SOURCE CODE
+
+fn go(x) {
+    [{True 1}]
+}
+
+
+----- COMPILED JAVASCRIPT
 import { toList } from "../rakun.mjs";
 
 function go(x) {

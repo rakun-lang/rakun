@@ -1,5 +1,6 @@
 ---
 source: compiler-core/src/language_server/tests/completion.rs
+assertion_line: 1063
 expression: "import dep\n\npub fn wibble(\n    _: String,\n) -> Nil {\n    Nil\n}"
 ---
 import dep

@@ -1,7 +1,13 @@
 ---
 source: compiler-core/src/type_/tests/errors.rs
+assertion_line: 924
 expression: "fn one() { 1 }\nfn main() { case 1 { _ if one -> 1 } }"
 ---
+----- SOURCE CODE
+fn one() { 1 }
+fn main() { case 1 { _ if one -> 1 } }
+
+----- ERROR
 error: Invalid guard variable
   ┌─ /src/one/two.rakun:2:27
   │
